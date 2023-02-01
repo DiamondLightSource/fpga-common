@@ -1,0 +1,52 @@
+MUST_DEFINE += FPGA_COMMON
+MUST_DEFINE += PROJECT_TOP
+MUST_DEFINE += TARGET
+MUST_DEFINE += BUILD_DIR
+
+# ------------------------------------------------------------------------------
+
+# The following extremly tricksy makefile code converts the list of MUST_DEFINE
+# names into symbols which will generate a suitable error when an attempt is
+# made to expand them.  These will be defined in the CONFIG file.
+define _MUST_DEFINE
+ifndef $1
+    $1 = $$(error Must define symbol $1 in CONFIG or Make file)
+endif
+endef
+_EVAL_MUST_DEFINE = $(eval $(_MUST_DEFINE))
+$(foreach var,$(MUST_DEFINE),$(call _EVAL_MUST_DEFINE,$(var)))
+
+
+# # A nice bit of code from https://www.systutorials.com/
+# #   how-to-get-the-full-path-and-directory-of-a-makefile-itself/
+# mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+# mkfile_dir := $(dir $(mkfile_path))
+# $(info $(MAKEFILE_LIST))
+# $(info $(mkfile_dir))
+
+# Function for safely quoting a string before exposing it to the shell.
+# Wraps string in quotes, and escapes all internal quotes.  Invoke as
+#
+#   $(call SAFE_QUOTE,string to expand)
+#
+SAFE_QUOTE = '$(subst ','\'',$(1))'
+# )' (Gets vim back in sync)
+
+# Passing makefile exports through is a bit tiresome.  We could mark our
+# symbols with export -- but that means *every* command gets them, and I
+# don't like that.  This macro instead just exports the listed symbols into a
+# called function, designed to be called like:
+#
+#       $(call EXPORT,$(EXPORTS)) script
+#
+EXPORT = $(foreach var,$(1),$(var)=$(call SAFE_QUOTE,$($(var))))
+
+# ------------------------------------------------------------------------------
+
+
+PYTHON ?= python
+
+TARGET_DIR = $(PROJECT_TOP)/$(TARGET)
+
+
+# vim: set filetype=make:
