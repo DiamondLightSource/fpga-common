@@ -1,34 +1,39 @@
 # This file must be run in the target build directory
 
+# Discover the path to this directory
+HERE := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+
 MUST_DEFINE += VIVADO
 MUST_DEFINE += FPGA_PART
 
 include $(PROJECT_TOP)/CONFIG
--include $(TARGET_DIR)/CONFIG
+include $(HERE)/Makefile.common
 
-include $(FPGA_COMMON)/Makefile.common
+# Can make these optional in the end
+include $(BOARD_DIR)/CONFIG
+include $(TARGET_DIR)/CONFIG
 
 
 # Command to run vivado
 RUN_VIVADO = source $(VIVADO) && vivado $(VIVADO_EXTRA_ARGS)
 
 
-TCL_DIR = $(FPGA_COMMON)/tcl
+TCL_DIR = $(HERE)/tcl
+TOOLS_DIR = $(HERE)/tools
 
-BOARD_DIR = $(PROJECT_TOP)/board
 VHD_DIR = $(TARGET_DIR)/vhd
 CONSTR_DIR = $(TARGET_DIR)/constr
+BD_DIR = $(TARGET_DIR)/bd
 
 
 VPATH += $(VHD_DIR)
 VPATH += $(wildcard $(VHD_DIR)/*)
+VPATH += $(BD_DIR)
 
 SOURCES := $(shell find $(VHD_DIR) -name \*.vhd)
 
 
-MAKE_ENTITY = $(PYTHON) $(FPGA_COMMON)/tools/make_entity.py
-
-BUILT_FILES += built/top_entity.vhd
+BUILT_FILES += top_entity.vhd
 
 
 # ------------------------------------------------------------------------------
@@ -48,21 +53,21 @@ fpga: $(TARGET).bit
 # Generate top entity
 built/top_entity.vhd: $(BOARD_DIR)/signals $(BOARD_DIR)/pins $(CONSTR_DIR)/used
 	mkdir -p built
-	cd built  &&  $(MAKE_ENTITY) $^ top
+	cd built  &&  $(TOOLS_DIR)/make_entity $^ top
 
 built/version.vhd: $(PROJECT_TOP)/VERSION
 	$(TCLDIR)/make_version.sh $@
 
-built/metadata.coe: prom_config
+built/metadata.coe: $(TARGET_DIR)/prom_config
 	mkdir -p built
-	$(PYTHONDIR)/prom_data_creator.py --format coe $< >$@
+	$(TOOLS_DIR)/prom_data_creator --format coe $< >$@
 
 # Other generated vhd files
 built/%.vhd: %.py %.in
 	$(PYTHON) $^ >$@
 
 
-fpga-built: $(BUILT_FILES)
+fpga-built: $(BUILT_FILES:%=built/%)
 .PHONY: fpga-built
 
 
@@ -72,21 +77,19 @@ fpga-built: $(BUILT_FILES)
 #   + *.vhd -> $(TARGET).bit
 
 # The interconnect block design needs the metadata array
-interconnect/interconnect.bd: built/metadata.coe
+interconnect/BD_DONE: built/metadata.coe
+
 
 # Load block designs from TCL sources
+%/BD_DONE: $(BD_DIR)/%.tcl
+	echo $$LM_LICENSE_FILE
+	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/create_bd.tcl \
+            -tclargs $* -tclargs $< -tclargs $(FPGA_PART)
+	touch $@
 
-# Ugly and scary trick here.  We need the .bd target to be a repeated for (eg
-# interconnect/interconnect.bd), but we can't match this directly using makefile
-# patterns.  The trick is to use .SECONDEXPANSION ... which affects the whole of
-# the rest of the makefile ... to pull out the correct dependency.
-.SECONDEXPANSION:
-%.bd: $$(notdir $$*).tcl
-	$(RUN_VIVADO) -mode batch -source $(TCLDIR)/create_bd.tcl \
-            -tclargs $(basename $(notdir $<)) -tclargs $<
 
 # Build final target
-$(TARGET).bit: $(BUILT_FILES) $(BLOCK_DESIGNS) $(SOURCES)
+$(TARGET).bit: $(BUILT_FILES:%=built/%) $(BLOCK_DESIGNS:%=%/BD_DONE) $(SOURCES)
 	ln -sf ./$(TARGET)/$(TARGET).runs/impl_1/top.bit $@
 	mkdir -p reports checkpoints
 	rm -rf $(TARGET)
@@ -100,7 +103,7 @@ $(TARGET).bit: $(BUILT_FILES) $(BLOCK_DESIGNS) $(SOURCES)
 # Run vivado on project
 runvivado:
 	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/run_vivado.tcl \
-            -tclargs '$(BDDIR)' \
+            -tclargs '$(BD_DIR)' \
             -tclargs '$(TARGET)/$(TARGET).xpr'
 .PHONY: runvivado
 

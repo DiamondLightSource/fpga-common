@@ -5,6 +5,7 @@ include $(FPGA_COMMON)/Makefile.common
 TARGET_BUILD_DIR = $(BUILD_DIR)/$(TARGET)
 
 # These symbols will be passed through to the local make
+# All other required symbols will be picked up from the project config
 MAKE_EXPORTS += PROJECT_TOP
 MAKE_EXPORTS += FPGA_COMMON
 MAKE_EXPORTS += TARGET

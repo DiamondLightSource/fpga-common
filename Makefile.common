@@ -21,8 +21,6 @@ $(foreach var,$(MUST_DEFINE),$(call _EVAL_MUST_DEFINE,$(var)))
 # #   how-to-get-the-full-path-and-directory-of-a-makefile-itself/
 # mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 # mkfile_dir := $(dir $(mkfile_path))
-# $(info $(MAKEFILE_LIST))
-# $(info $(mkfile_dir))
 
 # Function for safely quoting a string before exposing it to the shell.
 # Wraps string in quotes, and escapes all internal quotes.  Invoke as
@@ -47,6 +45,10 @@ EXPORT = $(foreach var,$(1),$(var)=$(call SAFE_QUOTE,$($(var))))
 PYTHON ?= python
 
 TARGET_DIR = $(PROJECT_TOP)/$(TARGET)
+
+# Convert license file from space separated to : separated list
+SPACE := $(subst ,, )
+export LM_LICENSE_FILE := $(subst $(SPACE),:,$(strip $(LM_LICENSE_FILE)))
 
 
 # vim: set filetype=make:
