@@ -1,4 +1,4 @@
-include $(FPGA_COMMON)/Makefile.common
+include $(FPGA_COMMON)/makefiles/Makefile.common
 
 
 # All builds will be delegated to the build directory
@@ -31,7 +31,7 @@ clean:
 .PHONY: clean
 
 $(GOALS): $(TARGET_BUILD_DIR)
-	$(MAKE) -C $< -f $(FPGA_COMMON)/Makefile.local \
+	$(MAKE) -C $< -f $(FPGA_COMMON)/makefiles/Makefile.fpga \
             $(call EXPORT,$(MAKE_EXPORTS)) $@
 .PHONY: $(GOALS)
 

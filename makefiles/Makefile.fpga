@@ -1,17 +1,17 @@
 # This file must be run in the target build directory
 
 # Discover the path to this directory
-HERE := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+HERE := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/..
 
 MUST_DEFINE += VIVADO
 MUST_DEFINE += FPGA_PART
 
 include $(PROJECT_TOP)/CONFIG
-include $(HERE)/Makefile.common
+include $(HERE)/makefiles/Makefile.common
 
 # Can make these optional in the end
 include $(BOARD_DIR)/CONFIG
-include $(TARGET_DIR)/CONFIG
+-include $(TARGET_DIR)/CONFIG
 
 
 # Command to run vivado
