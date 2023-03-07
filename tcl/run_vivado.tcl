@@ -4,7 +4,8 @@
 proc save_bd {} {
     global argv
     validate_bd_design
-    write_bd_tcl -bd_folder . -force "[lindex $argv 0]/[current_bd_design].tcl"
+    write_bd_tcl -keep_paths_as_is -bd_folder . -force \
+        "[lindex $argv 0]/[current_bd_design].tcl"
     save_bd_design
 }
 
