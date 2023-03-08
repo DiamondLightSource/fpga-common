@@ -1,0 +1,46 @@
+-- We'll pass some clocks through to the front panel LEDs
+ULED[3..0]                  out
+
+-- Backplane clocking and reset
+nCOLDRST                    in
+
+-- AMC ethernet port 1
+ETH1_AMC_RX_{P,N}           in
+ETH1_AMC_TX_{P,N}           out
+CLK125MHZ4_{P,N}            in
+
+-- Backplane AMC fat pipe
+AMC_RX_{P,N}[7..4]          in
+AMC_TX_{P,N}[7..4]          out
+FCLKA_{P,N}                 in
+
+-- MLVDS shared clocks
+MCLKA_{P,N}[1..8]           inout
+
+-- DDR3 x64
+C0_DDR3_DQ[63..0]           inout
+C0_DDR3_DQS_{P,N}[7..0]     inout
+C0_DDR3_ADDR[14..0]         out
+C0_DDR3_BA[2..0]            out
+C0_DDR3_RAS_N               out
+C0_DDR3_CAS_N               out
+C0_DDR3_WE_N                out
+C0_DDR3_RESET_N             out
+C0_DDR3_CK_{P,N}[0..0]      out
+C0_DDR3_CKE[0..0]           out
+C0_DDR3_DM[7..0]            out
+C0_DDR3_ODT[0..0]           out
+CLK533MHZ1_{P,N}            in
+
+-- Dummy clock for DSP clock
+CLK125MHZ0_{P,N}            in
+
+-- FMC 0
+FMC0_LA_{P,N}[0..33]        inout
+FMC0_HA_{P,N}[0..23]        inout
+FMC0_HB_{P,N}[0..21]        inout
+
+-- FMC 1
+FMC1_LA_{P,N}[0..33]        inout
+FMC1_HA_{P,N}[0..23]        inout
+FMC1_HB_{P,N}[0..21]        inout
