@@ -1,0 +1,3 @@
+# Python droppings need to be ignored
+*.pyc
+__pycache__
