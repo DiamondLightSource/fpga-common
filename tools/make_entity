@@ -6,15 +6,15 @@ import sys
 import os
 import types
 
-# Inputs are a list of signals, a list of pin assignments, and a list of signals
-# actually used.
-signal_file = sys.argv[1]
-pins_file = sys.argv[2]
-used_file = sys.argv[3]
+
+# Directory where the list of signals and pin assigments can be found
+board_dir = sys.argv[1]
+# File containing list of signals used
+used_file = sys.argv[2]
+# Name of entity to generate
+entity_name = sys.argv[3]
 
 # We generate two files: a top level entity and a pin constrains file.
-entity_name = sys.argv[4]
-
 entity_file = '%s_entity.vhd' % entity_name
 xdc_file = '%s_pins.xdc' % entity_name
 
@@ -295,8 +295,10 @@ def write_xdc(locations, used_pins, xdc_file):
                     file.write(xdc_pullup_line % locals())
 
 
-signals = load_signals(signal_file)
-locations = load_locations(pins_file)
+# signals = load_signals(signal_file)
+# locations = load_locations(pins_file)
+signals = load_signals(os.path.join(board_dir, 'signals'))
+locations = load_locations(os.path.join(board_dir, 'pins'))
 used = load_used_pins(signals, used_file)
 
 write_entity(used, entity_name, entity_file)

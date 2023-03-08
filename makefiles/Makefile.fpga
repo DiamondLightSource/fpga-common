@@ -1,13 +1,19 @@
 # This file must be run in the target build directory
 
 # Discover the path to this directory
-HERE := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/..
+HERE := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 
 MUST_DEFINE += VIVADO
 MUST_DEFINE += FPGA_PART
 
 include $(PROJECT_TOP)/CONFIG
 include $(HERE)/makefiles/Makefile.common
+
+# Compute board directory from BOARD_DEFS definition.  By default we look inside
+# our boards directory for board definitions, but BOARD_DEFS can be an absolute
+# path instead if required.
+$(call COMPUTE_PATH,BOARD_DEFS,BOARD_DIR,$(HERE)/boards)
+
 
 # Can make these optional in the end
 include $(BOARD_DIR)/CONFIG
@@ -51,7 +57,7 @@ fpga: $(TARGET).bit
 # Built files
 
 # Generate top entity
-built/top_entity.vhd: $(BOARD_DIR)/signals $(BOARD_DIR)/pins $(CONSTR_DIR)/used
+built/top_entity.vhd: $(BOARD_DIR) $(CONSTR_DIR)/used
 	mkdir -p built
 	cd built  &&  $(TOOLS_DIR)/make_entity $^ top
 
