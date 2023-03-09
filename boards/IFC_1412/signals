@@ -41,6 +41,9 @@ pad_FPGA_CFG_D{4,5,6,7}         inout
 pad_FP_LED2A_K                  out
 pad_FP_LED2B_K                  out
 
+# Front panel LEDs under FMC
+pad_FMC{1,2}_LED[1..8]              out
+
 # DIP switch readings from SW101 and SW102, also controlled by MMC
 pad_DIP_SW_L[0..7]              in
 
@@ -165,9 +168,6 @@ pad_FMC{1,2}_PG_M2C                 in
 
 # I2C interface to FMC2
 pad_FMC{1,2}_{SCL,SDA}              inout
-
-# Front panel LEDs under FMC
-pad_FMC{1,2}_LED[1..8]              out
 
 # Clocks from FMC
 pad_FMC{1,2}_CLK{0,1}_M2C_{P,N}     in
