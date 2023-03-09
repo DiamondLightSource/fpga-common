@@ -61,12 +61,15 @@ built/top_entity.vhd: $(BOARD_DIR) $(CONSTR_DIR)/used
 	mkdir -p built
 	cd built  &&  $(TOOLS_DIR)/make_entity $^ top
 
-built/version.vhd: $(PROJECT_TOP)/VERSION
-	$(TCLDIR)/make_version.sh $@
+built/version.vhd: # $(PROJECT_TOP)/VERSION
+	$(TOOLS_DIR)/make_version $(PROJECT_TOP) $@
 
 built/metadata.coe: $(TARGET_DIR)/prom_config
 	mkdir -p built
 	$(TOOLS_DIR)/prom_data_creator --format coe $< >$@
+
+built/register_defines.vhd: register_defines.in
+	$(TOOLS_DIR)/register_defines $^ >$@
 
 # Other generated vhd files
 built/%.vhd: %.py %.in
@@ -105,6 +108,9 @@ $(TARGET).bit: $(BUILT_FILES:%=built/%) $(BLOCK_DESIGNS:%=%/BD_DONE) $(SOURCES)
 
 
 # ------------------------------------------------------------------------------
+
+create-bd: $(BLOCK_DESIGNS:%=%/BD_DONE)
+.PHONY: create-bd
 
 # Run vivado on project
 runvivado:

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Shell script for creating VHDL version file
+
+set -e
+
+# First argument specifies project top
+PROJECT_TOP="${1:?Must specify project top}"
+# First argument specifies where to place the file we're going to build
+TARGET_FILE="${2:?Must specify target file}"
+
+set -o pipefail
+
+# First pick up the git information
+if GIT_SHA=$(git -C "$PROJECT_TOP" rev-parse HEAD 2>/dev/null | cut -b -7); then
+    # Ok, we have a valid git repository
+    GIT_DIRTY=$(git -C "$PROJECT_TOP" diff --shortstat --quiet HEAD; echo $?)
+else
+    # No git repository, create default values instead
+    GIT_SHA=0000000
+    GIT_DIRTY=1
+fi
+
+# # Now pick up the version file.  This is in makefile format, so we get make to
+# # convert it for us
+# VERSION="$(make -C "$PROJECT_TOP" print_version --no-print-directory)"
+# eval "$VERSION"
+
+cat <<EOF >"$TARGET_FILE"
+package version is
+    constant GIT_VERSION : natural := 16#$GIT_SHA#;
+    constant GIT_DIRTY : natural := $GIT_DIRTY;
+--     constant VERSION_MAJOR : natural := $VERSION_MAJOR;
+--     constant VERSION_MINOR : natural := $VERSION_MINOR;
+--     constant VERSION_PATCH : natural := $VERSION_PATCH;
+end;
+EOF
