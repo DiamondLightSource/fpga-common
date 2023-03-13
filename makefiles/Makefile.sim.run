@@ -1,0 +1,71 @@
+include $(CONFIG)
+include $(FPGA_COMMON)/makefiles/Makefile.common
+
+
+# The following symbols are passed through to the simulation script
+VSIM_EXPORTS += VHD_DIR
+VSIM_EXPORTS += BENCH_DIR
+VSIM_EXPORTS += COMMON_VHD
+
+RUN_VSIM = $(call EXPORT,$(VSIM_EXPORTS)) MTI_VCO_MODE=64 $(VSIM) \
+    -modelsimini ./modelsim.ini
+
+# Default action for vsim target, can be overridden
+define DO_RUN_VSIM
+echo running vsim
+$(RUN_VSIM)
+endef
+
+
+BENCH_DIR = $(SIM_TOP)/bench
+VHD_DIR = $(PROJECT_TOP)/vhd
+
+VPATH += $(VHD_DIR)
+
+
+default: vsim
+	echo default target
+.PHONY: default
+
+
+# Hand control over to the target makefile
+include $(SIM_TOP)/Makefile
+
+
+LINKED += $(notdir $(wildcard $(SIM_TOP)/do/*.do))
+
+vsim: $(BUILT:%=built/%) $(LINKED) modelsim.ini
+	$(DO_RUN_VSIM)
+.PHONY: vsim
+
+%: $(SIM_TOP)/do/%
+	ln -sf $< $@
+
+
+# We load modelsim.ini from the Xilinx Questasim libraries.  These are built by
+# the following procedure run from within Vivado, either:
+#
+#   compile_simlib -simulator questa -simulator_exec_path \
+#       {/dls_sw/FPGA/Questa/2020.4/questasim/bin} -family all -language all \
+#       -library all -dir {/dls_sw/FPGA/Xilinx/Vivado/2022.2/questasim/2020.4}
+#
+# or invoke Tools->Compile Simulation Libraries... selecting the following
+# settings:
+#
+#   Simulator : Questa Advanced Simulator
+#   Language, Library, Family : All
+#   Compiled library location : put in -dir location as above
+#   Simulator executable path : select questasim path
+#   Compile Xilinx IP : Enabled
+#
+modelsim.ini: $(MODELSIM_LIBS)/modelsim.ini
+	cp $< $@
+
+include $(FPGA_COMMON)/makefiles/Makefile.built
+
+built: $(LINKED) modelsim.ini
+
+
+.DELETE_ON_ERROR:
+
+# vim: set filetype=make:

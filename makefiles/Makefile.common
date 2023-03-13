@@ -1,7 +1,11 @@
-MUST_DEFINE += FPGA_COMMON
+MUST_DEFINE += FPGA_COMMON      # Path to this project
 MUST_DEFINE += PROJECT_TOP
 MUST_DEFINE += TARGET
-MUST_DEFINE += BUILD_DIR
+MUST_DEFINE += BUILD_TOP
+MUST_DEFINE += VIVADO
+MUST_DEFINE += VSIM
+MUST_DEFINE += MODELSIM_LIBS
+MUST_DEFINE += BOARD
 
 # ------------------------------------------------------------------------------
 
@@ -40,6 +44,12 @@ SAFE_QUOTE = '$(subst ','\'',$(1))'
 #       $(call EXPORT,$(EXPORTS)) script
 #
 EXPORT = $(foreach var,$(1),$(var)=$(call SAFE_QUOTE,$($(var))))
+
+# Similarly, this is used to pass TCL arguments through after safe quoting
+#
+#       $(call TCL_ARGS,$(ARGS))
+#
+TCL_ARGS = $(foreach var,$(1),-tclargs $(call SAFE_QUOTE,$($(var))))
 
 
 # Sometimes we allow a parameter to be specified either as a name which we
@@ -88,11 +98,21 @@ COMPUTE_PATH = $(eval $(_COMPUTE_PATH))
 
 PYTHON ?= python
 
-TARGET_DIR = $(PROJECT_TOP)/$(TARGET)
 
 # Convert license file from space separated to : separated list
 SPACE := $(subst ,, )
 export LM_LICENSE_FILE := $(subst $(SPACE),:,$(strip $(LM_LICENSE_FILE)))
+
+COMMON_VHD = $(FPGA_COMMON)/vhd
+TOOLS_DIR = $(FPGA_COMMON)/tools
+
+# Compute board directory from BOARD_DEFS definition.  By default we look inside
+# our boards directory for board definitions, but BOARD_DEFS can be an absolute
+# path instead if required.
+$(call COMPUTE_PATH,BOARD_DEFS,BOARD_DIR,$(FPGA_COMMON)/boards)
+
+# Path to constraints directory for project
+CONSTR_DIR = $(PROJECT_TOP)/constr
 
 
 # vim: set filetype=make:

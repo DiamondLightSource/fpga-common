@@ -1,123 +1,45 @@
-# This file must be run in the target build directory
+include $(FPGA_COMMON)/makefiles/Makefile.context
+PROJECT_TOP := $(CALLER_TOP)
 
-# Discover the path to this directory
-HERE := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
-
-MUST_DEFINE += VIVADO
-MUST_DEFINE += FPGA_PART
-
-include $(PROJECT_TOP)/CONFIG
-include $(HERE)/makefiles/Makefile.common
-
-# Compute board directory from BOARD_DEFS definition.  By default we look inside
-# our boards directory for board definitions, but BOARD_DEFS can be an absolute
-# path instead if required.
-$(call COMPUTE_PATH,BOARD_DEFS,BOARD_DIR,$(HERE)/boards)
-
-
-# Can make these optional in the end
-include $(BOARD_DIR)/CONFIG
--include $(TARGET_DIR)/CONFIG
-
-
-# Command to run vivado
-RUN_VIVADO = source $(VIVADO) && vivado $(VIVADO_EXTRA_ARGS)
-
-
-TCL_DIR = $(HERE)/tcl
-TOOLS_DIR = $(HERE)/tools
-
-VHD_DIR = $(TARGET_DIR)/vhd
-CONSTR_DIR = $(TARGET_DIR)/constr
-BD_DIR = $(TARGET_DIR)/bd
-
-
-VPATH += $(VHD_DIR)
-VPATH += $(wildcard $(VHD_DIR)/*)
-VPATH += $(BD_DIR)
-
-SOURCES := $(shell find $(VHD_DIR) -name \*.vhd)
-
-
-BUILT_FILES += top_entity.vhd
+include $(FPGA_COMMON)/makefiles/Makefile.common
 
 
 # ------------------------------------------------------------------------------
 
-default: fpga
-fpga: $(TARGET).bit
-.PHONY: default fpga
 
+# All builds will be delegated to the build directory
+TARGET_BUILD_DIR = $(BUILD_TOP)/$(TARGET)
 
-# Don't leave incomplete builds behind
-.DELETE_ON_ERROR:
+# These symbols will be passed through to the local make
+# All other required symbols will be picked up from the project config
+MAKE_EXPORTS += PROJECT_TOP
+MAKE_EXPORTS += CONFIG
+MAKE_EXPORTS += FPGA_COMMON
 
-
-# ------------------------------------------------------------------------------
-# Built files
-
-# Generate top entity
-built/top_entity.vhd: $(BOARD_DIR) $(CONSTR_DIR)/used
-	mkdir -p built
-	cd built  &&  $(TOOLS_DIR)/make_entity $^ top
-
-built/version.vhd: # $(PROJECT_TOP)/VERSION
-	$(TOOLS_DIR)/make_version $(PROJECT_TOP) $@
-
-built/metadata.coe: $(TARGET_DIR)/prom_config
-	mkdir -p built
-	$(TOOLS_DIR)/prom_data_creator --format coe $< >$@
-
-built/register_defines.vhd: register_defines.in
-	$(TOOLS_DIR)/register_defines $^ >$@
-
-# Other generated vhd files
-built/%.vhd: %.py %.in
-	$(PYTHON) $^ >$@
-
-
-fpga-built: $(BUILT_FILES:%=built/%)
-.PHONY: fpga-built
 
 
 # ------------------------------------------------------------------------------
-# Core build process:
-#   interconnect.tcl -> interconnect.bd -> interconnect.vhd
-#   + *.vhd -> $(TARGET).bit
+# Targets
 
-# The interconnect block design needs the metadata array
-interconnect/BD_DONE: built/metadata.coe
+# Delegate all goals except for clean and default
+GOALS = $(filter-out default clean $(TARGET_BUILD_DIR),$(MAKECMDGOALS))
 
 
-# Load block designs from TCL sources
-%/BD_DONE: $(BD_DIR)/%.tcl
-	echo $$LM_LICENSE_FILE
-	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/create_bd.tcl \
-            -tclargs $* -tclargs $< -tclargs $(FPGA_PART)
-	touch $@
+# Our default target does nothing
+default:
 
 
-# Build final target
-$(TARGET).bit: $(BUILT_FILES:%=built/%) $(BLOCK_DESIGNS:%=%/BD_DONE) $(SOURCES)
-	ln -sf ./$(TARGET)/$(TARGET).runs/impl_1/top.bit $@
-	mkdir -p reports checkpoints
-	rm -rf $(TARGET)
-	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/build_top.tcl \
-            -tclargs $(TARGET_DIR) -tclargs $(TARGET) -tclargs $(FPGA_PART) \
-            -tclargs '$(BLOCK_DESIGNS)'
+$(TARGET_BUILD_DIR):
+	mkdir -p $@
 
+clean:
+	rm -rf $(TARGET_BUILD_DIR)
+.PHONY: clean
 
-# ------------------------------------------------------------------------------
-
-create-bd: $(BLOCK_DESIGNS:%=%/BD_DONE)
-.PHONY: create-bd
-
-# Run vivado on project
-runvivado:
-	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/run_vivado.tcl \
-            -tclargs '$(BD_DIR)' \
-            -tclargs '$(TARGET)/$(TARGET).xpr'
-.PHONY: runvivado
+$(GOALS): $(TARGET_BUILD_DIR)
+	$(MAKE) -C $< -f $(FPGA_COMMON)/makefiles/Makefile.fpga.run \
+            $(call EXPORT,$(MAKE_EXPORTS)) $@
+.PHONY: $(GOALS)
 
 
 # vim: set filetype=make:

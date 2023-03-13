@@ -2,6 +2,8 @@ set src_dir [lindex $argv 0]
 set project [lindex $argv 1]
 set fpga_part [lindex $argv 2]
 set bd_list [lindex $argv 3]
+set vhd_dirs [lindex $argv 4]
+
 set hierarchy rebuilt
 # set hierarchy none
 
@@ -41,7 +43,10 @@ set_msg_config -id {Vivado 12-1790} -suppress
 # Add our files and set them to VHDL 2008.  This needs to be done before reading
 # any externally generated files, particularly the interconnect.
 add_files built
-add_files $src_dir/vhd
+foreach dir $vhd_dirs {
+    add_files $dir
+}
+# add_files $src_dir/vhd
 set_property FILE_TYPE "VHDL 2008" [get_files *.vhd]
 
 

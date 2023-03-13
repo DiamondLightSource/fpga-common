@@ -1,0 +1,28 @@
+# Rules for built files
+
+# Generate top entity
+built/top_entity.vhd: $(BOARD_DIR) $(CONSTR_DIR)/used
+	mkdir -p built
+	cd built  &&  $(TOOLS_DIR)/make_entity $^ top
+
+built/version.vhd: # $(PROJECT_TOP)/VERSION
+	mkdir -p built
+	$(TOOLS_DIR)/make_version $(PROJECT_TOP) $@
+
+built/metadata.coe: $(PROJECT_TOP)/prom_config
+	mkdir -p built
+	$(TOOLS_DIR)/prom_data_creator --format coe $< >$@
+
+built/register_defines.vhd: register_defines.in
+	mkdir -p built
+	$(TOOLS_DIR)/register_defines $^ >$@
+
+# Other generated vhd files
+built/%.vhd: %.py %.in
+	mkdir -p built
+	$(PYTHON) $^ >$@
+
+
+# Target for building all required targets
+built: $(BUILT:%=built/%)
+.PHONY: built

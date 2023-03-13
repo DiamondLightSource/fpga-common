@@ -1,0 +1,108 @@
+include $(CONFIG)
+include $(FPGA_COMMON)/makefiles/Makefile.common
+
+
+# Can make these optional in the end
+include $(BOARD_DIR)/CONFIG
+-include $(PROJECT_TOP)/CONFIG
+
+
+# Command to run vivado
+# RUN_VIVADO = source $(VIVADO) && vivado $(VIVADO_EXTRA_ARGS)
+RUN_VIVADO = $(VIVADO) $(VIVADO_EXTRA_ARGS)
+
+
+# These symbols are passed through to Vivado for assembly of the initial project
+VIVADO_EXPORTS += VHD_DIRS
+VIVADO_EXPORTS += BLOCK_DESIGNS
+VIVADO_EXPORTS += CONSTR_DIRS
+
+
+TCL_DIR = $(FPGA_COMMON)/tcl
+
+BD_DIR = $(PROJECT_TOP)/bd
+
+VHD_DIRS += $(PROJECT_TOP)/vhd
+VHD_DIRS += $(FPGA_COMMON)/vhd
+
+
+VPATH += $(VHD_DIRS)
+VPATH += $(wildcard $(VHD_DIRS)/*)
+VPATH += $(BLOCK_DESIGNS)
+
+
+BUILT += top_entity.vhd
+
+
+# ------------------------------------------------------------------------------
+
+default: fpga
+.PHONY: default
+
+fpga: $(TARGET).bit
+.PHONY: fpga
+
+# Don't leave incomplete builds behind
+.DELETE_ON_ERROR:
+
+
+# ------------------------------------------------------------------------------
+# Built files
+
+include $(PROJECT_TOP)/Makefile
+
+include $(FPGA_COMMON)/makefiles/Makefile.built
+
+
+
+# ------------------------------------------------------------------------------
+# Core build process:
+#   interconnect.tcl -> interconnect.bd -> interconnect.vhd
+#   + *.vhd -> $(TARGET).bit
+
+# The interconnect block design needs the metadata array
+interconnect/BD_DONE: built/metadata.coe
+
+
+SOURCES := $(shell find $(VHD_DIRS) -name \*.vhd)
+
+
+# Load block designs from TCL sources
+%/BD_DONE: $(BD_DIR)/%.tcl
+	echo $$LM_LICENSE_FILE
+	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/create_bd.tcl \
+            -tclargs $* -tclargs $< -tclargs $(FPGA_PART)
+	touch $@
+
+
+# The order of the build_top arguments matters here!
+BUILD_TOP_ARGS =
+BUILD_TOP_ARGS += PROJECT_TOP
+BUILD_TOP_ARGS += TARGET
+BUILD_TOP_ARGS += FPGA_PART
+BUILD_TOP_ARGS += BLOCK_DESIGNS
+BUILD_TOP_ARGS += VHD_DIRS
+
+# Build final target
+$(TARGET).bit: $(BUILT:%=built/%) $(BLOCK_DESIGNS:%=%/BD_DONE) $(SOURCES)
+	ln -sf ./$(TARGET)/$(TARGET).runs/impl_1/top.bit $@
+	mkdir -p reports checkpoints
+	rm -rf $(TARGET)
+	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/build_top.tcl \
+            $(call TCL_ARGS,$(BUILD_TOP_ARGS))
+
+
+# ------------------------------------------------------------------------------
+
+create-bd: $(BLOCK_DESIGNS:%=%/BD_DONE)
+.PHONY: create-bd
+
+# Run vivado on project
+runvivado:
+	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/run_vivado.tcl \
+            -tclargs '$(BD_DIR)' \
+            -tclargs '$(TARGET)/$(TARGET).xpr'
+.PHONY: runvivado
+
+
+# vim: set filetype=make:
