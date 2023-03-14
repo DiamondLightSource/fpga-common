@@ -6,5 +6,6 @@ import os.path
 try:
     import fpga_lib
 except ImportError:
-    python_dir = os.path.abspath(os.path.join(__file__, '../..', 'python'))
+    here = os.path.dirname(__file__)
+    python_dir = os.path.abspath(os.path.join(here, '..'))
     sys.path.append(python_dir)
