@@ -8,7 +8,7 @@ include $(FPGA_COMMON)/makefiles/Makefile.common
 
 
 # All builds will be delegated to the build directory
-TARGET_BUILD_DIR = $(BUILD_TOP)/$(TARGET)
+TARGET_BUILD_DIR = $(BUILD_TOP)/$(PROJECT_NAME)
 
 # These symbols will be passed through to the local make
 # All other required symbols will be picked up from the project config

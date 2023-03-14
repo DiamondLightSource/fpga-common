@@ -10,7 +10,6 @@ include $(FPGA_COMMON)/makefiles/Makefile.common
 
 
 # Assemble the name of the build directory from the project and simulation names
-PROJECT_NAME ?= $(notdir $(PROJECT_TOP))
 SIM_NAME ?= $(notdir $(SIM_TOP))
 BUILD_DIR ?= $(BUILD_TOP)/$(PROJECT_NAME)/sim/$(SIM_NAME)
 

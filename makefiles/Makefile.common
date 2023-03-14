@@ -1,11 +1,10 @@
 MUST_DEFINE += FPGA_COMMON      # Path to this project
 MUST_DEFINE += PROJECT_TOP
-MUST_DEFINE += TARGET
 MUST_DEFINE += BUILD_TOP
 MUST_DEFINE += VIVADO
 MUST_DEFINE += VSIM
 MUST_DEFINE += MODELSIM_LIBS
-MUST_DEFINE += BOARD
+
 
 # ------------------------------------------------------------------------------
 
@@ -98,6 +97,12 @@ COMPUTE_PATH = $(eval $(_COMPUTE_PATH))
 
 PYTHON ?= python
 
+BOARD ?= none
+
+# By default pick up the project name from the directory name of the project
+# top.  This can be overridden in the CONFIG file.
+PROJECT_NAME ?= $(notdir $(PROJECT_TOP))
+
 
 # Convert license file from space separated to : separated list
 SPACE := $(subst ,, )
@@ -106,10 +111,10 @@ export LM_LICENSE_FILE := $(subst $(SPACE),:,$(strip $(LM_LICENSE_FILE)))
 COMMON_VHD = $(FPGA_COMMON)/vhd
 TOOLS_DIR = $(FPGA_COMMON)/tools
 
-# Compute board directory from BOARD_DEFS definition.  By default we look inside
-# our boards directory for board definitions, but BOARD_DEFS can be an absolute
-# path instead if required.
-$(call COMPUTE_PATH,BOARD_DEFS,BOARD_DIR,$(FPGA_COMMON)/boards)
+# Compute board directory from BOARD definition.  By default we look inside our
+# boards directory for board definitions, but BOARD can be an absolute path
+# instead if required.
+$(call COMPUTE_PATH,BOARD,BOARD_DIR,$(FPGA_COMMON)/boards)
 
 # Path to constraints directory for project
 CONSTR_DIR = $(PROJECT_TOP)/constr

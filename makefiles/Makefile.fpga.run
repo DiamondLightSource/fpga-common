@@ -39,7 +39,7 @@ BUILT += top_entity.vhd
 default: fpga
 .PHONY: default
 
-fpga: $(TARGET).bit
+fpga: $(PROJECT_NAME).bit
 .PHONY: fpga
 
 # Don't leave incomplete builds behind
@@ -58,7 +58,7 @@ include $(FPGA_COMMON)/makefiles/Makefile.built
 # ------------------------------------------------------------------------------
 # Core build process:
 #   interconnect.tcl -> interconnect.bd -> interconnect.vhd
-#   + *.vhd -> $(TARGET).bit
+#   + *.vhd -> $(PROJECT_NAME).bit
 
 # The interconnect block design needs the metadata array
 interconnect/BD_DONE: built/metadata.coe
@@ -78,16 +78,16 @@ SOURCES := $(shell find $(VHD_DIRS) -name \*.vhd)
 # The order of the build_top arguments matters here!
 BUILD_TOP_ARGS =
 BUILD_TOP_ARGS += PROJECT_TOP
-BUILD_TOP_ARGS += TARGET
+BUILD_TOP_ARGS += PROJECT_NAME
 BUILD_TOP_ARGS += FPGA_PART
 BUILD_TOP_ARGS += BLOCK_DESIGNS
 BUILD_TOP_ARGS += VHD_DIRS
 
 # Build final target
-$(TARGET).bit: $(BUILT:%=built/%) $(BLOCK_DESIGNS:%=%/BD_DONE) $(SOURCES)
-	ln -sf ./$(TARGET)/$(TARGET).runs/impl_1/top.bit $@
+$(PROJECT_NAME).bit: $(BUILT:%=built/%) $(BLOCK_DESIGNS:%=%/BD_DONE) $(SOURCES)
+	rm -rf $(PROJECT_NAME)
+	ln -sf ./$(PROJECT_NAME)/$(PROJECT_NAME).runs/impl_1/top.bit $@
 	mkdir -p reports checkpoints
-	rm -rf $(TARGET)
 	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/build_top.tcl \
             $(call TCL_ARGS,$(BUILD_TOP_ARGS))
 
@@ -101,7 +101,7 @@ create-bd: $(BLOCK_DESIGNS:%=%/BD_DONE)
 runvivado:
 	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/run_vivado.tcl \
             -tclargs '$(BD_DIR)' \
-            -tclargs '$(TARGET)/$(TARGET).xpr'
+            -tclargs '$(PROJECT_NAME)/$(PROJECT_NAME).xpr'
 .PHONY: runvivado
 
 
