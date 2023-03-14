@@ -1,0 +1,22 @@
+# Configuration settings used for simulation
+
+BUILD_TOP = /scratch/$(USER)/tmp/fpga-common
+
+
+# Definitions needed for FPGA build
+VIVADO = /dls_sw/FPGA/Xilinx/Vivado/2022.2/bin/vivado
+VSIM = /dls_sw/FPGA/Questa/2020.4/questasim/bin/vsim
+MODELSIM_LIBS = /dls_sw/FPGA/Xilinx/Vivado/2022.2/questasim/2020.4
+
+# Vivado licensing
+LM_LICENSE_FILE += 2100@diamcslicserv01.dc.diamond.ac.uk
+LM_LICENSE_FILE += 2100@diamcslicserv02.diamond.ac.uk
+# Licensing for Mentor Graphics vsim
+LM_LICENSE_FILE += 1717@diamcslicserv01.dc.diamond.ac.uk
+
+# This is our project name
+PROJECT_NAME = fpga-common
+# Compute path to this directory
+FPGA_COMMON := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+
+# vim: set filetype=make:
