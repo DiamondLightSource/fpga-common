@@ -1,0 +1,57 @@
+# Register definitions for ADS42LB69
+
+# Name                  r  o  w  d   register/offset/width/default
+#
+# R6  (06)
+_R6                     6  0x80
+CLK_DIV                 6  1:0   0      # Input sample clock divider
+# R7  (07)
+SYNCIN_DELAY            7  2:0   0      # SYNCIN delay to clock
+# R8  (08)
+PDN_CHA                 8  7     0      # Power down Channel A
+PDN_CHB                 8  6     0      # Power down Channel B
+STDBY                   8  5     0      # Power down ADC
+DATA_FORMAT             8  4     0      # Twos complement or offset data
+DIS_CTRL_PINS           8  3     0      # Power down control pin setup
+TEST_PAT_ALIGN          8  2     0      # Test pattern alignment enable
+RESET                   8  0     0      # Software reset command
+# R11 (0B)
+CHA_GAIN               11  7:3   0      # Channel A input gain
+CHA_GAIN_EN            11  2     0      # Input gain enable
+FLIP_DATA              11  0     0      # Invert bit order on bus
+# R12 (0C)
+CHB_GAIN               12  7:3   0      # Channel B input gain
+CHB_GAIN_EN            12  2     0      # Input gain enable
+OVR_ON_LSB             12  1:0   0      # Enable overflow bits on data word
+# R13 (0D)
+_R13                   13  0x6C
+FAST_OVR_ON_PIN        13  0     0      # Select fast or normal overflow
+# R15 (0F)
+CHA_TEST_PATTERNS      15  7:4   0      # Channel A test pattern selection
+CHB_TEST_PATTERNS      15  3:0   0      # Channel B test pattern selection
+# R16-17 (10-11)
+CUSTOM_PATTERN_1       16  7:0   0
+                       17  7:0   0
+# R18-19 (12-13)
+CUSTOM_PATTERN_2       18  7:0   0      # Test pattern
+                       19  7:0   0
+# R20 (14)
+LVDS_CLK_STRENGTH      20  3     0      # Select clock output drive strength
+LVDS_DATA_STRENGTH     20  2     0      # Select data output drive strength
+DISABLE_OUTPUT_CHA     20  1     0      # Put channel A into tri-state
+DISABLE_OUTPUT_CHB     20  0     0      # Put channel B into tri-state
+# R21 (15)
+DDR_QDR                21  0     0      # Select DDR or QDR data mode
+# R22 (16)
+DDR_OUTPUT_TIMING      22  5:1   0      # DDR output shift relative to clock
+# R23 (17)
+LVDS_CLK_STR_EN        23  7     0      # Enable LVDS strength setting
+QDR_TIMING_CHA         23  5:1   0      # QDR output shift relative to clock
+INV_CLK_OUT_CHA        23  0     0      # Invert QDR data A clock
+# R24 (18)
+QDR_TIMING_CHB         24  5:1   0      # QDR output shift relative to clock
+INV_CLK_OUT_CHB        24  0     0      # Invert QDR data B clock
+# R31 (1F)
+FAST_OVR_THRESHOLD     31  6:0   0x7F   # Threshold for fast overflow detect
+# R32 (20)
+PDN_OVR_CTRL_PINS      32  0     0      # Select mode for Ctrl pins

@@ -1,0 +1,340 @@
+# Each output is controlled by a group of seven registers offset from 0x100+8*n
+    # Name                 f  w  o  d   field/width/offset/default
+    #
+
+CLKout0_1_ODL               0x100 6   0      # Output drive level
+CLKout0_1_IDL               0x100 5   0      # Input drive level
+DCLKout0_DIV                0x100 4:0 0      # Clock output divisor
+DCLKout0_DDLY_CNTH          0x101 7:4 5      # Digital delay high count
+DCLKout0_DDLY_CNTL          0x101 3:0 5      # Digital delay low count
+DCLKout0_DDLYd_CNTH         0x102 7:4 5      # Digital delay high count
+DCLKout0_DDLYd_CNTL         0x102 3:0 5      # Digital delay low count
+DCLKout0_ADLY               0x103 7:3 0      # Analogue delay
+DCLKout0_ADLY_MUX           0x103 2   0      # Enable duty cycle correction
+DCLKout0_MUX                0x103 1:0 0      # DCLK output mux
+DCLKout0_HS                 0x104 6   0      # DCLK half step
+SDCLKout1_MUX               0x104 5   0      # Select SDCLK source
+SDCLKout1_DDLY              0x104 4:1 0      # SDCLK delay
+SDCLKout1_HS                0x104 0   0      # SDCLK half step
+SDCLKout1_ADLY_EN           0x105 4   0      # Enable SDCLK analogue delay
+SDCLKout1_ADLY              0x105 3:0 0      # SDCLK analogue delay
+DCLKout0_DDLY_PD            0x106 7   1      # Digital delay power down
+DCLKout0_HSg_PD             0x106 6   1      # Glitchless half step power dwn
+DCLKout0_ADLYg_PD           0x106 5   1      # Glitchless analogue delay p/d
+DCLKout0_ADLY_PD            0x106 4   1      # Analogue delay power down
+CLKout0_1_PD                0x106 3   1      # Clock group power down
+SDCLKout1_DIS_MODE          0x106 2:1 0      # Sysref power down output mode
+SDCLKout1_PD                0x106 0   1      # Sysref power down
+SDCLKout1_POL               0x107 7   0      # Invert sysref clock output
+SDCLKout1_FMT               0x107 6:4 0      # Sysref clock output format
+DCLKout0_PLL                0x107 3   0      # Invert device clock output
+DCLKout0_FMT                0x107 2:0 0      # Device clock output format
+
+CLKout2_3_ODL               0x108 6   0      # Output drive level
+CLKout2_3_IDL               0x108 5   0      # Input drive level
+DCLKout2_DIV                0x108 4:0 0      # Clock output divisor
+DCLKout2_DDLY_CNTH          0x109 7:4 5      # Digital delay high count
+DCLKout2_DDLY_CNTL          0x109 3:0 5      # Digital delay low count
+DCLKout2_DDLYd_CNTH         0x10A 7:4 5      # Digital delay high count
+DCLKout2_DDLYd_CNTL         0x10A 3:0 5      # Digital delay low count
+DCLKout2_ADLY               0x10B 7:3 0      # Analogue delay
+DCLKout2_ADLY_MUX           0x10B 2   0      # Enable duty cycle correction
+DCLKout2_MUX                0x10B 1:0 0      # DCLK output mux
+DCLKout2_HS                 0x10C 6   0      # DCLK half step
+SDCLKout3_MUX               0x10C 5   0      # Select SDCLK source
+SDCLKout3_DDLY              0x10C 4:1 0      # SDCLK delay
+SDCLKout3_HS                0x10C 0   0      # SDCLK half step
+SDCLKout3_ADLY_EN           0x10D 4   0      # Enable SDCLK analogue delay
+SDCLKout3_ADLY              0x10D 3:0 0      # SDCLK analogue delay
+DCLKout2_DDLY_PD            0x10E 7   1      # Digital delay power down
+DCLKout2_HSg_PD             0x10E 6   1      # Glitchless half step power dwn
+DCLKout2_ADLYg_PD           0x10E 5   1      # Glitchless analogue delay p/d
+DCLKout2_ADLY_PD            0x10E 4   1      # Analogue delay power down
+CLKout2_3_PD                0x10E 3   1      # Clock group power down
+SDCLKout3_DIS_MODE          0x10E 2:1 0      # Sysref power down output mode
+SDCLKout3_PD                0x10E 0   1      # Sysref power down
+SDCLKout3_POL               0x10F 7   0      # Invert sysref clock output
+SDCLKout3_FMT               0x10F 6:4 0      # Sysref clock output format
+DCLKout2_PLL                0x10F 3   0      # Invert device clock output
+DCLKout2_FMT                0x10F 2:0 0      # Device clock output format
+
+CLKout4_5_ODL               0x110 6   0      # Output drive level
+CLKout4_5_IDL               0x110 5   0      # Input drive level
+DCLKout4_DIV                0x110 4:0 0      # Clock output divisor
+DCLKout4_DDLY_CNTH          0x111 7:4 5      # Digital delay high count
+DCLKout4_DDLY_CNTL          0x111 3:0 5      # Digital delay low count
+DCLKout4_DDLYd_CNTH         0x112 7:4 5      # Digital delay high count
+DCLKout4_DDLYd_CNTL         0x112 3:0 5      # Digital delay low count
+DCLKout4_ADLY               0x113 7:3 0      # Analogue delay
+DCLKout4_ADLY_MUX           0x113 2   0      # Enable duty cycle correction
+DCLKout4_MUX                0x113 1:0 0      # DCLK output mux
+DCLKout4_HS                 0x114 6   0      # DCLK half step
+SDCLKout5_MUX               0x114 5   0      # Select SDCLK source
+SDCLKout5_DDLY              0x114 4:1 0      # SDCLK delay
+SDCLKout5_HS                0x114 0   0      # SDCLK half step
+SDCLKout5_ADLY_EN           0x115 4   0      # Enable SDCLK analogue delay
+SDCLKout5_ADLY              0x115 3:0 0      # SDCLK analogue delay
+DCLKout4_DDLY_PD            0x116 7   1      # Digital delay power down
+DCLKout4_HSg_PD             0x116 6   1      # Glitchless half step power dwn
+DCLKout4_ADLYg_PD           0x116 5   1      # Glitchless analogue delay p/d
+DCLKout4_ADLY_PD            0x116 4   1      # Analogue delay power down
+CLKout4_5_PD                0x116 3   1      # Clock group power down
+SDCLKout5_DIS_MODE          0x116 2:1 0      # Sysref power down output mode
+SDCLKout5_PD                0x116 0   1      # Sysref power down
+SDCLKout5_POL               0x117 7   0      # Invert sysref clock output
+SDCLKout5_FMT               0x117 6:4 0      # Sysref clock output format
+DCLKout4_PLL                0x117 3   0      # Invert device clock output
+DCLKout4_FMT                0x117 2:0 0      # Device clock output format
+
+CLKout6_7_ODL               0x118 6   0      # Output drive level
+CLKout6_7_IDL               0x118 5   0      # Input drive level
+DCLKout6_DIV                0x118 4:0 0      # Clock output divisor
+DCLKout6_DDLY_CNTH          0x119 7:4 5      # Digital delay high count
+DCLKout6_DDLY_CNTL          0x119 3:0 5      # Digital delay low count
+DCLKout6_DDLYd_CNTH         0x11A 7:4 5      # Digital delay high count
+DCLKout6_DDLYd_CNTL         0x11A 3:0 5      # Digital delay low count
+DCLKout6_ADLY               0x11B 7:3 0      # Analogue delay
+DCLKout6_ADLY_MUX           0x11B 2   0      # Enable duty cycle correction
+DCLKout6_MUX                0x11B 1:0 0      # DCLK output mux
+DCLKout6_HS                 0x11C 6   0      # DCLK half step
+SDCLKout7_MUX               0x11C 5   0      # Select SDCLK source
+SDCLKout7_DDLY              0x11C 4:1 0      # SDCLK delay
+SDCLKout7_HS                0x11C 0   0      # SDCLK half step
+SDCLKout7_ADLY_EN           0x11D 4   0      # Enable SDCLK analogue delay
+SDCLKout7_ADLY              0x11D 3:0 0      # SDCLK analogue delay
+DCLKout6_DDLY_PD            0x11E 7   1      # Digital delay power down
+DCLKout6_HSg_PD             0x11E 6   1      # Glitchless half step power dwn
+DCLKout6_ADLYg_PD           0x11E 5   1      # Glitchless analogue delay p/d
+DCLKout6_ADLY_PD            0x11E 4   1      # Analogue delay power down
+CLKout6_7_PD                0x11E 3   1      # Clock group power down
+SDCLKout7_DIS_MODE          0x11E 2:1 0      # Sysref power down output mode
+SDCLKout7_PD                0x11E 0   1      # Sysref power down
+SDCLKout7_POL               0x11F 7   0      # Invert sysref clock output
+SDCLKout7_FMT               0x11F 6:4 0      # Sysref clock output format
+DCLKout6_PLL                0x11F 3   0      # Invert device clock output
+DCLKout6_FMT                0x11F 2:0 0      # Device clock output format
+
+CLKout8_9_ODL               0x120 6   0      # Output drive level
+CLKout8_9_IDL               0x120 5   0      # Input drive level
+DCLKout8_DIV                0x120 4:0 0      # Clock output divisor
+DCLKout8_DDLY_CNTH          0x121 7:4 5      # Digital delay high count
+DCLKout8_DDLY_CNTL          0x121 3:0 5      # Digital delay low count
+DCLKout8_DDLYd_CNTH         0x122 7:4 5      # Digital delay high count
+DCLKout8_DDLYd_CNTL         0x122 3:0 5      # Digital delay low count
+DCLKout8_ADLY               0x123 7:3 0      # Analogue delay
+DCLKout8_ADLY_MUX           0x123 2   0      # Enable duty cycle correction
+DCLKout8_MUX                0x123 1:0 0      # DCLK output mux
+DCLKout8_HS                 0x124 6   0      # DCLK half step
+SDCLKout9_MUX               0x124 5   0      # Select SDCLK source
+SDCLKout9_DDLY              0x124 4:1 0      # SDCLK delay
+SDCLKout9_HS                0x124 0   0      # SDCLK half step
+SDCLKout9_ADLY_EN           0x125 4   0      # Enable SDCLK analogue delay
+SDCLKout9_ADLY              0x125 3:0 0      # SDCLK analogue delay
+DCLKout8_DDLY_PD            0x126 7   1      # Digital delay power down
+DCLKout8_HSg_PD             0x126 6   1      # Glitchless half step power dwn
+DCLKout8_ADLYg_PD           0x126 5   1      # Glitchless analogue delay p/d
+DCLKout8_ADLY_PD            0x126 4   1      # Analogue delay power down
+CLKout8_9_PD                0x126 3   1      # Clock group power down
+SDCLKout9_DIS_MODE          0x126 2:1 0      # Sysref power down output mode
+SDCLKout9_PD                0x126 0   1      # Sysref power down
+SDCLKout9_POL               0x127 7   0      # Invert sysref clock output
+SDCLKout9_FMT               0x127 6:4 0      # Sysref clock output format
+DCLKout8_PLL                0x127 3   0      # Invert device clock output
+DCLKout8_FMT                0x127 2:0 0      # Device clock output format
+
+CLKout10_11_ODL             0x128 6   0      # Output drive level
+CLKout10_11_IDL             0x128 5   0      # Input drive level
+DCLKout10_DIV               0x128 4:0 0      # Clock output divisor
+DCLKout10_DDLY_CNTH         0x129 7:4 5      # Digital delay high count
+DCLKout10_DDLY_CNTL         0x129 3:0 5      # Digital delay low count
+DCLKout10_DDLYd_CNTH        0x12A 7:4 5      # Digital delay high count
+DCLKout10_DDLYd_CNTL        0x12A 3:0 5      # Digital delay low count
+DCLKout10_ADLY              0x12B 7:3 0      # Analogue delay
+DCLKout10_ADLY_MUX          0x12B 2   0      # Enable duty cycle correction
+DCLKout10_MUX               0x12B 1:0 0      # DCLK output mux
+DCLKout10_HS                0x12C 6   0      # DCLK half step
+SDCLKout11_MUX              0x12C 5   0      # Select SDCLK source
+SDCLKout11_DDLY             0x12C 4:1 0      # SDCLK delay
+SDCLKout11_HS               0x12C 0   0      # SDCLK half step
+SDCLKout11_ADLY_EN          0x12D 4   0      # Enable SDCLK analogue delay
+SDCLKout11_ADLY             0x12D 3:0 0      # SDCLK analogue delay
+DCLKout10_DDLY_PD           0x12E 7   1      # Digital delay power down
+DCLKout10_HSg_PD            0x12E 6   1      # Glitchless half step power dwn
+DCLKout10_ADLYg_PD          0x12E 5   1      # Glitchless analogue delay p/d
+DCLKout10_ADLY_PD           0x12E 4   1      # Analogue delay power down
+CLKout10_11_PD              0x12E 3   1      # Clock group power down
+SDCLKout11_DIS_MODE         0x12E 2:1 0      # Sysref power down output mode
+SDCLKout11_PD               0x12E 0   1      # Sysref power down
+SDCLKout11_POL              0x12F 7   0      # Invert sysref clock output
+SDCLKout11_FMT              0x12F 6:4 0      # Sysref clock output format
+DCLKout10_PLL               0x12F 3   0      # Invert device clock output
+DCLKout10_FMT               0x12F 2:0 0      # Device clock output format
+
+CLKout12_13_ODL             0x130 6   0      # Output drive level
+CLKout12_13_IDL             0x130 5   0      # Input drive level
+DCLKout12_DIV               0x130 4:0 0      # Clock output divisor
+DCLKout12_DDLY_CNTH         0x131 7:4 5      # Digital delay high count
+DCLKout12_DDLY_CNTL         0x131 3:0 5      # Digital delay low count
+DCLKout12_DDLYd_CNTH        0x132 7:4 5      # Digital delay high count
+DCLKout12_DDLYd_CNTL        0x132 3:0 5      # Digital delay low count
+DCLKout12_ADLY              0x133 7:3 0      # Analogue delay
+DCLKout12_ADLY_MUX          0x133 2   0      # Enable duty cycle correction
+DCLKout12_MUX               0x133 1:0 0      # DCLK output mux
+DCLKout12_HS                0x134 6   0      # DCLK half step
+SDCLKout13_MUX              0x134 5   0      # Select SDCLK source
+SDCLKout13_DDLY             0x134 4:1 0      # SDCLK delay
+SDCLKout13_HS               0x134 0   0      # SDCLK half step
+SDCLKout13_ADLY_EN          0x135 4   0      # Enable SDCLK analogue delay
+SDCLKout13_ADLY             0x135 3:0 0      # SDCLK analogue delay
+DCLKout12_DDLY_PD           0x136 7   1      # Digital delay power down
+DCLKout12_HSg_PD            0x136 6   1      # Glitchless half step power dwn
+DCLKout12_ADLYg_PD          0x136 5   1      # Glitchless analogue delay p/d
+DCLKout12_ADLY_PD           0x136 4   1      # Analogue delay power down
+CLKout12_13_PD              0x136 3   1      # Clock group power down
+SDCLKout13_DIS_MODE         0x136 2:1 0      # Sysref power down output mode
+SDCLKout13_PD               0x136 0   1      # Sysref power down
+SDCLKout13_POL              0x137 7   0      # Invert sysref clock output
+SDCLKout13_FMT              0x137 6:4 0      # Sysref clock output format
+DCLKout12_PLL               0x137 3   0      # Invert device clock output
+DCLKout12_FMT               0x137 2:0 0      # Device clock output format
+
+
+# Name                 field  w  o  d   width/offset/default
+#
+VCO_MUX                     0x138 6:5 0  # Selects internal VCO0
+OSCout_MUX                  0x138 4   0
+# Configure OSCout/CLKin2 as CLKin2 input (not actually used)
+OSCout_FMT                  0x138 2:0 0
+SYSREF_CLKin0_MUX           0x139 2   0  # SYSREF from MUX or CLKin0
+SYSREF_MUX                  0x139 1:0 0  # SYSREF source
+SYSREF_DIV                  0x13A 4:0 12
+                            0x13B 7:0 0
+SYSREF_DDLY                 0x13C 4:0 0
+                            0x13D 7:0 8
+SYSREF_PULSE_CNT            0x13E 1:0 3
+PLL2_NCLK_MUX               0x13F 4   0  # PLL2 N divider input
+PLL1_NCLK_MUX               0x13F 3   0  # PLL1 N delay input
+FB_MUX                      0x13F 2:1 0  # PLL1 feedback mux
+FB_MUX_EN                   0x13F 0   0  # Enable 0-delay feedback mux
+# Power down controls for various functions
+PLL1_PD                     0x140 7   0  # Power down PLL1
+VCO_LDO_PD                  0x140 6   0  # Power down ??
+VCO_PD                      0x140 5   0  # Power down VCO
+OSCin_PD                    0x140 4   0  # Power down OSCin port
+SYSREF_GBL_PD               0x140 3   0  # Global SYSREF power down control
+SYSREF_PD                   0x140 2   0  # Power down SYSREF
+SYSREF_DDLY_PD              0x140 1   0  # Power down SYSREF digital delay
+SYSREF_PLSR_PD              0x140 0   0  # Power down SYSREF pulse generator
+# Dynamic digital delay enables and control
+DDLYd_SYSREF_EN             0x141 7   0  # Enable SYSREF dynamic delay
+DDLYd12_EN                  0x141 6   0  # Enable DCLK digital delay
+DDLYd10_EN                  0x141 5   0
+DDLYd8_EN                   0x141 4   0
+DDLYd6_EN                   0x141 3   0
+DDLYd4_EN                   0x141 2   0
+DDLYd2_EN                   0x141 1   0
+DDLYd0_EN                   0x141 0   0
+DDLYd_STEP_CNT              0x142 3:0 0  # Digital delay control
+# SYSREEF and SYNC control
+SYSREF_CLR                  0x143 7   1  # Must be reset to 0
+SYNC_1SHOT_EN               0x143 6   0
+SYNC_POL                    0x143 5   0
+SYNC_EN                     0x143 4   1
+SYNC_PLL2_DLD               0x143 3   0
+SYNC_PLL1_DLD               0x143 2   0
+SYNC_MODE                   0x143 1:0 1  # SYNC event generation control
+# Control of whether SYNC events disturb DCLK outputs
+SYNC_DISSYSREF              0x144 7   0
+SYNC_DIS12                  0x144 6   0
+SYNC_DIS10                  0x144 5   0
+SYNC_DIS8                   0x144 4   0
+SYNC_DIS6                   0x144 3   0
+SYNC_DIS4                   0x144 2   0
+SYNC_DIS2                   0x144 1   0
+SYNC_DIS0                   0x144 0   0
+# Fixed register
+x145_8_0                    0x145 7:0 127    # Always program to 127!
+# CLKin control
+CLKin2_EN                   0x146 5   0  # Enable auto-switching
+CLKin1_EN                   0x146 4   0  # Enable auto-switching
+CLKin0_EN                   0x146 3   0  # Enable auto-switching
+CLKin2_TYPE                 0x146 2   0  # Bipolar input
+CLKin1_TYPE                 0x146 1   0  # Bipolar input
+CLKin0_TYPE                 0x146 0   0  # Bipolar input
+CLKin_SEL_POL               0x147 7   0
+CLKin_SEL_MODE              0x147 6:4 3  # Select PLL1 reference
+CLKin1_OUT_MUX              0x147 3:2 2  # Select CLKin1 destination
+CLKin0_OUT_MUX              0x147 1:0 2  # Select CLKin0 destination
+CLKin_SEL0_MUX              0x148 5:3 0  # Not used
+CLKin_SEL0_TYPE             0x148 2:0 2  # Input with pull-down
+SDIO_RDBK_TYPE              0x149 6   1  # Open collector SPI SDIO output
+CLKin_SEL1_MUX              0x149 5:3 0  # Not used
+CLKin_SEL1_TYPE             0x149 2:0 2  # Input with pull-down
+RESET_MUX                   0x14A 5:3 0  # Not used
+RESET_TYPE                  0x14A 2:0 2  # Input with pull-down
+# Holdover functionality (not used)
+LOS_TIMEOUT                 0x14B 7:6 0
+LOS_EN                      0x14B 5   0
+TRACK_EN                    0x14B 4   1
+HOLDOVER_FORCE              0x14B 3   0
+MAN_DAC_EN                  0x14B 2   1
+MAN_DAC                     0x14B 1:0 2
+                            0x14C 7:0 0
+DAC_TRIP_LOW                0x14D 5:0 0  # Holdover mode high threshold
+DAC_CLK_MULT                0x14E 7:6 0
+DAC_TRIP_HIGH               0x14E 5:0 0  # Holdover mode low threshold
+DAC_CLK_CNTR                0x14F 7:0 127
+CLKin_OVERRIDE              0x150 6   0
+HOLDOVER_PLL1_DET           0x150 4   0
+HOLDOVER_LOS_DET            0x150 3   0
+HOLDOVER_VTUNE_DET          0x150 2   0
+HOLDOVER_HITLESS_SWITCH     0x150 1   1
+HOLDOVER_EN                 0x150 0   1  # Holdover enabled by default
+HOLDOVER_DLD_CNT            0x151 5:0 2
+                            0x152 7:0 0
+CLKin0_R                    0x153 5:0 0
+                            0x154 7:0 120
+CLKin1_R                    0x155 5:0 0
+                            0x156 7:0 150
+CLKin2_R                    0x157 5:0 0
+                            0x158 7:0 150
+PLL1_N                      0x159 5:0 0
+                            0x15A 7:0 120
+PLL1_WND_SIZE               0x15B 7:6 3  # Lock detect window
+PLL1_CP_TRI                 0x15B 5   0
+PLL1_CP_POL                 0x15B 4   1
+PLL1_CP_GAIN                0x15B 3:0 4
+PLL1_DLD_CNT                0x15C 5:0 32   (0x15D 8 0 0
+PLL1_R_DLY                  0x15E 5:3 0
+PLL1_N_DLY                  0x15E 2:0 0
+PLL1_LD_MUX                 0x15F 7:3 1  # Output PLL1 lock to Status_LD1
+PLL1_LD_TYPE                0x15F 2:0 3  # Configure push-pull drive
+PLL2_P                      0x162 7:5 2
+OSCin_FREQ                  0x162 4:2 7
+PLL2_XTAL_EN                0x162 1   0
+PLL2_REF_2X_EN              0x162 0   1
+PLL2_FCAL_DIS               0x166 2   0
+PLL2_R                      0x160 3:0 0
+                            0x161 7:0 2
+PLL2_N_CAL                  0x163 1:0 0
+                            0x164 7:0 0
+                            0x165 7:0 12
+PLL2_N                      0x166 1:0 0
+                            0x167 7:0 0
+                            0x168 7:0 12
+PLL2_WND_SIZE               0x169 6:5 2  # Must be left at this value!
+PLL2_CP_GAIN                0x169 4:3 3
+PLL2_CP_POL                 0x169 2   0
+PLL2_CP_TRI                 0x169 1   0
+x169_1_0                    0x169 0   1  # Always program to 1!
+SYSREF_REQ_EN               0x16A 6   0
+PLL2_DLD_CNT                0x16A 5:0 32
+                            0x16B 7:0 0
+PLL2_LF_R4                  0x16C 5:3 0
+PLL2_LF_R3                  0x16C 2:0 0
+PLL2_LF_C4                  0x16D 7:4 0
+PLL2_LF_C3                  0x16D 3:0 0
+PLL2_LD_MUX                 0x16E 7:3 2  # Output PLL2 lock to Status_LD2
+PLL2_LD_TYPE                0x16E 2:0 3  # Configure push-pull drive
+PLL2_PRE_PD                 0x173 6   0
+PLL2_PD                     0x173 5   1
