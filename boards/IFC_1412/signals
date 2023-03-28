@@ -56,7 +56,7 @@ pad_SHARED_PAYLOAD_{SCL,SDA}    inout
 
 # Connected to MMC GPIO U202 IO1_6, unknown function, not in original .xdc,
 # pulled up by default
-pad_PERSTN0                     in
+pad_PERST_n                     in
 
 # Connected to MMC GPIO U202 I01_5, unknwon function, pulled up by default
 # Probably intended to be used as system reset under MMC control?
