@@ -47,10 +47,12 @@ fpga: $(PROJECT_NAME).bit
 
 
 # ------------------------------------------------------------------------------
-# Built files
 
-include $(PROJECT_TOP)/Makefile
+# Pull in any project VHDL definitions
+-include $(PROJECT_TOP)/FPGA_DEFS
 
+
+# Common rules for built targets
 include $(FPGA_COMMON)/makefiles/Makefile.built
 
 
@@ -104,5 +106,8 @@ runvivado:
             -tclargs '$(PROJECT_NAME)/$(PROJECT_NAME).xpr'
 .PHONY: runvivado
 
+
+# Allow any extra rules that need to come late to be included here
+-include $(PROJECT_TOP)/VHDL_RULES
 
 # vim: set filetype=make:
