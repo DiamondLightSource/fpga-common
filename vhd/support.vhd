@@ -1,4 +1,5 @@
 -- Generic helper and support functions for writing VHDL.
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -12,6 +13,7 @@ package support is
     type vector_array is array(natural range <>) of std_ulogic_vector;
     type vector_array_array is array(natural range <>) of vector_array;
     type integer_array is array(natural range<>) of integer;
+    type boolean_array is array(natural range<>) of boolean;
 
     -- Simple complex number type
     type complex_t is record

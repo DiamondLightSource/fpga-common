@@ -6,8 +6,6 @@ use ieee.numeric_std.all;
 use std.textio.all;
 
 use work.support.all;
-use work.defines.all;
-
 use work.register_defs.all;
 
 package sim_support is
@@ -41,9 +39,8 @@ end package;
 package body sim_support is
 
     procedure clk_wait(signal clk_i : in std_ulogic; count : in natural := 1) is
-        variable i : natural;
     begin
-        for i in 0 to count-1 loop
+        for i in 1 to count loop
             wait until rising_edge(clk_i);
         end loop;
     end procedure;
