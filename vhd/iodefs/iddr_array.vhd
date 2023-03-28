@@ -23,10 +23,12 @@ end;
 
 architecture arch of iddr_array is
 begin
-    iddr_array:
-    for i in 0 to COUNT-1 generate
+    iddr_array : for i in 0 to COUNT-1 generate
         iddr_inst : IDDR generic map (
-            DDR_CLK_EDGE => "SAME_EDGE_PIPELINED"
+            DDR_CLK_EDGE => "SAME_EDGE_PIPELINED",
+            -- Setting this allows this definition to be shared between 7-series
+            -- and ultrascale
+            SRTYPE => "ASYNC"
         ) port map (
             S => '0',
             C => clk_i,

@@ -22,8 +22,7 @@ end;
 
 architecture arch of ibufgds_array is
 begin
-    ibufgds_array:
-    for i in 0 to COUNT-1 generate
+    ibufgds_array : for i in 0 to COUNT-1 generate
         ibufgds_inst: IBUFGDS generic map (
             IOSTANDARD => "LVDS",
             DIFF_TERM => true

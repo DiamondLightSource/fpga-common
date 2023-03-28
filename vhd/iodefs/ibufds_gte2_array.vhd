@@ -23,8 +23,7 @@ end;
 
 architecture arch of ibufds_gte2_array is
 begin
-    ibufds_gte2_array:
-    for i in 0 to COUNT-1 generate
+    ibufds_gte2_array : for i in 0 to COUNT-1 generate
         ibufds_inst: IBUFDS_GTE2 generic map (
             CLKCM_CFG    => TRUE,
             CLKRCV_TRST  => TRUE,

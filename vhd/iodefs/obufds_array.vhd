@@ -22,8 +22,7 @@ end;
 
 architecture arch of obufds_array is
 begin
-    obufds_array:
-    for i in 0 to COUNT-1 generate
+    obufds_array : for i in 0 to COUNT-1 generate
         obufds_inst: OBUFDS generic map (
             IOSTANDARD => "LVDS"
         ) port map (

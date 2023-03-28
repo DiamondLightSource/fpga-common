@@ -9,9 +9,10 @@ use ieee.numeric_std.all;
 library unisim;
 use unisim.vcomponents.all;
 
-entity ibuf_array is
+entity iobuf_array is
     generic (
-        COUNT : natural := 1
+        COUNT : natural := 1;
+        IOSTANDARD : string := "DEFAULT"
     );
     port (
         i_i : in std_ulogic_vector(COUNT-1 downto 0);
@@ -21,10 +22,12 @@ entity ibuf_array is
     );
 end;
 
-architecture arch of ibuf_array is
+architecture arch of iobuf_array is
 begin
     iobuf_array : for i in 0 to COUNT-1 generate
-        ibuf_inst : IOBUF port map (
+        ibuf_inst : IOBUF generic map (
+            IOSTANDARD => IOSTANDARD
+        ) port map (
             T => t_i(i),
             I => i_i(i),
             O => o_o(i),
