@@ -166,6 +166,8 @@ class _Reader:
 
 class Registers:
     def __init__(self, raw_registers, defs_path):
+        if os.path.isfile(defs_path + '.old'):
+            defs_path = defs_path + '.old'
         groups, constants = load_register_defs(defs_path)
 
         self.constants = constants

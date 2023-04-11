@@ -14,7 +14,7 @@ entity stream_capture_bursts is
     generic (
         LOG_BURST_LENGTH : natural;         -- log2 of burst length
         PROGRESS_BIT : natural;             -- Addr bit for progress interrupt
-        ADDRESS_WIDTH : natural;
+        ADDRESS_WIDTH : natural;            -- Includes all byte address parts
         LOG_DATA_BYTES : natural := 2;      -- 4 bytes, 32 bits
         ADDRESS_FIFO_DEPTH : natural := 2;
         LOG_DATA_FIFO_DEPTH : natural := 1;
@@ -41,18 +41,18 @@ entity stream_capture_bursts is
         control_i : in stream_capture_control_t;
         status_o : out stream_capture_status_t;
 
-        -- Start and end addresses
-        first_address_i : in unsigned(ADDRESS_WIDTH-1 downto 0);
-        last_address_i : in unsigned(ADDRESS_WIDTH-1 downto 0);
+        -- Start and end addresses.  If not specified the entire address range
+        -- is addressed.
+        first_address_i : in unsigned(ADDRESS_WIDTH-1 downto 0)
+            := (others => '0');
+        last_address_i : in unsigned(ADDRESS_WIDTH-1 downto 0)
+            := (others => '1');
 
         trigger_i : in std_ulogic
     );
 end;
 
 architecture arch of stream_capture_bursts is
-    constant DATA_OUT_WIDTH : natural := 8 * 2**LOG_DATA_BYTES;
-    constant DATA_IN_WIDTH : natural := stream_i.data'LENGTH;
-
     subtype ADDRESS_RANGE is natural
         range ADDRESS_WIDTH-1 downto LOG_BURST_LENGTH+LOG_DATA_BYTES;
 

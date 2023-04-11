@@ -9,6 +9,12 @@ import numpy
 from fpga_lib import parse
 
 
+# Helper function for reading signed values from unsigned field
+def to_signed(x, bits):
+    # First convert from 2's complement to offset, then add in the offset.
+    return (x ^ (1 << (bits - 1))) + (-1 << (bits - 1))
+
+
 # Reads and writes a bit-field in a register
 class Field:
     def __init__(self, field):
