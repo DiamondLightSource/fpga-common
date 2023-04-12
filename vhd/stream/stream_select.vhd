@@ -30,6 +30,7 @@ architecture arch of stream_select is
         := (valid => '0', last => '0', data => (others => '0'));
     signal stream_out : data_stream_t(data(DATA_RANGE))
         := (valid => '0', last => '0', data => (others => '0'));
+    signal select_out : select_o'SUBTYPE := (others => '0');
 
     -- Try stream_o'SUBTYPE instead of data_stream_t(data(DATA_RANGE)) with the
     -- latest Questa Sim and Vivado
@@ -48,13 +49,12 @@ architecture arch of stream_select is
     signal next_state : state_t;
 
     signal switch_state : boolean;
-    signal valid_selection : boolean;
 
 begin
     switch_state <=
         state = ACTIVE and
-        select_in /= selection and selected_last_seen = '1';
-    valid_selection <= next_state = ACTIVE and not switch_state;
+        select_in /= selection and
+        selected_last_seen = '1';
 
     process (all) begin
         next_state <= state;
@@ -65,7 +65,7 @@ begin
                     next_state <= SKIP;
                 end if;
             when SKIP =>
-                -- Wait for selection to change
+                -- Wait for selection change to propagate
                 next_state <= SWITCHING;
             when SWITCHING =>
                 -- Wait for new edge of packet
@@ -95,11 +95,14 @@ begin
             end if;
 
             stream_out <= (
-                valid => selected_in.valid and to_std_ulogic(valid_selection),
+                valid =>
+                    selected_in.valid and to_std_ulogic(next_state = ACTIVE),
                 last => selected_in.last,
                 data => selected_in.data);
-            select_o <= to_unsigned(selection, select_o'LENGTH);
+            select_out <= to_unsigned(selection, select_o'LENGTH);
         end if;
     end process;
+
+    select_o <= select_out;
     stream_o <= stream_out;
 end;

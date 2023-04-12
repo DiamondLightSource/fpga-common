@@ -3,7 +3,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use std.textio.all;
 
 use work.support.all;
 use work.stream_defs.all;
@@ -58,8 +57,7 @@ begin
                     beat_counter <= beat_counter + 1;
                 end if;
 
-                check_match("Beat",
-                    current_payload.beat_count, beat_counter);
+                check_match("Beat", current_payload.beat_count, beat_counter);
                 check_match("Packet",
                     current_payload.packet_count, ref_payload.packet_count);
                 check_match("Tag", current_payload.tag, ref_payload.tag);

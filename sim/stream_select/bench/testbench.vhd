@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use std.textio.all;
 
 use work.support.all;
 use work.stream_defs.all;
@@ -25,17 +24,16 @@ architecture arch of testbench is
     subtype SELECT_RANGE is natural range bits(STREAM_COUNT-1)-1 downto 0;
     subtype PAYLOAD_RANGE is natural range 31 downto 0;
 
-    constant BURST_LENGTHS : integer_array(STREAMS_RANGE) := (8, 6, 3, 1);
-    constant BURST_DELAYS : integer_array(STREAMS_RANGE) := (0, 23, 17, 0);
-    constant DATA_GAPS : integer_array(STREAMS_RANGE) := (0, 1, 2, 0);
+    -- Configured behaviours for the four test streams
+    constant BURST_LENGTHS : integer_array(STREAMS_RANGE) := ( 8,  6,  3,  1);
+    constant BURST_DELAYS  : integer_array(STREAMS_RANGE) := ( 0, 23, 17,  0);
+    constant DATA_GAPS     : integer_array(STREAMS_RANGE) := ( 0,  1,  2,  0);
 
     signal streams_in : data_stream_array_t(STREAMS_RANGE)(data(PAYLOAD_RANGE));
 
     signal select_in : unsigned(SELECT_RANGE);
     signal select_out : unsigned(SELECT_RANGE);
     signal stream_out : data_stream_t(data(PAYLOAD_RANGE));
-
-    signal capture_count : natural := 0;
 
 begin
     clk <= not clk after 2 ns;
