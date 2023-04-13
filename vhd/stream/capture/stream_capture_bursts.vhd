@@ -48,7 +48,8 @@ entity stream_capture_bursts is
         last_address_i : in unsigned(ADDRESS_WIDTH-1 downto 0)
             := (others => '1');
 
-        trigger_i : in std_ulogic
+        -- Trigger for pre and post triggered capture
+        trigger_i : in std_ulogic := '0'
     );
 end;
 

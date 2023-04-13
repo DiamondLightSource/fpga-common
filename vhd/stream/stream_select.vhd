@@ -46,34 +46,34 @@ architecture arch of stream_select is
     -- don't generate broken packets
     type state_t is (ACTIVE, SKIP, SWITCHING);
     signal state : state_t := ACTIVE;
-    signal next_state : state_t;
 
     signal switch_state : boolean;
+
+    impure function next_state return state_t is
+    begin
+        case state is
+            when ACTIVE =>
+                -- Switch on edge of incoming packet
+                if switch_state then
+                    return SKIP;
+                end if;
+            when SKIP =>
+                -- Wait for selection change to propagate
+                return SWITCHING;
+            when SWITCHING =>
+                -- Wait for new edge of packet
+                if selected_last_seen then
+                    return ACTIVE;
+                end if;
+        end case;
+        return state;
+    end;
 
 begin
     switch_state <=
         state = ACTIVE and
         select_in /= selection and
         selected_last_seen = '1';
-
-    process (all) begin
-        next_state <= state;
-        case state is
-            when ACTIVE =>
-                -- Switch on edge of incoming packet
-                if switch_state then
-                    next_state <= SKIP;
-                end if;
-            when SKIP =>
-                -- Wait for selection change to propagate
-                next_state <= SWITCHING;
-            when SWITCHING =>
-                -- Wait for new edge of packet
-                if selected_last_seen then
-                    next_state <= ACTIVE;
-                end if;
-        end case;
-    end process;
 
     process (clk_i) begin
         if rising_edge(clk_i) then

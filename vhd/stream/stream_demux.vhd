@@ -5,6 +5,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.support.all;
+use work.stream_defs.all;
 
 entity stream_demux is
     generic (
@@ -14,12 +15,10 @@ entity stream_demux is
     port (
         clk_i : in std_ulogic;
 
-        enable_i : in std_ulogic;
-        last_i : in std_ulogic;
-        data_i : in signed(WIDTH-1 downto 0);
+        stream_i : in data_stream_t(data(WIDTH-1 downto 0));
 
         enables_o : out std_ulogic_vector(0 to WAYS-1) := (others => '0');
-        data_o : out signed_array(0 to WAYS-1)(WIDTH-1 downto 0)
+        data_o : out vector_array(0 to WAYS-1)(WIDTH-1 downto 0)
             := (others => (others => '0'))
     );
 end;
@@ -30,10 +29,10 @@ architecture arch of stream_demux is
 begin
     process (clk_i) begin
         if rising_edge(clk_i) then
-            if enable_i then
-                data_o(way) <= data_i;
+            if stream_i.valid then
+                data_o(way) <= stream_i.data;
                 compute_strobe(enables_o, way);
-                way <= 0 when last_i else way + 1;
+                way <= 0 when stream_i.last else way + 1;
             else
                 enables_o <= (others => '0');
             end if;
