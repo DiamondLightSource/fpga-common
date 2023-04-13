@@ -1,0 +1,9 @@
+BUILT += filter-taps.txt
+BUILT += stimulus.txt
+
+VPATH += $(BENCH_DIR)
+
+built/%: %
+	ln -sfn $^ .
+
+# vim: set filetype=make:
