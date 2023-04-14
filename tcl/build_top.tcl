@@ -1,8 +1,10 @@
-set src_dir [lindex $argv 0]
-set project [lindex $argv 1]
-set fpga_part [lindex $argv 2]
-set bd_list [lindex $argv 3]
-set vhd_dirs [lindex $argv 4]
+set fpga_common $env(FPGA_COMMON)
+set project_top $env(PROJECT_TOP)
+set project_name $env(PROJECT_NAME)
+set fpga_part $env(FPGA_PART)
+set block_designs $env(BLOCK_DESIGNS)
+set vhd_dirs $env(VHD_DIRS)
+
 
 set hierarchy rebuilt
 # set hierarchy none
@@ -16,7 +18,7 @@ proc check_timing {timingreport} {
     }
 }
 
-create_project $project $project -part $fpga_part
+create_project $project_name $project_name -part $fpga_part
 
 set_param project.enableVHDL2008 1
 set_property target_language VHDL [current_project]
@@ -46,12 +48,12 @@ add_files built
 foreach dir $vhd_dirs {
     add_files $dir
 }
-# add_files $src_dir/vhd
+# add_files $project_top/vhd
 set_property FILE_TYPE "VHDL 2008" [get_files *.vhd]
 
 
 # Ensure we've read the block designs and generated the associated files.
-foreach bd $bd_list {
+foreach bd $block_designs {
     read_bd $bd/$bd.bd
     make_wrapper -files [get_files $bd/$bd.bd] -top
     add_files -norecurse $bd/hdl/${bd}_wrapper.vhd
@@ -61,9 +63,9 @@ set_property top top [current_fileset]
 
 # Load the constraints
 read_xdc built/top_pins.xdc
-# set files [glob -nocomplain $src_dir/constr/*.xdc]
+# set files [glob -nocomplain $project_top/constr/*.xdc]
 # if [llength $files] { read_xdc $files }
-read_xdc [glob -nocomplain $src_dir/constr/*.xdc]
+read_xdc [glob -nocomplain $project_top/constr/*.xdc]
 
 foreach name {post_synth pblocks} {
     set xdc [get_files -quiet $name.xdc]
@@ -88,9 +90,10 @@ set_property STEPS.SYNTH_DESIGN.ARGS.ASSERT true [get_runs synth_1]
 set_property STEPS.SYNTH_DESIGN.ARGS.FLATTEN_HIERARCHY none [get_runs synth_1]
 
 
-# # Add script for rebuilding version file to synthesis step
-# set_property STEPS.SYNTH_DESIGN.TCL.PRE \
-#     $src_dir/tcl/make_version.tcl [get_runs synth_1]
+# Add script for rebuilding version file to synthesis step
+set make_version \
+    [add_files -norecurse built/make_version.tcl -fileset utils_1]
+set_property STEPS.SYNTH_DESIGN.TCL.PRE $make_version [get_runs synth_1]
 
 
 # This setting is recommended by Xilinx to help achieve timing closure for the

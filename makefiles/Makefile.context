@@ -2,12 +2,8 @@
 # top level makefile, which itself is designed to have been called in the
 # following way:
 #
-#   ifndef PROJECT_TOP
 #   include path/to/CONFIG      # Must define FPGA_COMMON
 #   include $(FPGA_COMMON)/makefiles/Makefile.<selected-top>
-#   else
-#       ...
-#   endif
 #
 # This means that we enter with the following entries in MAKEFILE_LIST:
 #  1. The invoking makefile.  This determines the originating project

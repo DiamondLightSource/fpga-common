@@ -6,8 +6,8 @@ set -e
 
 # First argument specifies project top
 PROJECT_TOP="${1:?Must specify project top}"
-# First argument specifies where to place the file we're going to build
-TARGET_FILE="${2:?Must specify target file}"
+# Second optional argument specifies where to place the built file
+TARGET_FILE="${2:-/dev/stdout}"
 
 set -o pipefail
 

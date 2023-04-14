@@ -32,6 +32,7 @@ VPATH += $(BLOCK_DESIGNS)
 
 
 BUILT += top_entity.vhd
+BUILT += make_version.tcl
 
 
 # ------------------------------------------------------------------------------
@@ -78,7 +79,7 @@ SOURCES := $(shell find $(VHD_DIRS) -name \*.vhd)
 
 
 # The order of the build_top arguments matters here!
-BUILD_TOP_ARGS =
+BUILD_TOP_ARGS += FPGA_COMMON
 BUILD_TOP_ARGS += PROJECT_TOP
 BUILD_TOP_ARGS += PROJECT_NAME
 BUILD_TOP_ARGS += FPGA_PART
@@ -90,8 +91,8 @@ $(PROJECT_NAME).bit: $(BUILT:%=built/%) $(BLOCK_DESIGNS:%=%/BD_DONE) $(SOURCES)
 	rm -rf $(PROJECT_NAME)
 	ln -sf ./$(PROJECT_NAME)/$(PROJECT_NAME).runs/impl_1/top.bit $@
 	mkdir -p reports checkpoints
-	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/build_top.tcl \
-            $(call TCL_ARGS,$(BUILD_TOP_ARGS))
+	$(call EXPORT,$(BUILT_TOP_ARGS)) $(RUN_VIVADO) \
+            -mode batch -source $(TCL_DIR)/build_top.tcl
 
 
 # ------------------------------------------------------------------------------

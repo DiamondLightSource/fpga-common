@@ -1,26 +1,29 @@
 # Rules for built files
 
 # Generate top entity
-built/top_entity.vhd: $(BOARD_DIR) $(CONSTR_DIR)/used
-	mkdir -p built
+built/top_entity.vhd: $(BOARD_DIR) $(CONSTR_DIR)/used | built
 	cd built  &&  $(TOOLS_DIR)/make_entity $^ top
 
-built/version.vhd: # $(PROJECT_TOP)/VERSION
-	mkdir -p built
+built/version.vhd: # $(PROJECT_TOP)/VERSION | built
 	$(TOOLS_DIR)/make_version $(PROJECT_TOP) $@
 
-built/metadata.coe: $(PROJECT_TOP)/prom_config
-	mkdir -p built
+built/metadata.coe: $(PROJECT_TOP)/prom_config | built
 	$(TOOLS_DIR)/prom_data_creator --format coe $< >$@
 
-built/register_defines.vhd: register_defines.in
-	mkdir -p built
+built/register_defines.vhd: register_defines.in | built
 	$(TOOLS_DIR)/register_defines $^ >$@
 
 # Other generated vhd files
-built/%.vhd: %.py %.in
-	mkdir -p built
+built/%.vhd: %.py %.in | built
 	$(PYTHON) $^ >$@
+
+MAKE_VERSION_TCL_SED += s:@@FPGA_COMMON@@:$(FPGA_COMMON):;
+MAKE_VERSION_TCL_SED += s:@@PROJECT_TOP@@:$(PROJECT_TOP):
+built/make_version.tcl: $(FPGA_COMMON)/tcl/make_version.tcl.in | built
+	sed '$(MAKE_VERSION_TCL_SED)' $< >$@
+
+built:
+	mkdir -p $@
 
 
 # Target for building all required targets
