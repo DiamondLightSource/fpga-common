@@ -6,6 +6,7 @@ include $(FPGA_COMMON)/makefiles/Makefile.common
 VSIM_EXPORTS += VHD_DIR
 VSIM_EXPORTS += BENCH_DIR
 VSIM_EXPORTS += COMMON_VHD
+VSIM_EXPORTS += COMMON_SIM
 
 RUN_VSIM = $(call EXPORT,$(VSIM_EXPORTS)) MTI_VCO_MODE=64 $(VSIM) \
     -modelsimini ./modelsim.ini

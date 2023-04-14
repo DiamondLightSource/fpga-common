@@ -1,6 +1,7 @@
 # Paths from environment
 set vhd_dir $env(VHD_DIR)
 set bench_dir $env(BENCH_DIR)
+set common_sim $env(COMMON_SIM)
 
 vlib work
 vlib msim
@@ -28,9 +29,10 @@ vcom -64 -2008 -work xil_defaultlib \
 
 
 vcom -64 -2008 -work xil_defaultlib \
-    $bench_dir/test_defs.vhd \
+    built/register_defines.vhd \
     $bench_dir/test_counter.vhd \
     $bench_dir/test_registers.vhd \
+    $common_sim/sim_support.vhd \
     $bench_dir/testbench.vhd
 
 
@@ -44,6 +46,8 @@ add wave -group "Regs" test_registers/*
 add wave -group "Events" test_registers/events/*
 add wave -group "Counter" test_registers/counter/*
 add wave -group "Bench" sim:*
+
+quietly set NumericStdNoWarnings 1
 
 run 1.1 us
 

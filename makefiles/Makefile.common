@@ -109,6 +109,7 @@ SPACE := $(subst ,, )
 export LM_LICENSE_FILE := $(subst $(SPACE),:,$(strip $(LM_LICENSE_FILE)))
 
 COMMON_VHD = $(FPGA_COMMON)/vhd
+COMMON_SIM = $(FPGA_COMMON)/sim/common
 TOOLS_DIR = $(FPGA_COMMON)/tools
 
 # Compute board directory from BOARD definition.  By default we look inside our

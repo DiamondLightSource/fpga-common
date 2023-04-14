@@ -1,0 +1,5 @@
+BUILT += register_defines.vhd
+
+VPATH += $(BENCH_DIR)
+
+# vim: set filetype=make:

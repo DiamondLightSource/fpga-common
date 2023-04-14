@@ -7,30 +7,23 @@ use std.textio.all;
 use work.support.all;
 use work.register_defs.all;
 
-use work.test_defs.all;
+use work.register_defines.all;
+
+use work.sim_support.all;
 
 entity testbench is
 end testbench;
 
 architecture arch of testbench is
-    procedure write(message : string := "") is
-        variable linebuffer : line;
-    begin
-        write(linebuffer, message);
-        writeline(output, linebuffer);
-    end;
-
     signal clk : std_ulogic := '0';
-    -- Extra clock for cross domain checks
-    signal cc_clk : std_ulogic := '0';
 
     procedure clk_wait(count : in natural := 1) is
     begin
-        for i in 1 to count loop
-            wait until rising_edge(clk);
-        end loop;
+        clk_wait(clk, count);
     end procedure;
 
+    -- Extra clock for cross domain checks
+    signal cc_clk : std_ulogic := '0';
 
     constant ADDRESS_WIDTH : natural := 12;
     subtype ADDRESS_RANGE is natural range ADDRESS_WIDTH-1 downto 0;

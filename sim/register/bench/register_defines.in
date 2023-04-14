@@ -1,0 +1,24 @@
+# Register definitions for simple test register
+!TEST
+    *RW
+        # Events capture
+        EVENTS      R
+        # Pulsed commands
+        COMMAND     W
+
+    # Two miscellaneous read/write control registers
+    !CONTROL
+        A       RW
+        B       RW
+
+    # Reading this counter auto-increments, writing sets value
+    COUNTER     RW
+
+    # Registers for sequential reading and writing a fixed array
+    BLOCK       RW
+
+    *RW
+        # Register for reading sequence
+        READ_SEQ    R
+        # Register for clock domain crossing
+        CC          W

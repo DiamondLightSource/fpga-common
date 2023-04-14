@@ -7,7 +7,7 @@ use ieee.numeric_std.all;
 use work.support.all;
 use work.register_defs.all;
 
-use work.test_defs.all;
+use work.register_defines.all;
 
 entity test_registers is
     port (
