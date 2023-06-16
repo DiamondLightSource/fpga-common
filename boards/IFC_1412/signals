@@ -205,17 +205,17 @@ pad_EXT_{A,B}[2..11]            inout
 # SGRAM (banks 24, 25) - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Clocks and clock enable
-pad_SG12_CK_{P,N}               out
-pad_SG{1,2}_WCK_{P,N}           out
+pad_SG12_CK_{P,N}               in
+pad_SG{1,2}_WCK_{P,N}           in
 pad_SG12_CKE_N                  out
 # Command address.  All bits except for bit 3 are shared between devices
-pad_SG12_CAL[0..2]              out
+pad_SG12_CAL[2..0]              out
 pad_SG{1,2}_CA3_{A,B}           out
-pad_SG12_CAU[4..9]              out
+pad_SG12_CAU[9..4]              out
 pad_SG12_CABI_N                 out
 # Data bus and error detect
-pad_SG{1,2}_DQ_{A,B}[0..15]     inout
-pad_SG{1,2}_DBI_N_{A,B}[0..1]   inout
-pad_SG{1,2}_EDC_{A,B}[0..1]     in
+pad_SG{1,2}_DQ_{A,B}[15..0]     inout
+pad_SG{1,2}_DBI_N_{A,B}[1..0]   inout
+pad_SG{1,2}_EDC_{A,B}[1..0]     in
 # Chip reset
 pad_SG{1,2}_RESET_N             out
