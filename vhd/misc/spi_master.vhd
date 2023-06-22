@@ -39,7 +39,7 @@ architecture arch of spi_master is
     constant OUT_BITS : natural := 1 + ADDRESS_BITS + DATA_BITS;
 
     -- Clock generator
-    signal divisor : unsigned(LOG_SCLK_DIVISOR downto 0) := (others => '0');
+    signal divisor : unsigned(LOG_SCLK_DIVISOR-1 downto 0) := (others => '0');
     signal sclk : std_ulogic;
     signal last_sclk : std_ulogic;
     signal sclk_rising : boolean;
@@ -56,15 +56,20 @@ architecture arch of spi_master is
     signal transmit : boolean;
 
 begin
-    sclk <= divisor(LOG_SCLK_DIVISOR);
+    sclk <= divisor(divisor'LEFT);
     sclk_rising  <= sclk = '1' and last_sclk = '0';
     sclk_falling <= sclk = '0' and last_sclk = '1';
     transmit <= state = COMMAND or state = DATA;
 
     process (clk_i) begin
         if rising_edge(clk_i) then
-            divisor <= divisor + 1;
-            last_sclk <= sclk;
+            if state = IDLE then
+                divisor <= (others => '0');
+                last_sclk <= '0';
+            else
+                divisor <= divisor + 1;
+                last_sclk <= sclk;
+            end if;
 
             case state is
                 when IDLE =>
