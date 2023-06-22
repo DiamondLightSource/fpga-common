@@ -29,7 +29,7 @@ vcom -64 -2008 -work xil_defaultlib \
 
 
 vcom -64 -2008 -work xil_defaultlib \
-    built/register_defines.vhd \
+    built_dir/register_defines.vhd \
     $bench_dir/test_counter.vhd \
     $bench_dir/test_registers.vhd \
     $common_sim/sim_support.vhd \

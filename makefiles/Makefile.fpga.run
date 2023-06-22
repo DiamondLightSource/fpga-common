@@ -64,7 +64,7 @@ include $(FPGA_COMMON)/makefiles/Makefile.built
 #   + *.vhd -> $(PROJECT_NAME).bit
 
 # The interconnect block design needs the metadata array
-interconnect/BD_DONE: built/metadata.coe
+interconnect/BD_DONE: built_dir/metadata.coe
 
 
 SOURCES := $(shell find $(VHD_DIRS) -name \*.vhd)
@@ -86,8 +86,12 @@ BUILD_TOP_ARGS += FPGA_PART
 BUILD_TOP_ARGS += BLOCK_DESIGNS
 BUILD_TOP_ARGS += VHD_DIRS
 
+BITFILE_DEPENDS += $(BUILT:%=built_dir/%)
+BITFILE_DEPENDS += $(BLOCK_DESIGNS:%=%/BD_DONE)
+BITFILE_DEPENDS += $(SOURCES)
+
 # Build final target
-$(PROJECT_NAME).bit: $(BUILT:%=built/%) $(BLOCK_DESIGNS:%=%/BD_DONE) $(SOURCES)
+$(PROJECT_NAME).bit: $(BITFILE_DEPENDS)
 	rm -rf $(PROJECT_NAME)
 	ln -sf ./$(PROJECT_NAME)/$(PROJECT_NAME).runs/impl_1/top.bit $@
 	mkdir -p reports checkpoints

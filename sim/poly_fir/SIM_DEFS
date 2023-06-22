@@ -3,7 +3,7 @@ BUILT += stimulus.txt
 
 VPATH += $(BENCH_DIR)
 
-built/%: %
+built_dir/%: %
 	ln -sfn $^ .
 
 # vim: set filetype=make:

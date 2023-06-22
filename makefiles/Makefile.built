@@ -1,31 +1,32 @@
 # Rules for built files
 
 # Generate top entity
-built/top_entity.vhd: $(BOARD_DIR) $(CONSTR_DIR)/used | built
-	cd built  &&  $(TOOLS_DIR)/make_entity $^ top
+built_dir/top_entity.vhd: $(BOARD_DIR) $(CONSTR_DIR)/used | built_dir
+	cd built_dir  &&  $(TOOLS_DIR)/make_entity $^ top
 
-built/version.vhd: # $(PROJECT_TOP)/VERSION | built
+# built/version.vhd: $(PROJECT_TOP)/VERSION | built_dir
+built_dir/version.vhd: | built_dir
 	$(TOOLS_DIR)/make_version $(PROJECT_TOP) $@
 
-built/metadata.coe: $(PROJECT_TOP)/prom_config | built
+built_dir/metadata.coe: $(PROJECT_TOP)/prom_config | built_dir
 	$(TOOLS_DIR)/prom_data_creator --format coe $< >$@
 
-built/register_defines.vhd: register_defines.in | built
+built_dir/register_defines.vhd: register_defines.in | built_dir
 	$(TOOLS_DIR)/register_defines $^ >$@
 
 # Other generated vhd files
-built/%.vhd: %.py %.in | built
+built_dir/%.vhd: %.py %.in | built_dir
 	$(PYTHON) $^ >$@
 
 MAKE_VERSION_TCL_SED += s:@@FPGA_COMMON@@:$(FPGA_COMMON):;
 MAKE_VERSION_TCL_SED += s:@@PROJECT_TOP@@:$(PROJECT_TOP):
-built/make_version.tcl: $(FPGA_COMMON)/tcl/make_version.tcl.in | built
+built_dir/make_version.tcl: $(FPGA_COMMON)/tcl/make_version.tcl.in | built_dir
 	sed '$(MAKE_VERSION_TCL_SED)' $< >$@
 
-built:
+built_dir:
 	mkdir -p $@
 
 
 # Target for building all required targets
-built: $(BUILT:%=built/%)
+built: $(BUILT:%=built_dir/%)
 .PHONY: built

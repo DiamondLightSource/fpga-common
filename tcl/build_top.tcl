@@ -44,7 +44,7 @@ set_msg_config -id {Vivado 12-1790} -suppress
 
 # Add our files and set them to VHDL 2008.  This needs to be done before reading
 # any externally generated files, particularly the interconnect.
-add_files built
+add_files built_dir
 foreach dir $vhd_dirs {
     add_files $dir
 }
@@ -62,7 +62,7 @@ foreach bd $block_designs {
 set_property top top [current_fileset]
 
 # Load the constraints
-read_xdc built/top_pins.xdc
+read_xdc built_dir/top_pins.xdc
 # set files [glob -nocomplain $project_top/constr/*.xdc]
 # if [llength $files] { read_xdc $files }
 read_xdc [glob -nocomplain $project_top/constr/*.xdc]
@@ -92,7 +92,7 @@ set_property STEPS.SYNTH_DESIGN.ARGS.FLATTEN_HIERARCHY none [get_runs synth_1]
 
 # Add script for rebuilding version file to synthesis step
 set make_version \
-    [add_files -norecurse built/make_version.tcl -fileset utils_1]
+    [add_files -norecurse built_dir/make_version.tcl -fileset utils_1]
 set_property STEPS.SYNTH_DESIGN.TCL.PRE $make_version [get_runs synth_1]
 
 

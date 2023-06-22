@@ -17,7 +17,7 @@ proc dirname {n path} {
 # directory is, then we can hand control over to the shell script to do the real
 # work.
 set build_dir [dirname 3 [pwd]]
-set version_file "$build_dir/built/version.vhd"
+set version_file "$build_dir/built_dir/version.vhd"
 
 # The following dance with `file mtime ...` is used to advise Vivado that
 # nothing has really changed.  This approach is described as a workaround by

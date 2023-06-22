@@ -35,7 +35,7 @@ default: vsim
 
 LINKED += $(notdir $(wildcard $(SIM_TOP)/do/*.do))
 
-vsim: $(BUILT:%=built/%) $(LINKED) modelsim.ini
+vsim: $(BUILT:%=built_dir/%) $(LINKED) modelsim.ini
 	$(DO_RUN_VSIM)
 .PHONY: vsim
 
@@ -64,8 +64,10 @@ modelsim.ini: $(MODELSIM_LIBS)/modelsim.ini
 
 include $(FPGA_COMMON)/makefiles/Makefile.built
 
+# Add extra dependencies to built target (defined in Makefile.built)
 built: $(LINKED) modelsim.ini
 
+# Add any extra simulation rules
 -include $(SIM_TOP)/SIM_RULES
 
 .DELETE_ON_ERROR:
