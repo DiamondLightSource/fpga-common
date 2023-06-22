@@ -176,7 +176,7 @@ def load_signals(signal_file):
             for name in expand_string(names):
                 assert name not in signals, 'Repeated signal name %s' % name
                 signals[name] = (range, direction)
-        except Exception, e:
+        except Exception as e:
             print('Error', e, 'on line', line_no)
             raise
 
@@ -195,7 +195,7 @@ def load_locations(pins_file):
             name, pin, iostandard, others = split_line(line, 2, ['', ''])
             name, index = parse_name_index(name)
             pins[(name, index)] = (pin, iostandard, others)
-        except Exception, e:
+        except Exception as e:
             print('Error', e, 'on line', line_no)
             raise
     return pins
@@ -237,18 +237,19 @@ def load_used_pins(signals, used_file):
 
 
 # Returns the appropriate type for the given range
-def range_type(range):
+def range_type(range, direction):
+    logic = 'std_logic' if direction == 'inout' else 'std_ulogic'
     if range is None:
-        return 'std_ulogic'
+        return logic
     else:
         low, high = range
         updown = 'to' if low <= high else 'downto'
-        return 'std_ulogic_vector(%d %s %d)' % (low, updown, high)
+        return '%s_vector(%d %s %d)' % (logic, low, updown, high)
 
 
 def map_pin_range(mapping):
     in_name, in_range, out_name, out_range, direction = mapping
-    type = range_type(out_range)
+    type = range_type(out_range, direction)
     return out_name, direction, type
 
 
