@@ -95,7 +95,7 @@ $(PROJECT_NAME).bit: $(BITFILE_DEPENDS)
 	rm -rf $(PROJECT_NAME)
 	ln -sf ./$(PROJECT_NAME)/$(PROJECT_NAME).runs/impl_1/top.bit $@
 	mkdir -p reports checkpoints
-	$(call EXPORT,$(BUILT_TOP_ARGS)) $(RUN_VIVADO) \
+	$(call EXPORT,$(BUILD_TOP_ARGS)) $(RUN_VIVADO) \
             -mode batch -source $(TCL_DIR)/build_top.tcl
 
 
@@ -106,10 +106,14 @@ create-bd: $(BLOCK_DESIGNS:%=%/BD_DONE)
 
 # Run vivado on project
 runvivado:
-	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/run_vivado.tcl \
+	TMP=$(CURDIR) $(RUN_VIVADO) \
+            -mode batch -source $(TCL_DIR)/run_vivado.tcl \
             -tclargs '$(BD_DIR)' \
             -tclargs '$(PROJECT_NAME)/$(PROJECT_NAME).xpr'
 .PHONY: runvivado
+# Note the rather odd TMP= workaround: this needs to be set when running the
+# Vivado hardware manager, as otherwise the application cs_server fails to run.
+# It appears to need somewhere where it can dump executable temporary files!
 
 
 # Allow any extra rules that need to come late to be included here
