@@ -1,6 +1,6 @@
 # Register definitions for LMK04616
 
-# Name                              r    o w d   register/offset/width/default
+# Name                              r  bits  d  register/bit-range/default
 
 # R0
 SWRST                               0x00 7   0  # Software reset
@@ -36,14 +36,14 @@ G_CLK_EN                            0x12 2   1
 PLL2_DIG_CLK_EN                     0x12 1   1
 PORCLKAFTERLOCK                     0x12 0   0
 
-PLL2_REF_DIGCLK_DIV                 0x13 4:5 0
+PLL2_REF_DIGCLK_DIV                 0x13 4:0 0
 
-EN_SYNC_PIN_FUNC                    0x14 7:1 0
-GLOBAL_CONT_SYSREF                  0x14 5:1 0
-GLOBAL_SYSREF                       0x14 4:1 0
-INV_SYNC_INPUT_SYNC_CLK             0x14 3:1 0
-SYNC_PIN_FUNC                       0x14 2   0
-GLOBAL_SYNC                         0x14 0:1 0
+EN_SYNC_PIN_FUNC                    0x14 7   0
+GLOBAL_CONT_SYSREF                  0x14 5   0
+GLOBAL_SYSREF                       0x14 4   0
+INV_SYNC_INPUT_SYNC_CLK             0x14 3   0
+SYNC_PIN_FUNC                       0x14 2:1 0
+GLOBAL_SYNC                         0x14 0   0
 
 CLKIN_STAGGER_EN                    0x15 3   1
 CLKIN_SWRST                         0x15 2   0
@@ -106,12 +106,12 @@ CLKIN3_LOS_REC_CNT                  0x29 7:0 0x14
 
 CLKIN3_LOS_LAT_SEL                  0x2A 7:0 0x80
 
-SW_CLKLOS_TMR                       0x2B 4:5 0
+SW_CLKLOS_TMR                       0x2B 4:0 0
 
 SW_REFINSEL                         0x2C 7:4 0
-SW_LOS_CH_SEL                       0x2C 3:4 0
+SW_LOS_CH_SEL                       0x2C 3:0 0
 
-SW_ALLREFSON_TMR                    0x2D 4:5 0
+SW_ALLREFSON_TMR                    0x2D 4:0 0
 
 OSCIN_PD_LDO                        0x2E 5   0
 OSCIN_SE_MODE                       0x2E 4   1
@@ -120,6 +120,7 @@ OSCIN_OSCINSTAGE_EN                 0x2E 2   1
 OCSIN_BUF_REF_EN                    0x2E 1   0
 OSCIN_BUF_LOS_EN                    0x2E 0   0
 
+OSCOUT_LVCMOS_WEAK_DRIVE            0x2F 7   0
 OSCOUT_DIV_REGCONTROL               0x2F 6   0
 OSCOUT_PINSEL_DIV                   0x2F 5:4 0
 OSCOUT_SEL_VBG                      0x2F 3   0
@@ -270,9 +271,9 @@ PLL1_LD_WNDW_SIZE                   0x58 7:0 0x3F
 PLL1_INTG_FL                        0x59 7:4 1
 PLL1_INTG                           0x59 3:0 1
 
-PLL1_PROP                           0x5A 6:7 8
+PLL1_PROP                           0x5A 6:0 8
 
-PLL1_PROP_FL                        0x5B 6:7 0x7F
+PLL1_PROP_FL                        0x5B 6:0 0x7F
 
 PLL1_HOLDOVER_EN                    0x5C 7   1
 PLL1_STARTUP_HOLDOVER_EN            0x5C 6   1
@@ -337,7 +338,7 @@ PLL2_R4_LF_SEL                      0x70 3:0 0
 PLL2_C3_LF_SEL                      0x71 7:4 0
 PLL2_R3_LF_SEL                      0x71 3:0 0
 
-PLL2_PROP                           0x72 5:6 3
+PLL2_PROP                           0x72 5:0 3
 
 PLL2_NDIV                           0x73 7:0 0
                                     0x74 7:0 0x20
@@ -367,7 +368,7 @@ PLL2_AC_STRT_THRESHOLD              0x82 4:0 0
 PLL2_AC_CMP_WAIT                    0x83 7:4 0
 PLL2_AC_INIT_WAIT                   0x83 3:0 0
 
-PLL2_AC_JUMP_STEP                   0x84 3:4 0xF
+PLL2_AC_JUMP_STEP                   0x84 3:0 0xF
 
 PLL2_LD_WNDW_SIZE                   0x85 7:0 1
 
@@ -477,7 +478,7 @@ HOLDOVER_LOS                        0xBE 2   0
 PLL2_LCK_DET                        0xBE 1   0
 PLL1_LCK_DET                        0xBE 0   0
 
-PLL2_DLD_EN                         0xF6 1   0
+PLL2_DLD_EN                         0xF6 1   1
 
 PLL2_DUAL_LOOP_EN                   0xF7 6:5 0
 
@@ -658,7 +659,7 @@ PLL1_SYNC_HOLDOVER                  0x149 2   0
 PLL1_STATUS1_HOLDOVER               0x149 1   0
 PLL1_STATUS0_HOLDOVER               0x149 0   0
 
-SYNC_ANALOGDLY                      0x14A 6:2 0     # 6:2
+SYNC_ANALOGDLY                      0x14A 6:2 0
 SYNC_ANALOGDLY_EN                   0x14A 1   0
 SYNC_INV                            0x14A 0   0
 

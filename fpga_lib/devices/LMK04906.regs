@@ -1,6 +1,6 @@
 # Register definitions for LMK04906
 
-# Name                  r   o   w  d   register/offset/width/default
+# Name                  r  bits   d    register/bit-range/default
 #
 # R0
 CLKout0_PD              0  31     1    # Power down CLKout0

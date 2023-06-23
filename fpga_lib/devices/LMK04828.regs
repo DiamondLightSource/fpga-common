@@ -1,6 +1,6 @@
 # Each output is controlled by a group of seven registers offset from 0x100+8*n
-    # Name                 f  w  o  d   field/width/offset/default
-    #
+
+# Name                      r     br  d      register/bit-range/default
 
 CLKout0_1_ODL               0x100 6   0      # Output drive level
 CLKout0_1_IDL               0x100 5   0      # Input drive level
@@ -304,7 +304,8 @@ PLL1_WND_SIZE               0x15B 7:6 3  # Lock detect window
 PLL1_CP_TRI                 0x15B 5   0
 PLL1_CP_POL                 0x15B 4   1
 PLL1_CP_GAIN                0x15B 3:0 4
-PLL1_DLD_CNT                0x15C 5:0 32   (0x15D 8 0 0
+PLL1_DLD_CNT                0x15C 5:0 32
+                            0x15D 7:0 0
 PLL1_R_DLY                  0x15E 5:3 0
 PLL1_N_DLY                  0x15E 2:0 0
 PLL1_LD_MUX                 0x15F 7:3 1  # Output PLL1 lock to Status_LD1

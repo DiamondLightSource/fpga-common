@@ -1,6 +1,6 @@
 # Register definitions for ADS42LB69
 
-# Name                  r  o  w  d   register/offset/width/default
+# Name                  r  bits  d      register/bit-range/default
 #
 # R6  (06)
 _R6                     6  0x80
