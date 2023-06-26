@@ -2,26 +2,25 @@
 
 # Name                              r  bits  d  register/bit-range/default
 
-# R0
-SWRST                               0x00 7   0  # Software reset
-LSB_FIRST                           0x00 6   0  # (Unsupported, leave as zero)
-ADDR_ASCEND                         0x00 5   0  # Address increment for stream
-SDO_ACTIVE                          0x00 4   0  # Must be set to 1
-SDO_ACTIVE_CPY                      0x00 3   0  # Must be set to 1
-ADDR_ASCEND_CPY                     0x00 2   0  # Must match ADDR_ASCENT
-LSB_FIRST_CPY                       0x00 1   0  # Must be set to 0
-SWRST_CPY                           0x00 0   0  # Must match SWRST
-# R3
-DEVID                               0x03 7:6 0  # Device ID, 0 => LMK04616
-CHIPTYPE                            0x03 3:0 6  # Chip type, 6 => PLL device
-# R4,5
-CHIPID                              0x04 7:0 0  # Chip identification
-                                    0x05 7:0 0
-# R6
-CHIPVER                             0x06 7:0 0  # Chip version
-# R12,13
-VENDORID                            0x0C 7:0 0  # Vendor identification
-                                    0x0D 7:0 0
+SWRST                               0x00 7   0
+LSB_FIRST                           0x00 6   0
+ADDR_ASCEND                         0x00 5   0
+SDO_ACTIVE                          0x00 4   0
+SDO_ACTIVE_CPY                      0x00 3   0
+ADDR_ASCEND_CPY                     0x00 2   0
+LSB_FIRST_CPY                       0x00 1   0
+SWRST_CPY                           0x00 0   0
+
+DEVID                               0x03 7:6 0      R
+CHIPTYPE                            0x03 3:0 6      R
+
+CHIPID                              0x04 7:0 0x38   R
+                                    0x05 7:0 0x03   R
+
+CHIPVER                             0x06 7:0 0x15   R
+
+VENDORID                            0x0C 7:0 0x51   R
+                                    0x0D 7:0 0x08   R
 
 OUTCH_MUTE                          0x10 5   0
 CLKINBLK_LOSLDO_EN                  0x10 4   1
@@ -296,10 +295,10 @@ PLL1_LOCKDET_CYC_CNT                0x63 7:0 0
                                     0x64 7:0 0x40
                                     0x65 7:0 0
 
-PLL1_STORAGE_CELL                   0x67 7:0 0
-                                    0x68 7:0 0
-                                    0x69 7:0 0
-                                    0x6A 5:0 0
+PLL1_STORAGE_CELL                   0x67 7:0 0      R
+                                    0x68 7:0 0      R
+                                    0x69 7:0 0      R
+                                    0x6A 5:0 0      R
 
 PLL1_RC_CLK_EN                      0x6B 4   1
 PLL1_RC_CLK_DIV                     0x6B 2:0 7
@@ -398,18 +397,18 @@ SPI_SDIO_OUTPUT_HIZ                 0x8F 6   1
 SPI_SDIO_ENB_INSTAGE                0x8F 5   0
 SPI_SDIO_EN_ML_INSTAGE              0x8F 4   0
 SPI_SDIO_OUTPUT_DATA                0x8F 2   0
-SPI_SDIO_INPUT_Y12                  0x8F 1   0
-SPI_SDIO_INPUT_M12                  0x8F 0   0
+SPI_SDIO_INPUT_Y12                  0x8F 1   0      R
+SPI_SDIO_INPUT_M12                  0x8F 0   0      R
 
 SPI_SCL_ENB_INSTAGE                 0x90 5   0
 SPI_SCL_EN_ML_INSTAGE               0x90 4   0
-SPI_SCL_INPUT_Y12                   0x90 1   0
-SPI_SCL_INPUT_M12                   0x90 0   0
+SPI_SCL_INPUT_Y12                   0x90 1   0      R
+SPI_SCL_INPUT_M12                   0x90 0   0      R
 
 SPI_SCS_ENB_INSTAGE                 0x91 5   0
 SPI_SCS_EN_ML_INSTAGE               0x91 4   0
-SPI_SCS_INPUT_Y12                   0x91 1   0
-SPI_SCS_INPUT_M12                   0x91 0   0
+SPI_SCS_INPUT_Y12                   0x91 1   0      R
+SPI_SCS_INPUT_M12                   0x91 0   0      R
 
 STATUS0_MUX_SEL                     0x92 7:5 4
 STATUS0_OUTPUT_MUTE                 0x92 4   0
@@ -436,15 +435,15 @@ STATUS0_OUTPUT_HIZ                  0x97 6   0
 STATUS0_ENB_INSTAGE                 0x97 5   1
 STATUS0_EN_ML_INSTAGE               0x97 4   0
 STATUS0_OUTPUT_DATA                 0x97 2   0
-STATUS0_INPUT_Y12                   0x97 1   0
-STATUS0_INPUT_M12                   0x97 0   0
+STATUS0_INPUT_Y12                   0x97 1   0      R
+STATUS0_INPUT_M12                   0x97 0   0      R
 
 STATUS1_OUTPUT_HIZ                  0x98 6   0
 STATUS1_ENB_INSTAGE                 0x98 5   1
 STATUS1_EN_ML_INSTAGE               0x98 4   0
 STATUS1_OUTPUT_DATA                 0x98 2   0
-STATUS1_INPUT_Y12                   0x98 1   0
-STATUS1_INPUT_M12                   0x98 0   0
+STATUS1_INPUT_Y12                   0x98 1   0      R
+STATUS1_INPUT_M12                   0x98 0   0      R
 
 SYNC_MUX_SEL                        0x99 7:5 4
 SYNC_OUTPUT_MUTE                    0x99 4   0
@@ -458,8 +457,8 @@ CLKINSEL1_EN_PULLDOWN               0x9B 0   0
 
 CLKINSEL1_ENB_INSTAGE               0x9C 5   0
 CLKINSEL1_EN_ML_INSTAGE             0x9C 4   0
-CLKINSEL1_INPUT_Y12                 0x9C 1   0
-CLKINSEL1_INPUT_M12                 0x9C 0   0
+CLKINSEL1_INPUT_Y12                 0x9C 1   0      R
+CLKINSEL1_INPUT_M12                 0x9C 0   0      R
 
 PLL1_TSTMODE_REF_FB_EN              0xAC 7   0
 
@@ -471,12 +470,12 @@ PLL2_RDIV_CLKEN                     0xAF 0   0
 
 PLL2_NDIV_CLKEN                     0xB0 0   1
 
-LOS                                 0xBE 5   0
-HOLDOVER_DLD                        0xBE 4   0
-HOLDOVER_LOL                        0xBE 3   0
-HOLDOVER_LOS                        0xBE 2   0
-PLL2_LCK_DET                        0xBE 1   0
-PLL1_LCK_DET                        0xBE 0   0
+LOS                                 0xBE 5   0      R
+HOLDOVER_DLD                        0xBE 4   0      R
+HOLDOVER_LOL                        0xBE 3   0      R
+HOLDOVER_LOS                        0xBE 2   0      R
+PLL2_LCK_DET                        0xBE 1   0      R
+PLL1_LCK_DET                        0xBE 0   0      R
 
 PLL2_DLD_EN                         0xF6 1   1
 
@@ -546,7 +545,7 @@ CH14_ADLY_EN                        0x11A 1   0
 CH15_ADLY                           0x11B 6:2 0
 CH15_ADLY_EN                        0x11B 1   0
 
-CLKMUX                              0x124 3:0 0
+CLKMUX                              0x124 3:0 0     R
 
 SYSREF_BYP_DYNDIGDLY_GATING_CH0_1   0x127 7   0
 SYSREF_BYP_ANALOGDLY_GATING_CH0_1   0x127 6   0
@@ -644,8 +643,8 @@ SYNC_OUTPUT_HIZ                     0x142 6   1
 SYNC_ENB_INSTAGE                    0x142 5   1
 SYNC_EN_ML_INSTAGE                  0x142 4   1
 SYNC_OUTPUT_DATA                    0x142 2   0
-SYNC_INPUT_Y12                      0x142 1   0
-SYNC_INPUT_M12                      0x142 0   0
+SYNC_INPUT_Y12                      0x142 1   0     R
+SYNC_INPUT_M12                      0x142 0   0     R
 
 FBBUF_CH6_EN                        0x143 4   0
 FBBUF_CH9_EN                        0x143 0   0

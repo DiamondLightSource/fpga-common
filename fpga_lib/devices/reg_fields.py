@@ -6,19 +6,23 @@ from collections import namedtuple, OrderedDict
 from .parse_regs import *
 
 
-Field = namedtuple('Field', ['register', 'offset', 'width'])
+Field = namedtuple('Field', ['register', 'offset', 'width', 'read_only'])
 
 
-def load_register_defs(device_name):
-    if '/' not in device_name:
-        # Look for the specified device in the current directory
-        here = os.path.dirname(__file__)
-        device_name = os.path.join(here, device_name + '.regs')
-    return parse_regs(device_name)
+def _make_field(reg):
+    return Field(reg.register, reg.offset, reg.width, reg.read_only)
 
 
 # This class is used to map logical packed fields to hardware registers.
+# This class should be subclassed and _DeviceName defined
 class FieldWriter(object):
+    def __load_register_defs(self):
+        device_name = self._DeviceName
+        if '/' not in device_name:
+            # Look for the specified device in the current directory
+            here = os.path.dirname(__file__)
+            device_name = os.path.join(here, device_name + '.regs')
+        return parse_regs(device_name)
 
     # A field definition is either a single field definition:
     #   (register, offset, width, default)
@@ -34,65 +38,49 @@ class FieldWriter(object):
         if isinstance(field, Register):
             # Simple case: single field
             default = field.value
-            fields = (Field(field.register, field.offset, field.width),)
+            fields = (_make_field(field),)
+            read_only = field.read_only
         else:
             # More complicated.
             # First assemble the default value
             field = field.registers
             default = field[0].value
+            read_only = field[0].read_only
             for f in field[1:]:
                 default = (default << f.width) | f.value
+                read_only = read_only or f.read_only
 
             # Next extract the list of field definitions in little endian order
             # for register generation.
-            fields = tuple(reversed([
-                Field(f.register, f.offset, f.width) for f in field]))
-        return fields, default
+            fields = tuple(reversed([_make_field(f) for f in field]))
+        return fields, default, read_only
 
     # Register definitions will be read from the given file
-    def __init__(self, device_name, write, read = None):
-        self._write = write     # Write to register
-        self._read = read       # Optionall, read from register
+    def __init__(self, writer = None, reader = None):
+        if writer is None:
+            # Fallback to simple text output
+            writer = self.dummy_writer
+
+        self._write = writer    # Write to register
+        self._read = reader     # Optional, read from register
         self.__live = False     # Switch between cached and direct access
         self.__registers = {}   # Maps register numbers to values
         self.__dirty = set()    # Set of changed registers
         self.__fields = {}      # Maps names to definitions
 
         # Walk the register definitions
-        for name, rdef in load_register_defs(device_name).items():
+        for name, rdef in self.__load_register_defs().items():
             if isinstance(rdef, (Register, Group)):
-                fields, default = self.__compute_fields(rdef)
+                fields, default, read_only = self.__compute_fields(rdef)
                 self.__fields[name] = fields
-                self.__write_value(name, default)
+                if not read_only:
+                    self.__write_value(name, default)
             elif isinstance(rdef, Constant):
                 # Constants are used to initialise individual registers.  The
                 # register name is not saved
                 self._write_register(rdef.register, rdef.value)
             else:
                 assert False, 'Invalid register definition'
-
-#         # First walk the fields to fill in any register background constant
-#         # settings.  This has to be done first.
-#         for name, field_def in self._Fields.__dict__.items():
-#             if name[0] == '_':
-#                 # Field definitions starting with _ (and not __) are constants
-#                 # used to initialise individual registers
-#                 if not name.startswith("__"):
-#                     reg, value = field_def
-#                     self._write_register(reg, value)
-# 
-#         # Gather list of valid field names in format for processing.
-#         self.__fields = {}      # Maps names to definitions
-#         for name, field_def in self._Fields.__dict__.items():
-#             if name[0] != '_':
-#                 # Normal fields
-#                 assert name not in self.__fields
-#                 default, fields = self.__compute_fields(field_def)
-#                 self.__fields[name] = fields
-# 
-#                 # Fill in the initial register values from the default
-#                 self.__write_value(name, default)
-
 
     # Call this to enable writing to hardware
     def enable_write(self, live = True):
@@ -138,23 +126,25 @@ class FieldWriter(object):
 
     # Updates the registers associated with the given named field.
     def __write_value(self, name, value):
-        for reg, offset, width in self.__fields[name]:
-            field_mask = ((1 << width) - 1) << offset
-            reg_value = self._read_register(reg) & ~field_mask
-            field_value = (value << offset) & field_mask
-            value >>= width
+        for f in self.__fields[name]:
+            assert not f.read_only, \
+                'Cannot write to read-only register %s' % name
+            field_mask = ((1 << f.width) - 1) << f.offset
+            reg_value = self._read_register(f.register) & ~field_mask
+            field_value = (value << f.offset) & field_mask
+            value >>= f.width
 
-            self._write_register(reg, reg_value | field_value)
+            self._write_register(f.register, reg_value | field_value)
         assert value == 0, 'Value for %s too large for field' % name
 
     # Reads given value directly from hardware
     def __read_value(self, name):
         value = 0
-        for reg, offset, width in reversed(self.__fields[name]):
-            reg_value = self._read_register(reg)
-            field_mask = ((1 << width) - 1) << offset
-            reg_value = (reg_value >> offset) & ((1 << width) - 1)
-            value = (value << width) | reg_value
+        for f in reversed(self.__fields[name]):
+            reg_value = self._read_register(f.register)
+            field_mask = ((1 << f.width) - 1) << f.offset
+            reg_value = (reg_value >> f.offset) & ((1 << f.width) - 1)
+            value = (value << f.width) | reg_value
         return value
 
 

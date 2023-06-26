@@ -9,7 +9,8 @@ __all__ = ['parse_regs', 'Register', 'Constant', 'Group']
 
 # Types of register definition
 Constant = namedtuple('Constant', ['register', 'value'])
-Register = namedtuple('Register', ['register', 'offset', 'width', 'value'])
+Register = namedtuple('Register',
+    ['register', 'offset', 'width', 'value', 'read_only'])
 # A group is a list of registers
 Group = namedtuple('Group', ['registers'])
 
@@ -55,10 +56,13 @@ def parse_lines(input_file):
 def int0(string):
     return int(string, 0)
 
-def parse_register(defs):
-    register = int0(defs[0])
-    range = defs[1].split(':', 1)
-    default = int0(defs[2])
+def parse_register(register, range, default, read_only = False):
+    register = int0(register)
+    range = range.split(':', 1)
+    default = int0(default)
+    if read_only:
+        assert read_only == 'R', 'Invalid register marker'
+        read_only = True
     if len(range) == 1:
         offset = int0(range[0])
         width = 1
@@ -66,14 +70,14 @@ def parse_register(defs):
         offset = int0(range[1])
         width = int0(range[0]) - offset + 1
     assert width > 0, 'Invalid register width: %d' % width
-    return Register(register, offset, width, default)
+    return Register(register, offset, width, default, read_only)
 
 def parse_group(defs):
-    return Group(list(map(parse_register, defs)))
+    return Group([parse_register(*d) for d in defs])
 
-def parse_constant(defs):
-    register = int0(defs[0])
-    value = int0(defs[1])
+def parse_constant(register, value):
+    register = int0(register)
+    value = int0(value)
     return Constant(register, value)
 
 
@@ -86,9 +90,9 @@ def parse_regs(reg_file):
             if len(defs) == 1:
                 defs = defs[0]
                 if len(defs) == 2:
-                    result = parse_constant(defs)
-                elif len(defs) == 3:
-                    result = parse_register(defs)
+                    result = parse_constant(*defs)
+                elif len(defs) >= 3:
+                    result = parse_register(*defs)
                 else:
                     assert False, 'Malformed register definition'
             else:

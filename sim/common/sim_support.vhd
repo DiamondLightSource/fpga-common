@@ -24,6 +24,7 @@ package sim_support is
         signal ack_i : in std_ulogic_vector;
         reg : natural);
 
+    -- Same as read_reg, but returns result into result variable
     procedure read_reg_result(
         signal clk_i : in std_ulogic;
         signal data_i : in reg_data_array_t;
