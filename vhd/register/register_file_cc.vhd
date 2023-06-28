@@ -27,7 +27,7 @@ architecture arch of register_file_cc is
 
 begin
     gen_regs : for i in write_strobe_i'RANGE generate
-        cc : entity work.cross_clocks generic map (
+        cc : entity work.cross_clocks_write generic map (
             WIDTH => REG_DATA_WIDTH
         ) port map (
             clk_in_i => clk_reg_i,

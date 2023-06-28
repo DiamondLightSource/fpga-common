@@ -14,6 +14,7 @@ vcom -64 -2008 -work xil_defaultlib \
     $vhd_dir/util/sync_bit.vhd \
     $vhd_dir/util/edge_detect.vhd \
     $vhd_dir/util/cross_clocks.vhd \
+    $vhd_dir/util/cross_clocks_write.vhd \
     $vhd_dir/register/register_defs.vhd \
     $vhd_dir/register/register_mux_strobe.vhd \
     $vhd_dir/register/register_buffer.vhd \
