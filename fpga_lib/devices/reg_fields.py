@@ -2,6 +2,7 @@
 
 import os
 from collections import namedtuple, OrderedDict
+import copy
 
 from .parse_regs import *
 
@@ -187,3 +188,11 @@ class FieldWriter(object):
 
         # Flush all dirty registers
         self._write_fields()
+
+
+    # Returns a list of all the field names
+    def _get_fields(self):
+        return self.__fields.keys()
+
+    def _get_field_meta(self, name):
+        return copy.deepcopy(self.__fields[name])

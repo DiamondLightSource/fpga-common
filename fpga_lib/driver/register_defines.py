@@ -182,7 +182,8 @@ def make_array(array, fields):
 
         def __getitem__(self, index):
             base, length = self.__range
-            assert 0 <= index < length, 'Index out of range'
+            if not 0 <= index < length:
+                raise IndexError()
 
             # Build a temporary register to wrap this entry
             register = parse.register_defines.Register(

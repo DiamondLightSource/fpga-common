@@ -31,7 +31,7 @@ PLL1EN                              0x10 0   1
 
 DEV_STARTUP                         0x11 0   0
 
-G_CLK_EN                            0x12 2   1
+DIG_CLK_EN                          0x12 2   1
 PLL2_DIG_CLK_EN                     0x12 1   1
 PORCLKAFTERLOCK                     0x12 0   0
 
@@ -116,7 +116,7 @@ OSCIN_PD_LDO                        0x2E 5   0
 OSCIN_SE_MODE                       0x2E 4   1
 OSCIN_BUF_TO_OSCOUT_EN              0x2E 3   1
 OSCIN_OSCINSTAGE_EN                 0x2E 2   1
-OCSIN_BUF_REF_EN                    0x2E 1   0
+OSCIN_BUF_REF_EN                    0x2E 1   0
 OSCIN_BUF_LOS_EN                    0x2E 0   0
 
 OSCOUT_LVCMOS_WEAK_DRIVE            0x2F 7   0
@@ -322,7 +322,7 @@ PLL2_BYP_SYNC_TOP                   0x6E 7   0
 PLL2_BYP_SYNC_BOTTOM                0x6E 6   0
 PLL2_EN_BYP_BUF                     0x6E 5   0
 PLL2_EN_BUF_SYNC_TOP                0x6E 4   1
-PLL2_EN_BUF_SYNC_BOT_TOM            0x6E 3   1
+PLL2_EN_BUF_SYNC_BOTTOM             0x6E 3   1
 PLL2_EN_BUF_OSCOUT                  0x6E 2   0
 PLL2_EN_BUF_CLK_TOP                 0x6E 1   1
 PLL2_EN_BUF_CLK_BOTTOM              0x6E 0   1
