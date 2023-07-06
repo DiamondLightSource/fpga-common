@@ -216,6 +216,6 @@ pad_SG12_CABI_N                 out
 # Data bus and error detect
 pad_SG{1,2}_DQ_{A,B}[15..0]     inout
 pad_SG{1,2}_DBI_N_{A,B}[1..0]   inout
-pad_SG{1,2}_EDC_{A,B}[1..0]     in
+pad_SG{1,2}_EDC_{A,B}[1..0]     inout
 # Chip reset
 pad_SG{1,2}_RESET_N             out
