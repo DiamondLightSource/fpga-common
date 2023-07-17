@@ -33,21 +33,18 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity cross_clocks_read is
-    generic (
-        WIDTH : natural
-    );
     port (
         clk_in_i : in std_ulogic;
         -- Strobe and ack for incoming data on clk_in_i clock domain
         strobe_i : in std_ulogic;
         ack_o : out std_ulogic;
-        data_o : out std_ulogic_vector(WIDTH-1 downto 0);
+        data_o : out std_ulogic_vector;
 
         clk_out_i : in std_ulogic;
         -- Update strobe and date on clk_out_i clock domain
         strobe_o : out std_ulogic;
         ack_i : in std_ulogic := '1';
-        data_i : in std_ulogic_vector(WIDTH-1 downto 0)
+        data_i : in std_ulogic_vector
     );
 end;
 
