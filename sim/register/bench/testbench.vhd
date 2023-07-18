@@ -15,20 +15,23 @@ entity testbench is
 end testbench;
 
 architecture arch of testbench is
+    constant CLK_PERIOD : time := 2 ns;
+    constant REG_CLK_PERIOD : time := 3.71 ns;
+    constant CC_CLK_PERIOD : time := 1.45 ns;
+
     signal clk : std_ulogic := '0';
 
-    procedure clk_wait(count : in natural := 1) is
-    begin
-        clk_wait(clk, count);
-    end procedure;
-
-    -- Extra clock for cross domain checks
+    -- Extra clocks for cross domain checks
+    signal reg_clk : std_ulogic := '0';
     signal cc_clk : std_ulogic := '0';
+
+    -- Should be controlled on clk domain
+    signal reg_clk_ok : std_ulogic := '1';
 
     constant ADDRESS_WIDTH : natural := 12;
     subtype ADDRESS_RANGE is natural range ADDRESS_WIDTH-1 downto 0;
 
-    -- Raw register interface with addresses
+    -- Raw register interface with addresses on clk domain
     signal write_strobe : std_ulogic;
     signal write_address : unsigned(ADDRESS_RANGE);
     signal write_data : reg_data_t;
@@ -37,6 +40,16 @@ architecture arch of testbench is
     signal read_address : unsigned(ADDRESS_RANGE);
     signal read_data : reg_data_t;
     signal read_ack : std_ulogic;
+
+    -- Register interface on reg_clk domain
+    signal reg_write_strobe : std_ulogic;
+    signal reg_write_address : unsigned(ADDRESS_RANGE);
+    signal reg_write_data : reg_data_t;
+    signal reg_write_ack : std_ulogic;
+    signal reg_read_strobe : std_ulogic;
+    signal reg_read_address : unsigned(ADDRESS_RANGE);
+    signal reg_read_data : reg_data_t;
+    signal reg_read_ack : std_ulogic;
 
     -- Decoded register interface
     signal test_write_strobe : std_ulogic_vector(TEST_REGS_RANGE);
@@ -58,24 +71,54 @@ architecture arch of testbench is
     signal cc_strobe : std_ulogic;
 
 begin
-    clk <= not clk after 2 ns;
-    cc_clk <= not cc_clk after 1.45 ns;
+    clk <= not clk after CLK_PERIOD;
+    reg_clk <= not reg_clk after REG_CLK_PERIOD;
+    cc_clk <= not cc_clk after CC_CLK_PERIOD;
+
+
+    -- Transfer register control over to reg_clk to test clock crossing
+    register_cc : entity work.register_bank_cc port map (
+        clk_in_i => clk,
+        clk_out_i => reg_clk,
+        clk_out_ok_i => reg_clk_ok,
+
+        write_address_i => write_address,
+        write_data_i => write_data,
+        write_strobe_i => write_strobe,
+        write_ack_o => write_ack,
+
+        read_address_i => read_address,
+        read_data_o => read_data,
+        read_strobe_i => read_strobe,
+        read_ack_o => read_ack,
+
+        write_address_o => reg_write_address,
+        write_data_o => reg_write_data,
+        write_strobe_o => reg_write_strobe,
+        write_ack_i => reg_write_ack,
+
+        read_address_o => reg_read_address,
+        read_data_i => reg_read_data,
+        read_strobe_o => reg_read_strobe,
+        read_ack_i => reg_read_ack
+    );
+
 
     -- Decode register addresses
     register_mux : entity work.register_mux generic map (
         BUFFER_DEPTH => 1
     ) port map (
-        clk_i => clk,
+        clk_i => reg_clk,
 
         -- Raw registers
-        write_strobe_i => write_strobe,
-        write_address_i => write_address,
-        write_data_i => write_data,
-        write_ack_o => write_ack,
-        read_strobe_i => read_strobe,
-        read_address_i => read_address,
-        read_data_o => read_data,
-        read_ack_o => read_ack,
+        write_strobe_i => reg_write_strobe,
+        write_address_i => reg_write_address,
+        write_data_i => reg_write_data,
+        write_ack_o => reg_write_ack,
+        read_strobe_i => reg_read_strobe,
+        read_address_i => reg_read_address,
+        read_data_o => reg_read_data,
+        read_ack_o => reg_read_ack,
 
         -- Decoded registers
         write_strobe_o => test_write_strobe,
@@ -86,9 +129,10 @@ begin
         read_ack_i => test_read_ack
     );
 
+
     -- Register destination
     test_registers : entity work.test_registers port map (
-        clk_i => clk,
+        clk_i => reg_clk,
 
         write_strobe_i => test_write_strobe,
         write_data_i => test_write_data,
@@ -117,8 +161,15 @@ begin
 
     -- Testbench
     process
-        procedure write_reg(address : natural; data : reg_data_t) is
+        procedure clk_wait(count : in natural := 1) is
         begin
+            clk_wait(clk, count);
+        end procedure;
+
+        procedure write_reg(address : natural; data : reg_data_t) is
+            variable start : time;
+        begin
+            start := now;
             write_address <= to_unsigned(address, ADDRESS_WIDTH);
             write_data <= data;
             write_strobe <= '1';
@@ -130,12 +181,15 @@ begin
             write_strobe <= '0';
             write(
                 "@ " & to_string(now, unit => ns) &
+                " (" & to_string(now - start, unit => ns) & ")" &
                 ": write_reg [" & natural'image(address) & 
                 "] <= " & to_hstring(data));
         end;
 
         procedure read_reg(address : ADDRESS_RANGE) is
+            variable start : time;
         begin
+            start := now;
             read_address <= to_unsigned(address, ADDRESS_WIDTH);
             read_strobe <= '1';
             while read_ack = '0' loop
@@ -146,6 +200,7 @@ begin
             read_strobe <= '0';
             write(
                 "@ " & to_string(now, unit => ns) &
+                " (" & to_string(now - start, unit => ns) & ")" &
                 ": read_reg [" & natural'image(address) & 
                 "] => " & to_hstring(read_data));
         end;
@@ -198,8 +253,14 @@ begin
         wait;
     end process;
 
+
     -- Sequence writer
     process
+        procedure clk_wait(count : in natural := 1) is
+        begin
+            clk_wait(reg_clk, count);
+        end procedure;
+
         procedure write_data(value : reg_data_t) is
         begin
             write_seq.strobe <= '1';
@@ -219,6 +280,7 @@ begin
         write_data(X"01020304");
         write_data(X"98765432");
         write_data(X"55555555");
+
         wait;
     end process;
 end;

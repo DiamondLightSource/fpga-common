@@ -15,7 +15,9 @@ vcom -64 -2008 -work xil_defaultlib \
     $vhd_dir/util/edge_detect.vhd \
     $vhd_dir/util/cross_clocks.vhd \
     $vhd_dir/util/cross_clocks_write.vhd \
+    $vhd_dir/util/cross_clocks_write_read.vhd \
     $vhd_dir/register/register_defs.vhd \
+    $vhd_dir/register/register_bank_cc.vhd \
     $vhd_dir/register/register_mux_strobe.vhd \
     $vhd_dir/register/register_buffer.vhd \
     $vhd_dir/register/register_mux.vhd \
@@ -42,6 +44,9 @@ vsim -t 1ps -voptargs=+acc -lib xil_defaultlib testbench
 view wave
 
 # add wave -group "Gather" gather/*
+add wave -group "Write CC" register_cc/write_cc/*
+add wave -group "Read CC" register_cc/read_cc/*
+add wave -group "CC" register_cc/*
 add wave -group "Mux" register_mux/*
 add wave -group "Regs" test_registers/*
 add wave -group "Events" test_registers/events/*
@@ -50,6 +55,6 @@ add wave -group "Bench" sim:*
 
 quietly set NumericStdNoWarnings 1
 
-run 1.1 us
+run 4 us
 
 # vim: set filetype=tcl:

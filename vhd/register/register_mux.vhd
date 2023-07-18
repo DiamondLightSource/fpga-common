@@ -113,6 +113,9 @@ begin
     end process;
 
 
+    -- Optional buffer to help with timing for large register files.  Note that
+    -- if this is instantiated then the register strobe/ack rules described in
+    -- register_buffer must be followed.
     mux_buffer : entity work.register_buffer generic map (
         BUFFER_DEPTH => BUFFER_DEPTH
     ) port map (

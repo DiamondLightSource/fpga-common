@@ -142,6 +142,8 @@ begin
         strobe_in <= '0';
         clk_out_ok <= '1';
 
+        clk_wait;
+
         for n in 1 to 5 loop
             transaction;
         end loop;
