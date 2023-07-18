@@ -35,6 +35,9 @@ use ieee.numeric_std.all;
 entity cross_clocks is
     port (
         clk_in_i : in std_ulogic;
+        -- clk_out status on clk_in domain.  If this is '0' then all register
+        -- transactions will be unconditionally completed to avoid stalls.
+        clk_out_ok_i : in std_ulogic := '1';
         -- Strobe and ack for incoming data on clk_in_i clock domain
         strobe_in_i : in std_ulogic;
         ack_in_o : out std_ulogic := '0';
@@ -77,13 +80,15 @@ begin
     -- Sending clock domain: request transfer, wait for ack
     process (clk_in_i) begin
         if rising_edge(clk_in_i) then
-            -- Toggle strobe_in state to initiate transaction request
-            if strobe_in_i then
+            -- Toggle strobe_in state to initiate transaction request.  If
+            -- clk_out is stalled don't do this and instead ack immediately.
+            if strobe_in_i and clk_out_ok_i then
                 strobe_in <= not strobe_in;
             end if;
-            -- Pulse acknowledge when ack_in changes state
+            -- Pulse acknowledge when ack_in changes state, or hold high when
+            -- clk_out is stalled.
             last_ack_in <= ack_in;
-            ack_in_o <= ack_in xor last_ack_in;
+            ack_in_o <= (ack_in xor last_ack_in) or not clk_out_ok_i;
         end if;
     end process;
 

@@ -22,6 +22,7 @@ architecture arch of testbench is
     signal strobe_in : std_ulogic;
     signal data_in : unsigned(15 downto 0) := X"0000";
     signal data_out : unsigned(15 downto 0) := X"0000";
+    signal clk_out_ok : std_ulogic := '0';
 
     -- Data and control on clk_in
     signal read_ack_in : std_ulogic;
@@ -54,6 +55,7 @@ begin
 
     read : entity work.cross_clocks_read port map (
         clk_in_i => clk_in,
+        clk_out_ok_i => clk_out_ok,
         strobe_i => strobe_in,
         ack_o => read_ack_in,
         unsigned(data_o(read_data_in'RANGE)) => read_data_in,
@@ -66,6 +68,7 @@ begin
 
     write : entity work.cross_clocks_write port map (
         clk_in_i => clk_in,
+        clk_out_ok_i => clk_out_ok,
         strobe_i => strobe_in,
         ack_o => write_ack_in,
         data_i(data_in'RANGE) => std_ulogic_vector(data_in),
@@ -78,6 +81,7 @@ begin
 
     write_read : entity work.cross_clocks_write_read port map (
         clk_in_i => clk_in,
+        clk_out_ok_i => clk_out_ok,
         strobe_i => strobe_in,
         ack_o => write_read_ack_in,
         write_data_i(data_in'RANGE) => std_ulogic_vector(data_in),
@@ -136,12 +140,18 @@ begin
 
     begin
         strobe_in <= '0';
+        clk_out_ok <= '1';
 
-        loop
+        for n in 1 to 5 loop
             transaction;
         end loop;
 
-        wait;
+        clk_out_ok <= '0';
+
+        for n in 1 to 5 loop
+            transaction;
+        end loop;
+
     end process;
 
 

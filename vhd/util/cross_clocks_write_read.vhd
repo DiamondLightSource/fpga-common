@@ -41,6 +41,9 @@ use ieee.numeric_std.all;
 entity cross_clocks_write_read is
     port (
         clk_in_i : in std_ulogic;
+        -- clk_out status on clk_in domain.  If this is '0' then all register
+        -- transactions will be unconditionally completed to avoid stalls.
+        clk_out_ok_i : in std_ulogic := '1';
         -- Strobe and ack for incoming data on clk_in_i clock domain
         strobe_i : in std_ulogic;
         ack_o : out std_ulogic;
@@ -78,6 +81,7 @@ architecture arch of cross_clocks_write_read is
 begin
     sync : entity work.cross_clocks port map (
         clk_in_i => clk_in_i,
+        clk_out_ok_i => clk_out_ok_i,
         strobe_in_i => strobe_in,
         ack_in_o => ack_o,
 
