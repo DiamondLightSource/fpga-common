@@ -541,7 +541,7 @@ def parse_constant_def(parse, constants):
     name, value = line.split('=', 1)
     name = name.strip()
     check_name(name, line_no)
-    value = int(value)
+    value = int(value, 0)
 
     constants[name] = Constant(name, value, doc)
 
