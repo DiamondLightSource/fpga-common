@@ -174,6 +174,7 @@ begin
     process (rstn_i, clk_i) begin
         if rstn_i = '0' then
             write_state <= WRITE_IDLE;
+            write_strobe_o <= '0';
         elsif rising_edge(clk_i) then
             case write_state is
                 when WRITE_IDLE =>
@@ -213,5 +214,4 @@ begin
     wready_o  <= to_std_ulogic(write_state = WRITE_START);
     bvalid_o  <= to_std_ulogic(write_state = WRITE_DONE);
     bresp_o <= "00";
-
 end;

@@ -41,7 +41,7 @@ end;
 architecture arch of register_mux_strobe is
     signal address : natural;
     signal ack_in : std_ulogic;
-    signal busy : boolean := false;
+    signal busy : std_ulogic := '0';
     signal strobe : strobe_o'SUBTYPE := (others => '0');
 
 begin
@@ -60,15 +60,15 @@ begin
 
     process (clk_i) begin
         if rising_edge(clk_i) then
-            ack_o <= ack_in and to_std_ulogic(busy);
+            ack_o <= ack_in and busy;
             if strobe_i = '1' then
                 if address <= ack_i'HIGH then
                     strobe <= compute_strobe(address, strobe_o'LENGTH);
                 end if;
-                busy <= true;
+                busy <= '1';
             else
                 strobe <= (others => '0');
-                busy <= busy and ack_in = '0';
+                busy <= busy and ack_in;
             end if;
         end if;
     end process;

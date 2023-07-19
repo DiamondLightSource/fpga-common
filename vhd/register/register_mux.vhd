@@ -21,11 +21,6 @@ entity register_mux is
         write_address_i : in unsigned;
         write_data_i : in reg_data_t;
         write_ack_o : out std_ulogic;
-
-        write_strobe_o : out std_ulogic_vector;
-        write_data_o : out reg_data_array_t;
-        write_ack_i : in std_ulogic_vector;
-
         -- Register read.
         read_strobe_i : in std_ulogic;
         read_address_i : in unsigned;
@@ -33,6 +28,11 @@ entity register_mux is
         read_ack_o : out std_ulogic := '0';
 
         -- Multiplexed registers
+        -- Write
+        write_strobe_o : out std_ulogic_vector;
+        write_data_o : out reg_data_array_t;
+        write_ack_i : in std_ulogic_vector;
+        -- Read
         read_data_i : in reg_data_array_t;      -- Individual read registers
         read_strobe_o : out std_ulogic_vector;   -- Individual read selects
         read_ack_i : in std_ulogic_vector        -- Individual read acknowlege
