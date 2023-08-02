@@ -13,12 +13,12 @@
 -- one clock cycle after the write_address and write_data outputs are valid.
 -- The write data and address will be held valid until write_ack_i is high:
 --
---  State           | IDLE  | START |WRITING| DONE  |
---                           ________________________
---  write_data_o,   XXXXXXXXX________________________
+--  State           | IDLE  |WRITING| DONE  |
+--                          _________________
+--  write_data_o,   XXXXXXXX_________________
 --  write_address_o
---                                    _______
---  write_strobe_o  _________________/       \_______
+--                            _______
+--  write_strobe_o  _________/       \_______
 --
 -- This means that modules can implement a simple one-cycle write interface by
 -- holding write_ack_i high.
@@ -28,28 +28,28 @@
 -- single cycle reads which don't depend on read_strobe, read_ack can be
 -- permanently high as shown here:
 --
---  State           | IDLE  | START |READING| DONE  |
---                           ________________________
---  read_address_o  XXXXXXXXX________________________
---                                    _______
---  read_strobe_o   _________________/       \_______
---                                   ________
---  read_data_i     XXXXXXXXXXXXXXXXX________XXXXXXXX
---                  _________________________________
+--  State           | IDLE  |READING| DONE  |
+--                          _________________
+--  read_address_o  XXXXXXXX_________________
+--                            _______
+--  read_strobe_o   _________/       \_______
+--                           ________
+--  read_data_i     XXXXXXXXX________XXXXXXXX
+--                  _________________________
 --  read_ack_i                                          (permanently high)
 --
 -- Alternatively read_ack can be generated some delay after read_strobe if it is
 -- necessary to delay the generation of read_data:
 --
---  State           | IDLE  | START |READING|READING|READING| DONE  |
---                           ________________________________________
---  read_address_o  XXXXXXXXX________________________________________
---                                    _______
---  read_strobe_o   _________________/       \_______________________
---                                                   ________
---  read_data_i     XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX________XXXXXXXX
---                                                    _______
---  read_ack_i      _________________________________/       \_______
+--  State           | IDLE  |READING|READING|READING| DONE  |
+--                          _________________________________
+--  read_address_o  XXXXXXXX_________________________________
+--                            _______
+--  read_strobe_o   _________/       \_______________________
+--                                           ________
+--  read_data_i     XXXXXXXXXXXXXXXXXXXXXXXXX________XXXXXXXX
+--                                            _______
+--  read_ack_i      _________________________/       \_______
 --
 
 library ieee;
@@ -108,15 +108,14 @@ architecture arch of axi_lite_slave is
     constant ADDR_WIDTH : natural := read_address_o'LENGTH;
 
     -- Reading state
-    type read_state_t is (READ_IDLE, READ_START, READ_READING, READ_DONE);
+    type read_state_t is (READ_IDLE, READ_READING, READ_DONE);
     signal read_state : read_state_t;
 
     -- Writing state
     -- The data and address for writes can come separately.
-    type write_state_t is (WRITE_IDLE, WRITE_START, WRITE_WRITING, WRITE_DONE);
+    type write_state_t is (WRITE_IDLE, WRITE_WRITING, WRITE_DONE);
     signal write_state : write_state_t;
-    signal valid_write : std_ulogic;
-
+    signal ready_out : std_ulogic := '0';
 
     -- Extracts register address from AXI address
     function register_address(addr : std_ulogic_vector) return unsigned
@@ -141,13 +140,10 @@ begin
                 when READ_IDLE =>
                     -- On valid read request latch read address
                     if arvalid_i = '1' then
+                        read_strobe_o <= '1';
                         read_address_o <= register_address(araddr_i);
-                        read_state <= READ_START;
+                        read_state <= READ_READING;
                     end if;
-                when READ_START =>
-                    -- Now pass read request through to selected module
-                    read_strobe_o <= '1';
-                    read_state <= READ_READING;
                 when READ_READING =>
                     -- Wait for read acknowledge from module
                     read_strobe_o <= '0';
@@ -175,34 +171,34 @@ begin
         if rstn_i = '0' then
             write_state <= WRITE_IDLE;
             write_strobe_o <= '0';
+            ready_out <= '0';
         elsif rising_edge(clk_i) then
             case write_state is
                 when WRITE_IDLE =>
                     -- Wait for valid read and write data
                     if awvalid_i = '1' and wvalid_i = '1' then
+                        ready_out <= '1';
                         write_address_o <= register_address(awaddr_i);
                         write_data_o <= wdata_i;
-                        valid_write <= vector_and(wstrb_i);
-                        write_state <= WRITE_START;
-                    end if;
-
-                when WRITE_START =>
-                    if valid_write = '1' then
-                        -- Generate write strobe for valid cycle
-                        write_strobe_o <= '1';
-                        write_state <= WRITE_WRITING;
-                    else
-                        -- For invalid write go straight to completion
-                        write_state <= WRITE_DONE;
+                        if vector_and(wstrb_i) then
+                            -- Generate write strobe for valid cycle
+                            write_strobe_o <= '1';
+                            write_state <= WRITE_WRITING;
+                        else
+                            -- For invalid write go straight to completion
+                            write_state <= WRITE_DONE;
+                        end if;
                     end if;
 
                 when WRITE_WRITING =>
                     write_strobe_o <= '0';
+                    ready_out <= '0';
                     if write_ack_i = '1' then
                         write_state <= WRITE_DONE;
                     end if;
 
                 when WRITE_DONE =>
+                    ready_out <= '0';
                     -- Wait for master to accept our response
                     if bready_i = '1' then
                         write_state <= WRITE_IDLE;
@@ -210,8 +206,8 @@ begin
             end case;
         end if;
     end process;
-    awready_o <= to_std_ulogic(write_state = WRITE_START);
-    wready_o  <= to_std_ulogic(write_state = WRITE_START);
+    awready_o <= ready_out;
+    wready_o  <= ready_out;
     bvalid_o  <= to_std_ulogic(write_state = WRITE_DONE);
     bresp_o <= "00";
 end;
