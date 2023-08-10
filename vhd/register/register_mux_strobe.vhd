@@ -68,7 +68,7 @@ begin
                 busy <= '1';
             else
                 strobe <= (others => '0');
-                busy <= busy and ack_in;
+                busy <= busy and not ack_in;
             end if;
         end if;
     end process;
