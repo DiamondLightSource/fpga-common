@@ -11,6 +11,7 @@ use work.register_defs.all;
 package sim_support is
     procedure clk_wait(signal clk_i : in std_ulogic; count : in natural := 1);
 
+    -- Register access for strobed registers
     procedure write_reg(
         signal clk_i : in std_ulogic;
         signal data_o : out reg_data_array_t;
@@ -23,7 +24,6 @@ package sim_support is
         signal strobe_o : out std_ulogic_vector;
         signal ack_i : in std_ulogic_vector;
         reg : natural);
-
     -- Same as read_reg, but returns result into result variable
     procedure read_reg_result(
         signal clk_i : in std_ulogic;
@@ -32,6 +32,32 @@ package sim_support is
         signal ack_i : in std_ulogic_vector;
         reg : natural;
         result : out reg_data_t);
+
+
+    -- Register access for addressed registers
+    procedure write_reg(
+        signal clk_i : in std_ulogic;
+        signal data_o : out reg_data_t;
+        signal address_o : out unsigned;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        reg : natural; value : reg_data_t);
+    procedure read_reg(
+        signal clk_i : in std_ulogic;
+        signal data_i : in reg_data_t;
+        signal address_o : out unsigned;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        reg : natural);
+    procedure read_reg_result(
+        signal clk_i : in std_ulogic;
+        signal data_i : in reg_data_t;
+        signal address_o : out unsigned;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        reg : natural;
+        result : out reg_data_t);
+
 
     procedure write(message : string := "");
 
@@ -47,6 +73,9 @@ package body sim_support is
     end procedure;
 
 
+    -- -------------------------------------------------------------------------
+    -- Decoded strobed registers
+
     procedure write_reg(
         signal clk_i : in std_ulogic;
         signal data_o : out reg_data_array_t;
@@ -57,12 +86,11 @@ package body sim_support is
         data_o(reg) <= value;
         strobe_o <= (strobe_o'RANGE => '0');
         strobe_o(reg) <= '1';
-        while ack_i(reg) = '0' loop
+        loop
             clk_wait(clk_i);
             strobe_o <= (strobe_o'RANGE => '0');
+            exit when ack_i(reg);
         end loop;
-        clk_wait(clk_i);
-        strobe_o <= (strobe_o'RANGE => '0');
         write(
             "@ " & to_string(now, unit => ns) &
             ": write_reg [" & natural'image(reg) & "] <= " & to_hstring(value));
@@ -75,18 +103,16 @@ package body sim_support is
         signal strobe_o : out std_ulogic_vector;
         signal ack_i : in std_ulogic_vector;
         reg : natural;
-        result : out reg_data_t)
-    is
+        result : out reg_data_t) is
     begin
         strobe_o <= (strobe_o'RANGE => '0');
         strobe_o(reg) <= '1';
-        while ack_i(reg) = '0' loop
+        loop
             clk_wait(clk_i);
             strobe_o <= (strobe_o'RANGE => '0');
+            exit when ack_i(reg);
         end loop;
         result := data_i(reg);
-        clk_wait(clk_i);
-        strobe_o <= (strobe_o'RANGE => '0');
 
         write(
             "@ " & to_string(now, unit => ns) &
@@ -103,6 +129,68 @@ package body sim_support is
         variable result : reg_data_t;
     begin
         read_reg_result(clk_i, data_i, strobe_o, ack_i, reg, result);
+    end procedure;
+
+
+    -- -------------------------------------------------------------------------
+    -- Addressed registers
+
+    procedure write_reg(
+        signal clk_i : in std_ulogic;
+        signal data_o : out reg_data_t;
+        signal address_o : out unsigned;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        reg : natural; value : reg_data_t) is
+    begin
+        data_o <= value;
+        address_o <= to_unsigned(reg, address_o'LENGTH);
+        strobe_o <= '1';
+        loop
+            clk_wait(clk_i);
+            strobe_o <= '0';
+            exit when ack_i;
+        end loop;
+        write(
+            "@ " & to_string(now, unit => ns) &
+            ": write_reg [" & natural'image(reg) & "] <= " & to_hstring(value));
+    end procedure;
+
+
+    procedure read_reg_result(
+        signal clk_i : in std_ulogic;
+        signal data_i : in reg_data_t;
+        signal address_o : out unsigned;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        reg : natural;
+        result : out reg_data_t) is
+    begin
+        address_o <= to_unsigned(reg, address_o'LENGTH);
+        strobe_o <= '1';
+        loop
+            clk_wait(clk_i);
+            strobe_o <= '0';
+            exit when ack_i;
+        end loop;
+        result := data_i;
+
+        write(
+            "@ " & to_string(now, unit => ns) &
+            ": read_reg [" & natural'image(reg) & "] => " & to_hstring(result));
+    end procedure;
+
+    procedure read_reg(
+        signal clk_i : in std_ulogic;
+        signal data_i : in reg_data_t;
+        signal address_o : out unsigned;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        reg : natural)
+    is
+        variable result : reg_data_t;
+    begin
+        read_reg_result(clk_i, data_i, address_o, strobe_o, ack_i, reg, result);
     end procedure;
 
 
