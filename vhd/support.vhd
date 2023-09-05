@@ -156,6 +156,11 @@ package support is
 
     -- Reverses order of bits in vector
     function reverse(data : in std_ulogic_vector) return std_ulogic_vector;
+
+    -- Choice between two strings based on boolean, useful for attributes and
+    -- generic parameters
+    function choose(choice : boolean; if_true : string; if_false : string)
+        return string;
 end;
 
 
@@ -474,4 +479,15 @@ package body support is
         end loop;
         return result;
     end;
+
+
+    function choose(choice : boolean; if_true : string; if_false : string)
+        return string is
+    begin
+        if choice then
+            return if_true;
+        else
+            return if_false;
+        end if;
+    end function;
 end;
