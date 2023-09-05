@@ -2,12 +2,18 @@
 -- either by setting RAM_STYLE or by relying on the tools default.
 --
 -- The delay from read_addr_i to read_data_o is 1 or 2 clock ticks depending on
--- whether the setting of OUTPUT_REG: the REGISTER and PIPELINE options are used
+-- whether the setting of OUTPUT_REG: the REGISTER option is used
 -- to reduce the latency requirements on BRAM output.  The precise relationship
 -- between read_addr_i, read_strobe_i, and read_data_o depends on OUTPUT_REG and
 -- is shown below:
 --
---  OUTPUT_REG = BYPASS
+--  OUTPUT_REG = NONE
+--      read_data_o is updates with read_addr_i, read_strobe_i is ignored
+-- clk_i            /       /       /       /       /       /       /       /
+-- read_addr_i    --X  A    X  B    X---------------X  C    X------------------
+-- read_data_o    --X M[A]  X M[B]  X---------------X M[C]  X------------------
+--
+--  OUTPUT_REG = LATCHED
 --      read_data_o is one tick after read_addr_i, read_strobe_i
 -- clk_i            /       /       /       /       /       /       /       /
 -- read_addr_i    --X  A    X  B    X---------------X  C    X------------------
@@ -21,13 +27,9 @@
 -- read_strobe_i  __/^^^^^^^^^^^^^^^\_______________/^^^^^^^\__________________
 -- read_data_o    ------------------X M[A]  X M[B]                  X M[C]
 --
---  OUTPUT_REG = PIPELINE
---      read_data_o is one tick after read_addr_i, read_strobe_i, but is for
---      the previously strobed address (here Z is the previous strobed address)
--- clk_i            /       /       /       /       /       /       /       /
--- read_addr_i    --X  A    X  B    X---------------X  C    X------------------
--- read_strobe_i  __/^^^^^^^^^^^^^^^\_______________/^^^^^^^\__________________
--- read_data_o    ----------X M[Z]  X M[A]                  X M[B]
+-- Note that properly pipelined operation, where the output only changes in step
+-- with read_addr_i is not supported, as this does not appear to be supported by
+-- the hardware we want to target.
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -43,18 +45,19 @@ entity memory_array is
         --  "BLOCK"         Use block RAM
         MEM_STYLE : string := "";   -- Default to unspecified
 
-        -- There are three options for the BRAM output register: bypass it,
-        -- register, and pipeline.  These options have the following meaning:
+        -- There are three options for the memory output: no registering at all
+        -- (only works for distributed RAM), internal latch, and output
+        -- register:
         --
-        --  BYPASS
+        --  NONE
+        --      read_data_o is not registered and updates with read_addr_i,
+        --      read_strobe_i is ignored
+        --  LATCHED
         --      read_data_o updates one tick after read_addr_i and read_strobe_i
         --  REGISTER
         --      read_data_o updates two ticks after read_addr_i and
         --      read_strobe_i
-        --  PIPELINE
-        --      read_data_o updates one tick after read_strobe_i but reflects
-        --      the value from the previous read_addr_i value.
-        OUTPUT_REG : string := "BYPASS"; -- or REGISTER or PIPELINE
+        OUTPUT_REG : string := "LATCHED"; -- or REGISTER
 
         -- Initial value for memory array
         INITIAL : std_ulogic_vector(DATA_BITS-1 downto 0) := (others => '0');
@@ -82,30 +85,25 @@ architecture arch of memory_array is
     attribute ram_style : string;
     attribute ram_style of memory : signal is MEM_STYLE;
 
+    signal memory_data : std_ulogic_vector(DATA_BITS-1 downto 0);
     signal read_data : std_ulogic_vector(DATA_BITS-1 downto 0)
         := (others => '0');
     signal read_data_out : std_ulogic_vector(DATA_BITS-1 downto 0)
         := (others => '0');
 
-    constant DOUBLE_REG : boolean :=
-        OUTPUT_REG = "REGISTER" or OUTPUT_REG = "PIPELINE";
-    constant PIPELINE_REG : boolean := OUTPUT_REG = "PIPELINE";
-
 begin
-    assert DOUBLE_REG or OUTPUT_REG = "BYPASS"
-        report "Invalid OUTPUT_REG: '" & OUTPUT_REG & "'"
-        severity failure;
     -- For callers to verify if required:
     --  read_addr_i
-    --      => read_data        = read_data_o if not DOUBLE_REG
-    --      => read_data_out    = read_data_o if DOUBLE_REG
+    --      => read_data        = read_data_o if OUTPUT_REG = "LATCHED"
+    --      => read_data_out    = read_data_o if OUTPUT_REG = "REGISTER"
     assert READ_DELAY = 0 or
-        (not DOUBLE_REG and READ_DELAY = 1) or
-        (DOUBLE_REG and READ_DELAY = 2)
-        report "Invalid READ_DELAY and DOUBLE_REG: "
-            & integer'image(READ_DELAY) & ", " & to_string(DOUBLE_REG)
+        (OUTPUT_REG = "LATCHED" and READ_DELAY = 1) or
+        (OUTPUT_REG = "REGISTER" and READ_DELAY = 2)
+        report "Invalid READ_DELAY and OUTPUT_REG: "
+            & integer'image(READ_DELAY) & ", '" & OUTPUT_REG & "'"
         severity failure;
 
+    memory_data <= memory(to_integer(read_addr_i));
     process (clk_i) begin
         if rising_edge(clk_i) then
             if write_strobe_i = '1' then
@@ -113,18 +111,22 @@ begin
             end if;
 
             if read_strobe_i = '1' then
-                read_data <= memory(to_integer(read_addr_i));
+                read_data <= memory_data;
             end if;
-
-            if read_strobe_i = '1' or not PIPELINE_REG then
-                read_data_out <= read_data;
-            end if;
+            read_data_out <= read_data;
         end if;
     end process;
 
-    gen_reg: if DOUBLE_REG generate
+    select_out :
+    if OUTPUT_REG = "NONE" generate
+        read_data_o <= memory_data;
+    elsif OUTPUT_REG = "LATCHED" generate
+        read_data_o <= read_data;
+    elsif OUTPUT_REG = "REGISTER" generate
         read_data_o <= read_data_out;
     else generate
-        read_data_o <= read_data;
+        assert false
+            report "Invalid OUTPUT_REG: '" & OUTPUT_REG & "'"
+            severity failure;
     end generate;
 end;
