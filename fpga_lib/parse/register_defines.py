@@ -529,6 +529,8 @@ def parse_shared_def(parse, defines):
         result, _ = parse_group_def(0, parse, defines)
     else:
         result = parse_reg_def(0, parse)
+    assert result.name not in defines, \
+        'Repeated definition for "%s"' % result.name
     defines[result.name] = result
 
 
@@ -580,8 +582,9 @@ def separate_defines(defines):
 
 
 # Converts a list of indented parses into a list of Group definitions
-def parse_defs(parse):
-    defines = OrderedDict()
+def parse_defs(parse, defines = None):
+    if defines is None:
+        defines = OrderedDict()
     groups = []
     constants = OrderedDict()
 
@@ -645,14 +648,3 @@ def flatten(parse):
     flatten = FlattenMethods()
     groups = [flatten.walk_group(0, group) for group in parse.groups]
     return parse._replace(groups = groups)
-
-
-# ------------------------------------------------------------------------------
-
-if __name__ == '__main__':
-    import sys
-    indent_parse = indent.parse_file(file(sys.argv[1]))
-    parse = parse(indent_parse)
-    print_parse(parse)
-    print()
-    print_parse(flatten(parse))

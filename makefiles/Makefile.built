@@ -11,8 +11,10 @@ built_dir/version.vhd: | built_dir
 built_dir/metadata.coe: $(PROJECT_TOP)/prom_config | built_dir
 	$(TOOLS_DIR)/prom_data_creator --format coe $< >$@
 
-built_dir/%register_defines.vhd: %register_defines.in | built_dir
-	$(TOOLS_DIR)/register_defines $< $*register_defines >$@
+# Register definitions, recognised by name of form _defines.vhd
+built_dir/%_defines.vhd: %_defines.in | built_dir
+	$(TOOLS_DIR)/register_defines \
+            $(REG_INCLUDES_$*:%=-i %) -n $*_defines $< >$@
 
 # Other generated vhd files
 built_dir/%.vhd: %.py %.in | built_dir

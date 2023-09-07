@@ -2,10 +2,11 @@
 
 from __future__ import print_function
 
+import argparse
+from collections import OrderedDict
+
 # Ensure we can find the path to fpga_lib
 import fixup_imports
-
-import sys
 from fpga_lib import parse
 
 
@@ -114,8 +115,38 @@ def generate_package(package, parse):
     print(tail_template)
 
 
+def parse_input(filename, defines = None):
+    parsed_indent = parse.indent.parse_file(open(filename))
+    return parse.register_defines.parse_defs(parsed_indent, defines)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description = '''\
+Generate VHDL register definitions from register description file.''')
+    parser.add_argument('input', help = 'Register description file')
+    parser.add_argument('--name', '-n', default = 'register_defines',
+        help = 'Name of package to generate')
+    parser.add_argument('--include', '-i', action = 'append', default = [],
+        help = 'Packages to include in parsed result')
+    return parser.parse_args()
+
+
+def process_includes(includes):
+    defines = OrderedDict()
+
+    for filename in includes:
+        parsed = parse_input(filename)
+        for group in parsed.groups:
+            assert group.name not in defines, \
+                'Multiple definitions of group "%s"' % group.name
+            defines[group.name] = group._replace(content = [])
+    return defines
+
+
 if __name__ == '__main__':
-    package = sys.argv[2] if len(sys.argv) > 2 else 'register_defines'
-    indent = parse.indent.parse_file(open(sys.argv[1]))
-    parse = parse.register_defines.parse_defs(indent)
-    generate_package(package, parse)
+    args = parse_args()
+
+    defines = process_includes(args.include)
+    parsed = parse_input(args.input, defines)
+    generate_package(args.name, parsed)
