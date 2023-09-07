@@ -300,9 +300,9 @@ class GenerateMethods(parse.register_defines.WalkParse):
 generate = GenerateMethods()
 
 
-def load_register_defs(defs_path):
+def load_register_defs(*defs_path):
     # Read the definitions in parsed form
-    defs = parse.parsed_defs(defs_path, flatten = True)
+    defs = parse.parsed_defs(*defs_path, flatten = True)
 
     groups = {}
     for group in defs.groups:

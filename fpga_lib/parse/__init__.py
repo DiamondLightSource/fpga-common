@@ -3,9 +3,14 @@
 from . import indent
 from . import register_defines
 
-def parsed_defs(defs_path, warn = False, flatten = False):
-    defs = register_defines.parse_defs(
-        indent.parse_file(open(defs_path), warn))
+class FailParse(Exception):
+    pass
+
+def parsed_defs(*defs_path, warn = False, flatten = False, defines = None):
+    for filename in defs_path:
+        parsed_indent = indent.parse_file(open(filename), warn)
+        defines = register_defines.parse_defs(parsed_indent, defines)
+
     if flatten:
-        defs = register_defines.flatten(defs)
-    return defs
+        defines = register_defines.flatten(defines)
+    return defines

@@ -52,9 +52,8 @@ class read_lines:
 
 
     def fail(self, message):
-        print('Error: %s on line %d' % (message, self.line_no),
-            file = sys.stderr)
-        sys.exit(1)
+        from . import FailParse
+        raise FailParse('Indent error: %s on line %d' % (message, self.line_no))
 
     def warn(self, message):
         if self.__warn:

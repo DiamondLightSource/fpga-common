@@ -79,7 +79,7 @@ Constant = namedtuple('Constant',
     ['name', 'value', 'doc'])
 
 Parse = namedtuple('Parse',
-    ['group_defs', 'register_defines', 'groups', 'constants'])
+    ['group_defs', 'register_defs', 'groups', 'constants'])
 
 
 # ------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ def print_parse(parse):
     methods = PrintMethods(':')
     for g in parse.group_defs:
         methods.walk_group(0, g)
-    for r in parse.register_defines:
+    for r in parse.register_defs:
         methods.walk_register(0, r)
 
     methods = PrintMethods()
@@ -217,10 +217,9 @@ def print_parse(parse):
 # ------------------------------------------------------------------------------
 # Parse implementation
 
-
 def fail_parse(message, line_no):
-    print('Parse error: %s at line %d' % (message, line_no), file = sys.stderr)
-    sys.exit(1)
+    from . import FailParse
+    raise FailParse('Parse error: %s at line %d' % (message, line_no))
 
 def parse_int(value, line_no):
     try:
@@ -582,11 +581,10 @@ def separate_defines(defines):
 
 
 # Converts a list of indented parses into a list of Group definitions
-def parse_defs(parse, defines = None):
-    if defines is None:
-        defines = OrderedDict()
-    groups = []
-    constants = OrderedDict()
+def parse_defs(parse, parsed = None):
+    if parsed is None:
+        parsed = empty_parse()
+    defines, groups, constants = gather_parse_defs(parsed)
 
     # The incoming parse is a list of (line, [parse], doc, line_no) parses
     for entry in parse:
@@ -594,6 +592,40 @@ def parse_defs(parse, defines = None):
 
     group_defs, register_defs = separate_defines(defines)
     return Parse(group_defs, register_defs, groups, constants)
+
+
+# ------------------------------------------------------------------------------
+# Functions to help with combining parses
+
+# Creates a parse as if parsing an empty file
+def empty_parse():
+    return Parse([], [], [], {})
+
+
+# Trims a parse to bare bone definitions required for includes
+def trim_parse(parsed):
+    return Parse(
+        [group._replace(content = [])
+         for group in parsed.group_defs + parsed.groups],
+        [register._replace(fields = []) for register in parsed.register_defs],
+        [],
+        {})
+
+def extend_defines(defines, list):
+    from . import FailParse
+    for entry in list:
+        if entry.name in defines:
+            raise FailParse('Name "%s" repeated in defs' % entry.name)
+        defines[entry.name] = entry
+
+
+# Extracts defines, groups and constants from parsed structure.
+def gather_parse_defs(parsed):
+    defines = OrderedDict()
+    extend_defines(defines, parsed.group_defs)
+    extend_defines(defines, parsed.register_defs)
+    extend_defines(defines, parsed.groups)
+    return (defines, [], parsed.constants)
 
 
 # ------------------------------------------------------------------------------

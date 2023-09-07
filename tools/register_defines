@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 
+import sys
 import argparse
 from collections import OrderedDict
 
@@ -109,15 +110,18 @@ def generate_package(package, parse):
     generate = Generate()
     print(head_template % package)
     generate_constants(generate.walk_constant, parse.constants)
-    generate_list(generate.walk_register, parse.register_defines)
+    generate_list(generate.walk_register, parse.register_defs)
     generate_list(generate.walk_group, parse.group_defs)
     generate_list(generate.walk_group, parse.groups)
     print(tail_template)
 
 
 def parse_input(filename, defines = None):
-    parsed_indent = parse.indent.parse_file(open(filename))
-    return parse.register_defines.parse_defs(parsed_indent, defines)
+    try:
+        return parse.parsed_defs(filename, defines = defines)
+    except parse.FailParse as e:
+        print(e, 'parsing', filename, file = sys.stderr)
+        sys.exit(1)
 
 
 def parse_args():
@@ -133,20 +137,19 @@ Generate VHDL register definitions from register description file.''')
 
 
 def process_includes(includes):
-    defines = OrderedDict()
+    parsed = parse.register_defines.empty_parse()
 
     for filename in includes:
-        parsed = parse_input(filename)
-        for group in parsed.groups:
-            assert group.name not in defines, \
-                'Multiple definitions of group "%s"' % group.name
-            defines[group.name] = group._replace(content = [])
-    return defines
+        parsed = parse_input(filename, parsed)
+        parsed = parse.register_defines.trim_parse(parsed)
+    return parsed
 
 
-if __name__ == '__main__':
+def main():
     args = parse_args()
 
-    defines = process_includes(args.include)
-    parsed = parse_input(args.input, defines)
+    parsed = process_includes(args.include)
+    parsed = parse_input(args.input, parsed)
     generate_package(args.name, parsed)
+
+main()
