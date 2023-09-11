@@ -17,13 +17,13 @@ package sim_support is
         signal data_o : out reg_data_array_t;
         signal strobe_o : out std_ulogic_vector;
         signal ack_i : in std_ulogic_vector;
-        reg : natural; value : reg_data_t);
+        reg : natural; value : reg_data_t; quiet : boolean := false);
     procedure read_reg(
         signal clk_i : in std_ulogic;
         signal data_i : in reg_data_array_t;
         signal strobe_o : out std_ulogic_vector;
         signal ack_i : in std_ulogic_vector;
-        reg : natural);
+        reg : natural; quiet : boolean := false);
     -- Same as read_reg, but returns result into result variable
     procedure read_reg_result(
         signal clk_i : in std_ulogic;
@@ -31,7 +31,7 @@ package sim_support is
         signal strobe_o : out std_ulogic_vector;
         signal ack_i : in std_ulogic_vector;
         reg : natural;
-        result : out reg_data_t);
+        result : out reg_data_t; quiet : boolean := false);
 
 
     -- Register access for addressed registers
@@ -41,14 +41,14 @@ package sim_support is
         signal address_o : out unsigned;
         signal strobe_o : out std_ulogic;
         signal ack_i : in std_ulogic;
-        reg : natural; value : reg_data_t);
+        reg : natural; value : reg_data_t; quiet : boolean := false);
     procedure read_reg(
         signal clk_i : in std_ulogic;
         signal data_i : in reg_data_t;
         signal address_o : out unsigned;
         signal strobe_o : out std_ulogic;
         signal ack_i : in std_ulogic;
-        reg : natural);
+        reg : natural; quiet : boolean := false);
     procedure read_reg_result(
         signal clk_i : in std_ulogic;
         signal data_i : in reg_data_t;
@@ -56,10 +56,10 @@ package sim_support is
         signal strobe_o : out std_ulogic;
         signal ack_i : in std_ulogic;
         reg : natural;
-        result : out reg_data_t);
+        result : out reg_data_t; quiet : boolean := false);
 
 
-    procedure write(message : string := "");
+    procedure write(message : string := ""; stamp : boolean := false);
 
 end package;
 
@@ -81,7 +81,7 @@ package body sim_support is
         signal data_o : out reg_data_array_t;
         signal strobe_o : out std_ulogic_vector;
         signal ack_i : in std_ulogic_vector;
-        reg : natural; value : reg_data_t) is
+        reg : natural; value : reg_data_t; quiet : boolean := false) is
     begin
         data_o(reg) <= value;
         strobe_o <= (strobe_o'RANGE => '0');
@@ -91,9 +91,12 @@ package body sim_support is
             strobe_o <= (strobe_o'RANGE => '0');
             exit when ack_i(reg);
         end loop;
-        write(
-            "@ " & to_string(now, unit => ns) &
-            ": write_reg [" & natural'image(reg) & "] <= " & to_hstring(value));
+        data_o(reg) <= (others => 'U');
+        if not quiet then
+            write(
+                "write_reg [" & natural'image(reg) &
+                "] <= " & to_hstring(value), true);
+        end if;
     end procedure;
 
 
@@ -103,7 +106,7 @@ package body sim_support is
         signal strobe_o : out std_ulogic_vector;
         signal ack_i : in std_ulogic_vector;
         reg : natural;
-        result : out reg_data_t) is
+        result : out reg_data_t; quiet : boolean := false) is
     begin
         strobe_o <= (strobe_o'RANGE => '0');
         strobe_o(reg) <= '1';
@@ -114,9 +117,11 @@ package body sim_support is
         end loop;
         result := data_i(reg);
 
-        write(
-            "@ " & to_string(now, unit => ns) &
-            ": read_reg [" & natural'image(reg) & "] => " & to_hstring(result));
+        if not quiet then
+            write(
+                "read_reg [" & natural'image(reg) &
+                "] => " & to_hstring(result), true);
+        end if;
     end procedure;
 
     procedure read_reg(
@@ -124,11 +129,11 @@ package body sim_support is
         signal data_i : in reg_data_array_t;
         signal strobe_o : out std_ulogic_vector;
         signal ack_i : in std_ulogic_vector;
-        reg : natural)
+        reg : natural; quiet : boolean := false)
     is
         variable result : reg_data_t;
     begin
-        read_reg_result(clk_i, data_i, strobe_o, ack_i, reg, result);
+        read_reg_result(clk_i, data_i, strobe_o, ack_i, reg, result, quiet);
     end procedure;
 
 
@@ -141,7 +146,7 @@ package body sim_support is
         signal address_o : out unsigned;
         signal strobe_o : out std_ulogic;
         signal ack_i : in std_ulogic;
-        reg : natural; value : reg_data_t) is
+        reg : natural; value : reg_data_t; quiet : boolean := false) is
     begin
         data_o <= value;
         address_o <= to_unsigned(reg, address_o'LENGTH);
@@ -151,9 +156,13 @@ package body sim_support is
             strobe_o <= '0';
             exit when ack_i;
         end loop;
-        write(
-            "@ " & to_string(now, unit => ns) &
-            ": write_reg [" & natural'image(reg) & "] <= " & to_hstring(value));
+        data_o <= (data_o'RANGE => 'U');
+        address_o <= (address_o'RANGE => 'U');
+        if not quiet then
+            write(
+                "write_reg [" & natural'image(reg) &
+                "] <= " & to_hstring(value), true);
+        end if;
     end procedure;
 
 
@@ -164,7 +173,7 @@ package body sim_support is
         signal strobe_o : out std_ulogic;
         signal ack_i : in std_ulogic;
         reg : natural;
-        result : out reg_data_t) is
+        result : out reg_data_t; quiet : boolean := false) is
     begin
         address_o <= to_unsigned(reg, address_o'LENGTH);
         strobe_o <= '1';
@@ -173,11 +182,14 @@ package body sim_support is
             strobe_o <= '0';
             exit when ack_i;
         end loop;
+        address_o <= (address_o'RANGE => 'U');
         result := data_i;
 
-        write(
-            "@ " & to_string(now, unit => ns) &
-            ": read_reg [" & natural'image(reg) & "] => " & to_hstring(result));
+        if not quiet then
+            write(
+                "read_reg [" & natural'image(reg) &
+                "] => " & to_hstring(result), true);
+        end if;
     end procedure;
 
     procedure read_reg(
@@ -186,17 +198,21 @@ package body sim_support is
         signal address_o : out unsigned;
         signal strobe_o : out std_ulogic;
         signal ack_i : in std_ulogic;
-        reg : natural)
+        reg : natural; quiet : boolean := false)
     is
         variable result : reg_data_t;
     begin
-        read_reg_result(clk_i, data_i, address_o, strobe_o, ack_i, reg, result);
+        read_reg_result(
+            clk_i, data_i, address_o, strobe_o, ack_i, reg, result, quiet);
     end procedure;
 
 
-    procedure write(message : string := "") is
+    procedure write(message : string := ""; stamp : boolean := false) is
         variable linebuffer : line;
     begin
+        if stamp then
+            write(linebuffer, "@ " & to_string(now, unit => ns) & ": ");
+        end if;
         write(linebuffer, message);
         writeline(output, linebuffer);
     end;
