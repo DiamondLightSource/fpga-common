@@ -20,6 +20,11 @@ built_dir/%_defines.vhd: %_defines.in | built_dir
 built_dir/%.vhd: %.py %.in | built_dir
 	$(PYTHON) $^ >$@
 
+# Dummy vhd with empty architecture, useful for top syntax checking
+built_dir/%.vhd.dummy: %.vhd | built_dir
+	sed '/^architecture/{s/$$/ begin end;/;q}' $< >$@
+
+
 MAKE_VERSION_TCL_SED += s:@@FPGA_COMMON@@:$(FPGA_COMMON):;
 MAKE_VERSION_TCL_SED += s:@@PROJECT_TOP@@:$(PROJECT_TOP):
 built_dir/make_version.tcl: $(FPGA_COMMON)/tcl/make_version.tcl.in | built_dir
