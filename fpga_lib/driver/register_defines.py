@@ -72,8 +72,13 @@ def make_register(register, fields):
             try:
                 read, write = self.__fields[name]
             except KeyError:
-                # If no support in fields, look for this in the dictionary
-                return self.__dict__[name]
+                try:
+                    # If no support in fields, look for this in the dictionary
+                    return self.__dict__[name]
+                except KeyError as e:
+                    # Suppress the confusing nested exception message that would
+                    # otherwise occur here.
+                    raise e from None
             else:
                 # Delegate named fields to their associated read method
                 return read(self)
