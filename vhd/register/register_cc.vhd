@@ -15,51 +15,54 @@ entity register_cc is
         clk_out_ok_i : in std_ulogic := '1';
 
         -- Master clock domain (on clk_in_i)
-        write_data_i : in reg_data_t;
-        write_strobe_i : in std_ulogic;
-        write_ack_o : out std_ulogic;
+        write_data_i : in reg_data_array_t;
+        write_strobe_i : in std_ulogic_vector;
+        write_ack_o : out std_ulogic_vector;
 
-        read_data_o : out reg_data_t;
-        read_strobe_i : in std_ulogic;
-        read_ack_o : out std_ulogic;
+        read_data_o : out reg_data_array_t;
+        read_strobe_i : in std_ulogic_vector;
+        read_ack_o : out std_ulogic_vector;
 
         -- Slave clock domain (on clk_out_i)
-        write_data_o : out reg_data_t;
-        write_strobe_o : out std_ulogic;
-        write_ack_i : in std_ulogic;
+        write_data_o : out reg_data_array_t;
+        write_strobe_o : out std_ulogic_vector;
+        write_ack_i : in std_ulogic_vector;
 
-        read_data_i : in reg_data_t;
-        read_strobe_o : out std_ulogic;
-        read_ack_i : in std_ulogic
+        read_data_i : in reg_data_array_t;
+        read_strobe_o : out std_ulogic_vector;
+        read_ack_i : in std_ulogic_vector
     );
 end;
 
 architecture arch of register_cc is
-    subtype EMPTY_RANGE is natural range -1 downto 0;
-    constant EMPTY_VALUE : unsigned := (EMPTY_RANGE => '0');
-
 begin
-    register_cc : entity work.register_bank_cc port map (
-        clk_in_i => clk_in_i,
-        clk_out_i => clk_out_i,
-        clk_out_ok_i => clk_out_ok_i,
+    gen_write : for i in write_strobe_i'RANGE generate
+        write : entity work.cross_clocks_write port map (
+            clk_in_i => clk_in_i,
+            clk_out_ok_i => clk_out_ok_i,
+            strobe_i => write_strobe_i(i),
+            ack_o => write_ack_o(i),
+            data_i => write_data_i(i),
 
-        write_address_i => EMPTY_VALUE,
-        write_data_i => write_data_i,
-        write_strobe_i => write_strobe_i,
-        write_ack_o => write_ack_o,
-        read_address_i => EMPTY_VALUE,
-        read_data_o => read_data_o,
-        read_strobe_i => read_strobe_i,
-        read_ack_o => read_ack_o,
+            clk_out_i => clk_out_i,
+            strobe_o => write_strobe_o(i),
+            ack_i => write_ack_i(i),
+            data_o => write_data_o(i)
+        );
+    end generate;
 
-        write_address_o(EMPTY_RANGE) => open,
-        write_data_o => write_data_o,
-        write_strobe_o => write_strobe_o,
-        write_ack_i => write_ack_i,
-        read_address_o(EMPTY_RANGE) => open,
-        read_data_i => read_data_i,
-        read_strobe_o => read_strobe_o,
-        read_ack_i => read_ack_i
-    );
+    gen_read : for i in read_strobe_i'RANGE generate
+        read : entity work.cross_clocks_read port map (
+            clk_in_i => clk_in_i,
+            clk_out_ok_i => clk_out_ok_i,
+            strobe_i => read_strobe_i(i),
+            ack_o => read_ack_o(i),
+            data_o => read_data_o(i),
+
+            clk_out_i => clk_out_i,
+            strobe_o => read_strobe_o(i),
+            ack_i => read_ack_i(i),
+            data_i => read_data_i(i)
+        );
+    end generate;
 end;

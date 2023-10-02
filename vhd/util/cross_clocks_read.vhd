@@ -53,7 +53,7 @@ end;
 
 architecture arch of cross_clocks_read is
     signal ack_wait : std_ulogic := '0';
-    signal data_in : data_i'SUBTYPE;
+    signal data_in : data_i'SUBTYPE := (others => '0');
     signal ack_in : std_ulogic := '0';
     signal valid_ack : std_ulogic;
 

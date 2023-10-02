@@ -17,6 +17,7 @@ entity register_file_cc is
 
         -- Register array on data clock domain
         clk_data_i : in std_ulogic;
+        clk_data_ok_i : in std_ulogic := '1';
         register_data_o : out reg_data_array_t;
         data_strobe_o : out std_ulogic_vector
     );
@@ -34,6 +35,7 @@ begin
             data_i => write_data_i(i),
 
             clk_out_i => clk_data_i,
+            clk_out_ok_i => clk_data_ok_i,
             strobe_o => data_strobe_o(i),
             data_o => register_data(i)
         );
