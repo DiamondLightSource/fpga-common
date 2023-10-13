@@ -1,38 +1,43 @@
+# Creates and runs FPGA build
+
 include $(CONFIG)
+include $(FPGA_COMMON)/makefiles/Makefile.core
 include $(FPGA_COMMON)/makefiles/Makefile.common
 
+# Pull in any project VHDL definitions
+-include $(CALLER_TOP)/FPGA_DEFS
 
-# Can make these optional in the end
+# Pick up board specific definitions
 include $(BOARD_DIR)/CONFIG
--include $(PROJECT_TOP)/CONFIG
 
 
-# Command to run vivado
-# RUN_VIVADO = source $(VIVADO) && vivado $(VIVADO_EXTRA_ARGS)
-RUN_VIVADO = $(VIVADO) $(VIVADO_EXTRA_ARGS)
+# ------------------------------------------------------------------------------
 
-
-# These symbols are passed through to Vivado for assembly of the initial project
-VIVADO_EXPORTS += VHD_DIRS
-VIVADO_EXPORTS += BLOCK_DESIGNS
-VIVADO_EXPORTS += CONSTR_DIRS
-
+PROJECT_TOP = $(CALLER_TOP)
 
 TCL_DIR = $(FPGA_COMMON)/tcl
 
-BD_DIR = $(PROJECT_TOP)/bd
+# Both of these directories are going to be target specific
+BD_DIR = $(PROJECT_TOP)/bd$(_TARGET)
+CONSTR_DIRS += $(CONSTR_DIR)
 
-VHD_DIRS += $(PROJECT_TOP)/vhd
+
+VHD_DIRS += $(VHD_DIR)
 VHD_DIRS += $(FPGA_COMMON)/vhd
-
-
-VPATH += $(VHD_DIRS)
-VPATH += $(wildcard $(VHD_DIRS)/*)
-VPATH += $(BLOCK_DESIGNS)
-
 
 BUILT += top_entity.vhd
 BUILT += make_version.tcl
+
+
+SOURCES := $(shell find $(VHD_DIRS) -name \*.vhd)
+
+
+# ------------------------------------------------------------------------------
+
+$(call MUST_DEFINE,VIVADO)
+
+# Command to run vivado
+RUN_VIVADO = $(VIVADO) $(VIVADO_EXTRA_ARGS)
 
 
 # ------------------------------------------------------------------------------
@@ -45,12 +50,6 @@ fpga: $(PROJECT_NAME).bit
 
 # Don't leave incomplete builds behind
 .DELETE_ON_ERROR:
-
-
-# ------------------------------------------------------------------------------
-
-# Pull in any project VHDL definitions
--include $(PROJECT_TOP)/FPGA_DEFS
 
 
 # Common rules for built targets
@@ -67,9 +66,6 @@ include $(FPGA_COMMON)/makefiles/Makefile.built
 interconnect/BD_DONE: built_dir/metadata.coe
 
 
-SOURCES := $(shell find $(VHD_DIRS) -name \*.vhd)
-
-
 # Load block designs from TCL sources
 %/BD_DONE: $(BD_DIR)/%.tcl
 	echo $$LM_LICENSE_FILE
@@ -78,13 +74,14 @@ SOURCES := $(shell find $(VHD_DIRS) -name \*.vhd)
 	touch $@
 
 
-# The order of the build_top arguments matters here!
+# Arguments passed through to initial build of project
 BUILD_TOP_ARGS += FPGA_COMMON
 BUILD_TOP_ARGS += PROJECT_TOP
 BUILD_TOP_ARGS += PROJECT_NAME
 BUILD_TOP_ARGS += FPGA_PART
 BUILD_TOP_ARGS += BLOCK_DESIGNS
 BUILD_TOP_ARGS += VHD_DIRS
+BUILD_TOP_ARGS += CONSTR_DIRS
 
 BITFILE_DEPENDS += $(BUILT:%=built_dir/%)
 BITFILE_DEPENDS += $(BLOCK_DESIGNS:%=%/BD_DONE)

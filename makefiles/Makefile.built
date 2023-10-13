@@ -1,14 +1,20 @@
 # Rules for built files
 
-# Generate top entity
-built_dir/top_entity.vhd: $(BOARD_DIR) $(CONSTR_DIR)/used | built_dir
-	cd built_dir  &&  $(TOOLS_DIR)/make_entity $^ top
+# We need to ensure that the built directory is on the vpath
+VPATH += built_dir
 
-# built/version.vhd: $(PROJECT_TOP)/VERSION | built_dir
+VPATH += $(PROJECT_TOP)
+VPATH += $(VHD_DIR)
+
+
+# Generate top entity
+built_dir/top_entity.vhd: $(CONSTR_DIR)/used | built_dir
+	$(TOOLS_DIR)/make_entity $(BOARD_DIR) $^ top built_dir
+
 built_dir/version.vhd: | built_dir
 	$(TOOLS_DIR)/make_version $(PROJECT_TOP) $@
 
-built_dir/metadata.coe: $(PROJECT_TOP)/prom_config | built_dir
+built_dir/metadata.coe: prom_config | built_dir
 	$(TOOLS_DIR)/prom_data_creator --format coe $< >$@
 
 # Register definitions, recognised by name of form _defines.vhd
@@ -20,7 +26,8 @@ built_dir/%_defines.vhd: %_defines.in | built_dir
 built_dir/%.vhd: %.py %.in | built_dir
 	$(PYTHON) $^ >$@
 
-# Dummy vhd with empty architecture, useful for top syntax checking
+# Dummy vhd with empty architecture, useful for top syntax checking.  Generated
+# from original .vhd by deleting the architecture body.
 built_dir/%.vhd.dummy: %.vhd | built_dir
 	sed '/^architecture/{s/$$/ begin end;/;q}' $< >$@
 
@@ -30,10 +37,39 @@ MAKE_VERSION_TCL_SED += s:@@PROJECT_TOP@@:$(PROJECT_TOP):
 built_dir/make_version.tcl: $(FPGA_COMMON)/tcl/make_version.tcl.in | built_dir
 	sed '$(MAKE_VERSION_TCL_SED)' $< >$@
 
-built_dir:
-	mkdir -p $@
-
 
 # Target for building all required targets
 built: $(BUILT:%=built_dir/%)
 .PHONY: built
+
+
+# ------------------------------------------------------------------------------
+# Hack for target specific files.  Probably want to do this differently...
+
+# The tricksy dance below is trying to gather all target specific files together
+# where they can be found using standard Makefile searching.  This is done by
+# linking them all into built_dir and adding built_dir to the VPATH once this is
+# done.  There remains one tricky wrinkle: in order for make to _find_ these
+# files after this assembly we need to trigger a reload of the Makefile: this is
+# done via the special built_dir/marker file.
+
+ifdef _TARGET
+    TARGET_FILES := $(shell find $(PROJECT_TOP) -name \*$(_TARGET) -type f)
+endif
+
+# # These files have the correct names but are in places where we're not looking
+# TARGET_DIR_FILES := $(wildcard $(TARGET_DIRS:%=$(PROJECT_TOP)/%$(_TARGET)/*))
+
+# This is unfortuately a bit of a hack, and is only triggered when built_dir
+# needs to be created.
+built_dir: $(TARGET_FILES)
+	mkdir -p $@
+# 	ln -s $(TARGET_DIR_FILES) $@
+	$(foreach file,$(TARGET_FILES), \
+            ln -s $(file) $@/$(notdir $(file:%$(_TARGET)=%));)
+
+# This marker forces the makefile to reload after creating the build directory
+# and linking the appropriate files so that they can be found.
+built_dir/marker: built_dir
+	touch $@
+include built_dir/marker

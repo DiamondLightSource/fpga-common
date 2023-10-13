@@ -1,0 +1,32 @@
+# Core definitions needed for both .common and .delegate makefiles
+# This can safely be included before any other symbols have been defined.
+
+
+# This converts an undefined symbol into one which will generate an error when
+# an attempt is made to expand it.  Invoke as
+#
+#   $(call MUST_DEFINE,symbol-name)
+#
+define _MUST_DEFINE
+ifeq ($$($1),)
+    $1 = $$(error Symbol $1 must be defined)
+endif
+endef
+MUST_DEFINE = $(eval $(_MUST_DEFINE))
+
+# Function for safely quoting a string before exposing it to the shell.
+# Wraps string in quotes, and escapes all internal quotes.  Invoke as
+#
+#   $(call SAFE_QUOTE,string to expand)
+#
+SAFE_QUOTE = '$(subst ','\'',$(1))'
+# )' (Gets vim back in sync)
+
+# Passing makefile exports through is a bit tiresome.  We could mark our
+# symbols with export -- but that means *every* command gets them, and I
+# don't like that.  This macro instead just exports the listed symbols into a
+# called function, designed to be called like:
+#
+#       $(call EXPORT,$(EXPORTS)) script
+#
+EXPORT = $(foreach var,$(1),$(var)=$(call SAFE_QUOTE,$($(var))))

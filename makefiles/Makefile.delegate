@@ -1,0 +1,98 @@
+# This file is designed to delegate all makefile targets to the designated build
+# directory.
+#
+# The following symbols are used to compute the build directory and therefore
+# need to already be defined when this is invoked:
+#
+#   BUILD_TOP       Path to directory for build subdirector
+#   TARGET          Optional target identification for multiple target builds
+#   CLASS           Defined by caller to identify makefile to invoke
+#   BUILD_PATTERN   Used to define detailed structure of build directory name
+#
+# This is designed to be called immediately as part of the calling context for a
+# top level makefile, which itself is designed to have been called in the
+# following way:
+#
+#   include path/to/CONFIG      # Must define FPGA_COMMON
+#   include $(FPGA_COMMON)/makefiles/Makefile.<selected-top>
+#
+# This means that we enter with the following entries in MAKEFILE_LIST:
+#  1. The invoking makefile.  This determines the originating project
+#  2. The CONFIG file for the originating project.  This defines extra symbols
+#     that may be needed
+#  3. The invoked makefile (selected-top above)
+#  4. This makefile.
+
+
+# ------------------------------------------------------------------------------
+# Pick up caller info
+
+# Check for structured call
+ifneq ($(words $(MAKEFILE_LIST)),4)
+    $(error Looks like this makefile is called incorrectly)
+endif
+
+# Extract the two key elements from the original invoking makefile, relying on
+# the check above.
+CALLER_TOP := $(abspath $(dir $(word 1,$(MAKEFILE_LIST))))
+CONFIG := $(abspath $(word 2,$(MAKEFILE_LIST)))
+
+
+# ------------------------------------------------------------------------------
+# Check for symbols that must be defined
+
+ifndef FPGA_COMMON
+    $(error Symbol FPGA_COMMON must be defined (how did we get here?!))
+endif
+include $(FPGA_COMMON)/makefiles/Makefile.core
+
+# The following symbols must have been defined by this point.
+$(call MUST_DEFINE,BUILD_TOP)        # Where to put the build directory
+$(call MUST_DEFINE,CLASS)            # Part of build directory
+ifdef NEED_TARGET
+    $(call MUST_DEFINE,TARGET)
+endif
+
+
+# ------------------------------------------------------------------------------
+# Work out where to put the build directory
+
+# The name of the calling directory is part of the build directory
+COMPONENT_NAME = $(notdir $(CALLER_TOP))
+
+# Generate target suffix from optional TARGET
+_TARGET := $(TARGET:%=.%)
+
+# Assemble target build directory
+BUILD_DIR := $(abspath \
+    $(BUILD_TOP)/$(PROJECT_NAME)/$(CLASS)$(BUILD_PATTERN)$(_TARGET))
+
+
+# ------------------------------------------------------------------------------
+# Delegate all goals to the build directory
+
+# The following symbols need to be passed through
+MAKE_EXPORTS += FPGA_COMMON
+MAKE_EXPORTS += CALLER_TOP
+# MAKE_EXPORTS += PROJECT_NAME
+MAKE_EXPORTS += CONFIG
+MAKE_EXPORTS += _TARGET
+
+# Delegate all goals except for clean and building the directory
+GOALS = $(filter-out clean build_dir $(BUILD_DIR),$(MAKECMDGOALS))
+
+default $(GOALS): | $(BUILD_DIR)
+	$(MAKE) -C $(BUILD_DIR) $(call EXPORT,$(MAKE_EXPORTS)) \
+            -f $(FPGA_COMMON)/makefiles/Makefile.$(CLASS).run $@
+.PHONY: default $(GOALS)
+
+$(BUILD_DIR):
+	mkdir -p $@
+
+build_dir: $(BUILD_DIR)
+	echo $^
+.PHONY: build_dir
+
+clean:
+	rm -rf $(BUILD_DIR)
+.PHONY: clean

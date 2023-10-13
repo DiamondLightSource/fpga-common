@@ -1,34 +1,7 @@
 # Makefile for launching simulation
 
-include $(FPGA_COMMON)/makefiles/Makefile.context
-SIM_TOP := $(CALLER_TOP)
-PROJECT_TOP := $(abspath $(CALLER_TOP)/../..)
-
-include $(FPGA_COMMON)/makefiles/Makefile.common
-
-# ------------------------------------------------------------------------------
-
-
-# Assemble the name of the build directory from the project and simulation names
-SIM_NAME ?= $(notdir $(SIM_TOP))
-BUILD_DIR ?= $(BUILD_TOP)/$(PROJECT_NAME)/sim/$(SIM_NAME)
-
-
-MAKE_EXPORTS += PROJECT_TOP
-MAKE_EXPORTS += CONFIG
-MAKE_EXPORTS += FPGA_COMMON
-MAKE_EXPORTS += SIM_TOP
-
-default $(filter-out clean,$(MAKECMDGOALS)): $(BUILD_DIR)
-	$(MAKE) -f $(FPGA_COMMON)/makefiles/Makefile.sim.run -C $< \
-            $(call EXPORT,$(MAKE_EXPORTS)) $@
-.PHONY: default
-
-$(BUILD_DIR):
-	mkdir -p $@
-
-clean:
-	rm -rf $(BUILD_DIR)
-.PHONY: clean
+CLASS = sim
+BUILD_PATTERN = /$(COMPONENT_NAME)
+include $(FPGA_COMMON)/makefiles/Makefile.delegate
 
 # vim: set filetype=make:

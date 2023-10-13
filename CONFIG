@@ -1,6 +1,7 @@
 # Configuration settings used for simulation
 
-BUILD_TOP = /scratch/$(USER)/tmp/fpga-common
+PROJECT_NAME = fpga-common
+BUILD_TOP = /scratch/$(USER)/tmp
 
 
 # Definitions needed for FPGA build

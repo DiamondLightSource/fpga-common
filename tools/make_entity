@@ -13,6 +13,8 @@ board_dir = sys.argv[1]
 used_file = sys.argv[2]
 # Name of entity to generate
 entity_name = sys.argv[3]
+# Location to place generated files
+target_dir = sys.argv[4]
 
 # We generate two files: a top level entity and a pin constrains file.
 entity_file = '%s_entity.vhd' % entity_name
@@ -255,7 +257,7 @@ def map_pin_range(mapping):
 
 # The entity maps all the used pins.
 def write_entity(used_pins, entity_name, entity_file):
-    with open(entity_file, 'w') as file:
+    with open(os.path.join(target_dir, entity_file), 'w') as file:
         file.write(entity_template_head % locals())
         sep = ''
         for mapping in used_pins:
@@ -287,7 +289,7 @@ def map_used_pins(locations, mapping):
 
 # Maps each used pin to the appropriate physical location.
 def write_xdc(locations, used_pins, xdc_file):
-    with open(xdc_file, 'w') as file:
+    with open(os.path.join(target_dir, xdc_file), 'w') as file:
         for mapping in used_pins:
             for name, index, info in map_used_pins(locations, mapping):
                 location, iostandard, others = info

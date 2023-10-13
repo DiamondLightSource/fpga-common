@@ -1,45 +1,7 @@
-include $(FPGA_COMMON)/makefiles/Makefile.context
-PROJECT_TOP := $(CALLER_TOP)
+# Makefile for creating FPGA
 
-include $(FPGA_COMMON)/makefiles/Makefile.common
-
-
-# ------------------------------------------------------------------------------
-
-
-# All builds will be delegated to the build directory
-TARGET_BUILD_DIR = $(BUILD_TOP)/$(PROJECT_NAME)
-
-# These symbols will be passed through to the local make
-# All other required symbols will be picked up from the project config
-MAKE_EXPORTS += PROJECT_TOP
-MAKE_EXPORTS += CONFIG
-MAKE_EXPORTS += FPGA_COMMON
-
-
-
-# ------------------------------------------------------------------------------
-# Targets
-
-# Delegate all goals except for clean and default
-GOALS = $(filter-out default clean $(TARGET_BUILD_DIR),$(MAKECMDGOALS))
-
-
-# Our default target does nothing
-default:
-
-
-$(TARGET_BUILD_DIR):
-	mkdir -p $@
-
-clean:
-	rm -rf $(TARGET_BUILD_DIR)
-.PHONY: clean
-
-$(GOALS): $(TARGET_BUILD_DIR)
-	$(MAKE) -C $< -f $(FPGA_COMMON)/makefiles/Makefile.fpga.run \
-            $(call EXPORT,$(MAKE_EXPORTS)) $@
-.PHONY: $(GOALS)
-
+CLASS = fpga
+BUILD_PATTERN =
+include $(FPGA_COMMON)/makefiles/Makefile.delegate
 
 # vim: set filetype=make:

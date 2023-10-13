@@ -1,6 +1,21 @@
+# Runner for simulation
+
 include $(CONFIG)
+include $(FPGA_COMMON)/makefiles/Makefile.core
 include $(FPGA_COMMON)/makefiles/Makefile.common
 
+# Any extra build targets etc are configured here
+-include $(CALLER_TOP)/SIM_DEFS
+
+
+# ------------------------------------------------------------------------------
+# Running vsim
+
+$(call MUST_DEFINE,VSIM)
+$(call MUST_DEFINE,MODELSIM_LIBS)
+
+PROJECT_TOP = $(CALLER_TOP)/../..
+BENCH_DIR = $(CALLER_TOP)/bench
 
 # The following symbols are passed through to the simulation script
 VSIM_EXPORTS += VHD_DIR
@@ -18,30 +33,29 @@ $(RUN_VSIM)
 endef
 
 
-BENCH_DIR = $(SIM_TOP)/bench
-VHD_DIR = $(PROJECT_TOP)/vhd
+# ------------------------------------------------------------------------------
+# Building requirements
+
+# The following files are expected to be linked into the build directory
+LINKED += $(notdir $(wildcard $(CALLER_TOP)/do/*.do))
+LINKED += modelsim.ini
 
 VPATH += $(VHD_DIR)
 
 
-default: vsim
-	echo default target
-.PHONY: default
+# ------------------------------------------------------------------------------
+# Rules
 
+# Generate all targets that need to be built as preconditions
+include $(FPGA_COMMON)/makefiles/Makefile.built
 
-# Hand control over to the target makefile
--include $(SIM_TOP)/SIM_DEFS
-
-
-LINKED += $(notdir $(wildcard $(SIM_TOP)/do/*.do))
-
-vsim: $(BUILT:%=built_dir/%) $(LINKED) modelsim.ini
+# Default action is to run vsim
+default vsim: $(BUILT:%=built_dir/%) $(LINKED)
 	$(DO_RUN_VSIM)
-.PHONY: vsim
+.PHONY: default vsim
 
-%: $(SIM_TOP)/do/%
+%: $(CALLER_TOP)/do/%
 	ln -sf $< $@
-
 
 # We load modelsim.ini from the Xilinx Questasim libraries.  These are built by
 # the following procedure run from within Vivado, either:
@@ -62,13 +76,8 @@ vsim: $(BUILT:%=built_dir/%) $(LINKED) modelsim.ini
 modelsim.ini: $(MODELSIM_LIBS)/modelsim.ini
 	cp $< $@
 
-include $(FPGA_COMMON)/makefiles/Makefile.built
-
-# Add extra dependencies to built target (defined in Makefile.built)
-built: $(LINKED) modelsim.ini
-
 # Add any extra simulation rules
--include $(SIM_TOP)/SIM_RULES
+-include $(CALLER_TOP)/SIM_RULES
 
 .DELETE_ON_ERROR:
 
