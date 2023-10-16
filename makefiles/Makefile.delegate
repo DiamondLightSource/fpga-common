@@ -74,9 +74,11 @@ BUILD_DIR := $(abspath \
 # The following symbols need to be passed through
 MAKE_EXPORTS += FPGA_COMMON
 MAKE_EXPORTS += CALLER_TOP
-# MAKE_EXPORTS += PROJECT_NAME
 MAKE_EXPORTS += CONFIG
 MAKE_EXPORTS += _TARGET
+ifdef PROJECT_NAME
+    MAKE_EXPORTS += PROJECT_NAME
+endif
 
 # Delegate all goals except for clean and building the directory
 GOALS = $(filter-out clean build_dir $(BUILD_DIR),$(MAKECMDGOALS))

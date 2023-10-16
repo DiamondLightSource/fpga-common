@@ -4,7 +4,7 @@ set project_name $env(PROJECT_NAME)
 set fpga_part $env(FPGA_PART)
 set block_designs $env(BLOCK_DESIGNS)
 set vhd_dirs $env(VHD_DIRS)
-set constr_dirs $env(CONSTR_DIRS)
+set constr_files $env(CONSTR_FILES)
 
 
 set hierarchy rebuilt
@@ -63,12 +63,7 @@ foreach bd $block_designs {
 set_property top top [current_fileset]
 
 # Load the constraints
-read_xdc built_dir/top_pins.xdc
-# set files [glob -nocomplain $project_top/constr/*.xdc]
-# if [llength $files] { read_xdc $files }
-foreach constr $constr_dirs {
-    read_xdc [glob -nocomplain $constr/*.xdc]
-}
+read_xdc $constr_files
 
 foreach name {post_synth pblocks} {
     set xdc [get_files -quiet $name.xdc]

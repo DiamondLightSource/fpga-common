@@ -19,7 +19,9 @@ TCL_DIR = $(FPGA_COMMON)/tcl
 
 # Both of these directories are going to be target specific
 BD_DIR = $(PROJECT_TOP)/bd$(_TARGET)
-CONSTR_DIRS += $(CONSTR_DIR)
+
+CONSTR_FILES += built_dir/top_pins.xdc
+CONSTR_FILES += $(wildcard $(CONSTR_DIR)/*.xdc)
 
 
 VHD_DIRS += $(VHD_DIR)
@@ -81,7 +83,7 @@ BUILD_TOP_ARGS += PROJECT_NAME
 BUILD_TOP_ARGS += FPGA_PART
 BUILD_TOP_ARGS += BLOCK_DESIGNS
 BUILD_TOP_ARGS += VHD_DIRS
-BUILD_TOP_ARGS += CONSTR_DIRS
+BUILD_TOP_ARGS += CONSTR_FILES
 
 BITFILE_DEPENDS += $(BUILT:%=built_dir/%)
 BITFILE_DEPENDS += $(BLOCK_DESIGNS:%=%/BD_DONE)

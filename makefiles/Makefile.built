@@ -57,14 +57,10 @@ ifdef _TARGET
     TARGET_FILES := $(shell find $(PROJECT_TOP) -name \*$(_TARGET) -type f)
 endif
 
-# # These files have the correct names but are in places where we're not looking
-# TARGET_DIR_FILES := $(wildcard $(TARGET_DIRS:%=$(PROJECT_TOP)/%$(_TARGET)/*))
-
 # This is unfortuately a bit of a hack, and is only triggered when built_dir
 # needs to be created.
 built_dir: $(TARGET_FILES)
 	mkdir -p $@
-# 	ln -s $(TARGET_DIR_FILES) $@
 	$(foreach file,$(TARGET_FILES), \
             ln -s $(file) $@/$(notdir $(file:%$(_TARGET)=%));)
 
