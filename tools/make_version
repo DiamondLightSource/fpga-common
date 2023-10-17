@@ -26,12 +26,17 @@ fi
 # VERSION="$(make -C "$PROJECT_TOP" print_version --no-print-directory)"
 # eval "$VERSION"
 
+# This isn't implemented as yet, so just fill in placeholders
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+
 cat <<EOF >"$TARGET_FILE"
 package version is
     constant GIT_VERSION : natural := 16#$GIT_SHA#;
     constant GIT_DIRTY : natural := $GIT_DIRTY;
---     constant VERSION_MAJOR : natural := $VERSION_MAJOR;
---     constant VERSION_MINOR : natural := $VERSION_MINOR;
---     constant VERSION_PATCH : natural := $VERSION_PATCH;
+    constant VERSION_MAJOR : natural := $VERSION_MAJOR;
+    constant VERSION_MINOR : natural := $VERSION_MINOR;
+    constant VERSION_PATCH : natural := $VERSION_PATCH;
 end;
 EOF

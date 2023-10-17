@@ -14,6 +14,8 @@ use ieee.numeric_std.all;
 
 use work.support.all;
 
+use work.stream_defs.all;
+
 entity one_pole_iir is
     generic (
         -- Number of concurrent channels of data
@@ -34,13 +36,8 @@ entity one_pole_iir is
 
         iir_shift_i : in unsigned;
 
-        enable_i : in std_ulogic := '1';
-        last_i : in std_ulogic := '1';
-        data_i : in signed;
-
-        enable_o : out std_ulogic;
-        last_o : out std_ulogic;
-        data_o : out signed
+        stream_i : in data_stream_t;
+        stream_o : out data_stream_t
     );
 end;
 
@@ -58,11 +55,11 @@ architecture arch of one_pole_iir is
     -- Allow for scaling increase.  If we've done our reckoning right there
     -- should be no overflow.
     constant MAX_SHIFT : natural := compute_max_shift;
-    constant ACCUM_BITS : natural := data_i'LENGTH + MAX_SHIFT;
+    constant ACCUM_BITS : natural := stream_i.data'LENGTH + MAX_SHIFT;
 
     -- Return the top bits from the accumulator
     subtype DATA_OUT_RANGE is natural
-        range ACCUM_BITS - 1 downto ACCUM_BITS - data_o'LENGTH;
+        range ACCUM_BITS - 1 downto ACCUM_BITS - stream_o.data'LENGTH;
 
     -- Accumulator and shifted accumulator
     subtype accum_t is signed(ACCUM_BITS-1 downto 0);
@@ -73,15 +70,17 @@ architecture arch of one_pole_iir is
     signal accum_out : accum_t := (others => '0');
 
     signal shift_in : natural range 0 to MAX_SHIFT;
-    signal enable_in : std_ulogic := '0';
+    signal valid_in : std_ulogic := '0';
     signal last_in : std_ulogic := '1';
 
+    signal valid_out : std_ulogic := '0';
+    signal last_out : std_ulogic;
 
 begin
-    -- Delay from data_i to data_o:
-    --  data_i, iir_shift_i = shift_in
+    -- Delay from stream_i.data to stream_o.data:
+    --  stream_i.data, iir_shift_i = shift_in
     --      => data_in
-    --      => accum_out = data_o
+    --      => accum_out = stream_o.data
     assert PROCESS_DELAY = 2
         report "Incorrect process delay " & integer'image(PROCESS_DELAY)
         severity failure;
@@ -101,7 +100,7 @@ begin
         MEM_STYLE => DELAY_MEM_STYLE
     ) port map (
         clk_i => clk_i,
-        enable_i => enable_in,
+        enable_i => valid_in,
         data_i => std_ulogic_vector(accum_out),
         signed(data_o) => accum_in
     );
@@ -147,33 +146,38 @@ begin
 
             -- Shift the data in so that the gain of the filter stays the same
             -- when the shift is changed.  This is pipelined.
-            data_in <=
-                shift_left(resize(data_i, ACCUM_BITS), MAX_SHIFT - shift_in);
-            enable_in <= enable_i;
-            last_in <= last_i;
+            data_in <= shift_left(
+               resize(signed(stream_i.data), ACCUM_BITS),
+               MAX_SHIFT - shift_in);
+            valid_in <= stream_i.valid;
+            last_in <= stream_i.last;
 
             if ONE_TICK_IIR then
                 -- If updating on every tick then we need to update the
                 -- accumulator in one large step.  This is a bit demanding on
                 -- timing as some of the combinatorial paths can be very long.
-                if enable_in then
+                if valid_in then
                     accum_out <= accum_decay + data_in - fixup_bit;
                 end if;
             else
                 -- Otherwise we compute the update in two ticks.  A bit of care
                 -- is required to align with the associated channel delay.
-                if CHANNELS = 1 or enable_in = '1' then
+                if CHANNELS = 1 or valid_in = '1' then
                     partial_accum <= accum_decay;
                     fixup_accum_bit <= fixup_bit;
                 end if;
-                if enable_in then
+                if valid_in then
                     accum_out <= partial_accum + data_in - fixup_accum_bit;
                 end if;
             end if;
-            enable_o <= enable_in;
-            last_o <= last_in;
+            valid_out <= valid_in;
+            last_out <= last_in;
         end if;
     end process;
 
-    data_o <= accum_out(DATA_OUT_RANGE);
+    stream_o <= (
+        valid => valid_out,
+        last => last_out,
+        data => std_ulogic_vector(accum_out(DATA_OUT_RANGE))
+    );
 end;

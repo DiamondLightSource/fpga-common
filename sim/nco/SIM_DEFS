@@ -1,0 +1,5 @@
+# Make file for running vsim
+
+BUILT += nco_cos_sin_table.vhd
+
+VPATH += $(VHD_DIR)/nco
