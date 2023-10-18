@@ -1,6 +1,6 @@
 -- Array of IBUFDS
 --
--- Double ended input buffers with LVDS input standard
+-- Double ended input buffers
 
 library ieee;
 use ieee.std_logic_1164.all;

@@ -1,6 +1,6 @@
 -- Array of OBUFDS
 --
--- Double ended output buffers with LVDS output standard
+-- Double ended differential output buffers
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -11,7 +11,8 @@ use unisim.vcomponents.all;
 
 entity obufds_array is
     generic (
-        COUNT : natural := 1
+        COUNT : natural := 1;
+        IOSTANDARD : string := "DEFAULT"
     );
     port (
         i_i : in  std_ulogic_vector(COUNT-1 downto 0);
@@ -24,7 +25,7 @@ architecture arch of obufds_array is
 begin
     obufds_array : for i in 0 to COUNT-1 generate
         obufds_inst: OBUFDS generic map (
-            IOSTANDARD => "LVDS"
+            IOSTANDARD => IOSTANDARD
         ) port map (
             I  => i_i(i),
             O  => p_o(i),

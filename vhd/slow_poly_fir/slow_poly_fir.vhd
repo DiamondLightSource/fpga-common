@@ -121,9 +121,11 @@ begin
     -- as during the very first tick of simulation both these signals will be
     -- set to 'U', triggering failure!  This test was originally written as
     --      assert fifo_write_ready or not enable_i
+    -- pragma translate off
     assert fifo_write_ready /= '0' or enable_i /= '1'
         report "FIFO overflow"
         severity failure;
+    -- pragma translate on
 
 
     -- Taps
