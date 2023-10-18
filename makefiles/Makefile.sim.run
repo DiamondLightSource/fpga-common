@@ -4,6 +4,9 @@ include $(CONFIG)
 include $(FPGA_COMMON)/makefiles/Makefile.core
 include $(FPGA_COMMON)/makefiles/Makefile.common
 
+PROJECT_TOP = $(CALLER_TOP)/../..
+BENCH_DIR = $(CALLER_TOP)/bench
+
 # Any extra build targets etc are configured here
 -include $(CALLER_TOP)/SIM_DEFS
 
@@ -13,9 +16,6 @@ include $(FPGA_COMMON)/makefiles/Makefile.common
 
 $(call MUST_DEFINE,VSIM)
 $(call MUST_DEFINE,MODELSIM_LIBS)
-
-PROJECT_TOP = $(CALLER_TOP)/../..
-BENCH_DIR = $(CALLER_TOP)/bench
 
 # The following symbols are passed through to the simulation script
 VSIM_EXPORTS += VHD_DIR

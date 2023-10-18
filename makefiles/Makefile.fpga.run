@@ -116,6 +116,6 @@ runvivado:
 
 
 # Allow any extra rules that need to come late to be included here
--include $(PROJECT_TOP)/VHDL_RULES
+-include $(PROJECT_TOP)/FPGA_RULES
 
 # vim: set filetype=make:

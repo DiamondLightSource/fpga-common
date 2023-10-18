@@ -9,7 +9,10 @@
 #
 define _MUST_DEFINE
 ifeq ($$($1),)
+    $$(info Symbol $1 not yet defined)
     $1 = $$(error Symbol $1 must be defined)
+else
+    $$(info $1 = $($1))
 endif
 endef
 MUST_DEFINE = $(eval $(_MUST_DEFINE))
