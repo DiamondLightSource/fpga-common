@@ -2,6 +2,7 @@
 
 CLASS = fpga
 BUILD_PATTERN =
+FPGA_TOP := $(CURDIR)
 include $(FPGA_COMMON)/makefiles/Makefile.delegate
 
 # vim: set filetype=make:

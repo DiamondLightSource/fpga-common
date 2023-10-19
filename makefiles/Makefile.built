@@ -3,7 +3,7 @@
 # We need to ensure that the built directory is on the vpath
 VPATH += built_dir
 
-VPATH += $(PROJECT_TOP)
+VPATH += $(FPGA_TOP)
 VPATH += $(VHD_DIR)
 
 
@@ -12,7 +12,7 @@ built_dir/top_entity.vhd: $(CONSTR_DIR)/used | built_dir
 	$(TOOLS_DIR)/make_entity $(BOARD_DIR) $^ top built_dir
 
 built_dir/version.vhd: | built_dir
-	$(TOOLS_DIR)/make_version $(PROJECT_TOP) $@
+	$(TOOLS_DIR)/make_version $(FPGA_TOP) $@
 
 built_dir/metadata.coe: prom_config | built_dir
 	$(TOOLS_DIR)/prom_data_creator --format coe $< >$@
@@ -33,7 +33,7 @@ built_dir/%.vhd.dummy: %.vhd | built_dir
 
 
 MAKE_VERSION_TCL_SED += s:@@FPGA_COMMON@@:$(FPGA_COMMON):;
-MAKE_VERSION_TCL_SED += s:@@PROJECT_TOP@@:$(PROJECT_TOP):
+MAKE_VERSION_TCL_SED += s:@@FPGA_TOP@@:$(FPGA_TOP):
 built_dir/make_version.tcl: $(FPGA_COMMON)/tcl/make_version.tcl.in | built_dir
 	sed '$(MAKE_VERSION_TCL_SED)' $< >$@
 
@@ -54,7 +54,7 @@ built: $(BUILT:%=built_dir/%)
 # done via the special built_dir/marker file.
 
 ifdef _TARGET
-    TARGET_FILES := $(shell find $(PROJECT_TOP) -name \*$(_TARGET) -type f)
+    TARGET_FILES := $(shell find $(FPGA_TOP) -name \*$(_TARGET) -type f)
 endif
 
 # This is unfortuately a bit of a hack, and is only triggered when built_dir

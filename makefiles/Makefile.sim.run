@@ -4,7 +4,6 @@ include $(CONFIG)
 include $(FPGA_COMMON)/makefiles/Makefile.core
 include $(FPGA_COMMON)/makefiles/Makefile.common
 
-PROJECT_TOP = $(CALLER_TOP)/../..
 BENCH_DIR = $(CALLER_TOP)/bench
 
 # Any extra build targets etc are configured here

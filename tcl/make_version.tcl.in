@@ -3,7 +3,7 @@
 
 # The following locations need to be baked into this script
 set fpga_common "@@FPGA_COMMON@@"
-set project_top "@@PROJECT_TOP@@"
+set fpga_top "@@FPGA_TOP@@"
 
 
 proc dirname {n path} {
@@ -29,7 +29,7 @@ set version_file "$build_dir/built_dir/version.vhd"
 set temp_time [file mtime $version_file]
 
 # Build the version file
-exec "$fpga_common/tools/make_version" "$project_top" $version_file
+exec "$fpga_common/tools/make_version" "$fpga_top" $version_file
 
 # Restore timestamps
 file mtime $version_file $temp_time

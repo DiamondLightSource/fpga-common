@@ -1,6 +1,5 @@
 # Flag all of these symbols so that an error is generated if an attempt is make
 # to use them when they're not defined.
-$(call MUST_DEFINE,PROJECT_TOP)      # Path to top of main project
 $(call MUST_DEFINE,PROJECT_NAME)     # Name of project
 $(call MUST_DEFINE,BOARD)            # Specifies board
 
@@ -8,12 +7,13 @@ $(call MUST_DEFINE,BOARD)            # Specifies board
 # anyway
 $(call MUST_DEFINE,FPGA_COMMON)
 $(call MUST_DEFINE,CALLER_TOP)
+$(call MUST_DEFINE,FPGA_TOP)
 $(call MUST_DEFINE,CONFIG)
+$(call MUST_DEFINE,CONFIG_TOP)
 
 # ------------------------------------------------------------------------------
 
 PYTHON ?= python
-
 
 # Convert license file from space separated to : separated list
 SPACE := $(subst ,, )
@@ -22,11 +22,12 @@ export LM_LICENSE_FILE := $(subst $(SPACE),:,$(strip $(LM_LICENSE_FILE)))
 COMMON_VHD = $(FPGA_COMMON)/vhd
 COMMON_SIM = $(FPGA_COMMON)/sim/common
 TOOLS_DIR = $(FPGA_COMMON)/tools
+TCL_DIR = $(FPGA_COMMON)/tcl
 
 BOARD_DIR ?= $(FPGA_COMMON)/boards/$(BOARD)
 
-VHD_DIR = $(PROJECT_TOP)/vhd
-CONSTR_DIR = $(PROJECT_TOP)/constr$(_TARGET)
-
+VHD_DIR = $(FPGA_TOP)/vhd
+CONSTR_DIR = $(FPGA_TOP)/constr$(_TARGET)
+BD_DIR = $(FPGA_TOP)/bd$(_TARGET)
 
 # vim: set filetype=make:

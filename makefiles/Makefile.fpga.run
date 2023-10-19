@@ -13,23 +13,14 @@ include $(BOARD_DIR)/CONFIG
 
 # ------------------------------------------------------------------------------
 
-PROJECT_TOP = $(CALLER_TOP)
-
-TCL_DIR = $(FPGA_COMMON)/tcl
-
-# Both of these directories are going to be target specific
-BD_DIR = $(PROJECT_TOP)/bd$(_TARGET)
-
 CONSTR_FILES += built_dir/top_pins.xdc
 CONSTR_FILES += $(wildcard $(CONSTR_DIR)/*.xdc)
-
 
 VHD_DIRS += $(VHD_DIR)
 VHD_DIRS += $(FPGA_COMMON)/vhd
 
 BUILT += top_entity.vhd
 BUILT += make_version.tcl
-
 
 SOURCES := $(shell find $(VHD_DIRS) -name \*.vhd)
 
@@ -78,7 +69,6 @@ interconnect/BD_DONE: built_dir/metadata.coe
 
 # Arguments passed through to initial build of project
 BUILD_TOP_ARGS += FPGA_COMMON
-BUILD_TOP_ARGS += PROJECT_TOP
 BUILD_TOP_ARGS += PROJECT_NAME
 BUILD_TOP_ARGS += FPGA_PART
 BUILD_TOP_ARGS += BLOCK_DESIGNS
@@ -116,6 +106,6 @@ runvivado:
 
 
 # Allow any extra rules that need to come late to be included here
--include $(PROJECT_TOP)/FPGA_RULES
+-include $(FPGA_TOP)/FPGA_RULES
 
 # vim: set filetype=make:

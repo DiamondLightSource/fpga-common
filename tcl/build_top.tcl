@@ -1,5 +1,4 @@
 set fpga_common $env(FPGA_COMMON)
-set project_top $env(PROJECT_TOP)
 set project_name $env(PROJECT_NAME)
 set fpga_part $env(FPGA_PART)
 set block_designs $env(BLOCK_DESIGNS)
@@ -46,10 +45,7 @@ set_msg_config -id {Vivado 12-1790} -suppress
 # Add our files and set them to VHDL 2008.  This needs to be done before reading
 # any externally generated files, particularly the interconnect.
 add_files built_dir
-foreach dir $vhd_dirs {
-    add_files $dir
-}
-# add_files $project_top/vhd
+foreach dir $vhd_dirs { add_files $dir }
 set_property FILE_TYPE "VHDL 2008" [get_files *.vhd]
 
 

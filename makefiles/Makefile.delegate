@@ -8,6 +8,7 @@
 #   TARGET          Optional target identification for multiple target builds
 #   CLASS           Defined by caller to identify makefile to invoke
 #   BUILD_PATTERN   Used to define detailed structure of build directory name
+#   FPGA_TOP        Path to directory containing vhd and constr directories
 #
 # This is designed to be called immediately as part of the calling context for a
 # top level makefile, which itself is designed to have been called in the
@@ -36,6 +37,7 @@ endif
 # the check above.
 CALLER_TOP := $(abspath $(dir $(word 1,$(MAKEFILE_LIST))))
 CONFIG := $(abspath $(word 2,$(MAKEFILE_LIST)))
+CONFIG_TOP := $(dir $(CONFIG))
 
 
 # ------------------------------------------------------------------------------
@@ -47,6 +49,7 @@ endif
 include $(FPGA_COMMON)/makefiles/Makefile.core
 
 # The following symbols must have been defined by this point.
+$(call MUST_DEFINE,FPGA_TOP)         # Location of the FPGA files
 $(call MUST_DEFINE,BUILD_TOP)        # Where to put the build directory
 $(call MUST_DEFINE,CLASS)            # Part of build directory
 ifdef NEED_TARGET
@@ -74,7 +77,9 @@ BUILD_DIR := $(abspath \
 # The following symbols need to be passed through
 MAKE_EXPORTS += FPGA_COMMON
 MAKE_EXPORTS += CALLER_TOP
+MAKE_EXPORTS += FPGA_TOP
 MAKE_EXPORTS += CONFIG
+MAKE_EXPORTS += CONFIG_TOP
 MAKE_EXPORTS += _TARGET
 ifdef PROJECT_NAME
     MAKE_EXPORTS += PROJECT_NAME
