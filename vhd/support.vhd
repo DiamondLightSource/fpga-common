@@ -161,6 +161,10 @@ package support is
     -- generic parameters
     function choose(choice : boolean; if_true : string; if_false : string)
         return string;
+
+    -- Gray code support
+    function unsigned_to_gray(value : unsigned) return std_ulogic_vector;
+    function gray_to_unsigned(value : std_ulogic_vector) return unsigned;
 end;
 
 
@@ -490,4 +494,22 @@ package body support is
             return if_false;
         end if;
     end function;
+
+
+    function unsigned_to_gray(value : unsigned) return std_ulogic_vector is
+    begin
+        -- This is the easy direction!
+        return std_ulogic_vector(shift_right(value, 1) xor value);
+    end;
+
+    function gray_to_unsigned(value : std_ulogic_vector) return unsigned
+    is
+        variable result : unsigned(value'RANGE) := unsigned(value);
+    begin
+        -- This direction requires generating a long carry chain
+        for i in result'HIGH - 1 downto result'LOW loop
+            result(i) := result(i + 1) xor result(i);
+        end loop;
+        return result;
+    end;
 end;
