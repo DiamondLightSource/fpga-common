@@ -45,6 +45,15 @@ fpga: $(PROJECT_NAME).bit
 .DELETE_ON_ERROR:
 
 
+# If _TARGET is defined then add all target specific files to TARGET_FILES.
+# These files will be linked into built_dir so that they can be found during the
+# normal build.
+ifdef _TARGET
+    # Use eval to force expansion of the shell command right away
+    $(eval TARGET_FILES += $(shell find $(FPGA_TOP) -name \*$(_TARGET) -type f))
+endif
+
+
 # Common rules for built targets
 include $(FPGA_COMMON)/makefiles/Makefile.built
 

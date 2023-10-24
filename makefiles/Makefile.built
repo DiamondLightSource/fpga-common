@@ -38,11 +38,6 @@ built_dir/make_version.tcl: $(FPGA_COMMON)/tcl/make_version.tcl.in | built_dir
 	sed '$(MAKE_VERSION_TCL_SED)' $< >$@
 
 
-# Target for building all required targets
-built: $(BUILT:%=built_dir/%)
-.PHONY: built
-
-
 # ------------------------------------------------------------------------------
 # Hack for target specific files.  Probably want to do this differently...
 
@@ -53,19 +48,32 @@ built: $(BUILT:%=built_dir/%)
 # files after this assembly we need to trigger a reload of the Makefile: this is
 # done via the special built_dir/marker file.
 
-ifdef _TARGET
-    TARGET_FILES := $(shell find $(FPGA_TOP) -name \*$(_TARGET) -type f)
-endif
+# This rule creates the target required to link a single target file
+define _MAKE_TARGET_FILE
+BUILT += $2
+built_dir/$2: $1 | built_dir
+	ln -s $$< $$@
+endef
 
-# This is unfortuately a bit of a hack, and is only triggered when built_dir
-# needs to be created.
-built_dir: $(TARGET_FILES)
-	mkdir -p $@
-	$(foreach file,$(TARGET_FILES), \
-            ln -s $(file) $@/$(notdir $(file:%$(_TARGET)=%));)
+# Invoke _MAKE_TARGET_FILE above on each discovered TARGET_FILE
+$(foreach file,$(TARGET_FILES),$(eval \
+    $(call _MAKE_TARGET_FILE,$(file),$(notdir $(file:%$(_TARGET)=%)))))
 
 # This marker forces the makefile to reload after creating the build directory
 # and linking the appropriate files so that they can be found.
-built_dir/marker: built_dir
+built_dir/marker: $(TARGET_FILES) | built_dir
 	touch $@
+
+
+# ------------------------------------------------------------------------------
+
+$(info BUILT = $(BUILT))
+
+# Target for building all required targets
+built: $(BUILT:%=built_dir/%)
+.PHONY: built
+
+built_dir:
+	mkdir -p $@
+
 include built_dir/marker
