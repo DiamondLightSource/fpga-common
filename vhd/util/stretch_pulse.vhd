@@ -20,6 +20,7 @@ end;
 
 architecture arch of stretch_pulse is
     signal pulse_delay : std_ulogic_vector(WIDTH-1 downto 0);
+    signal pulse_out : pulse_o'SUBTYPE := (others => '0');
 
 begin
     delayline : entity work.fixed_delay generic map (
@@ -35,11 +36,12 @@ begin
         if rising_edge(clk_i) then
             for i in WIDTH-1 downto 0 loop
                 if pulse_i(i) then
-                    pulse_o(i) <= '1';
+                    pulse_out(i) <= '1';
                 elsif pulse_delay(i) then
-                    pulse_o(i) <= '0';
+                    pulse_out(i) <= '0';
                 end if;
             end loop;
+            pulse_o <= pulse_out;
         end if;
     end process;
 end;
