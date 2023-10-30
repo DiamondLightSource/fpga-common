@@ -33,7 +33,8 @@ end;
 architecture arch of in_fifo is
     -- The following constants are fudge factors for safely locating the in and
     -- out pointers and detecting underflow or overflow
-    constant RESET_OFFSET : natural := 6;
+    constant RESET_OFFSET : natural := 7;
+    constant DEPTH_OFFSET : natural := 5;
     constant EMPTY_OFFSET : natural := 7;
     constant NEARLY_EMPTY_OFFSET : natural := 6;
     constant NEARLY_FULL_OFFSET : natural := 1;
@@ -50,10 +51,19 @@ architecture arch of in_fifo is
     signal depth : unsigned(2 downto 0) := "000";
 
     attribute ASYNC_REG : string;
+    attribute DONT_TOUCH : string;
+    attribute max_delay_from : string;
+    attribute false_path_to : string;
+
     attribute ASYNC_REG of in_ptr_sync : signal is "TRUE";
     attribute ASYNC_REG of in_ptr_out : signal is "TRUE";
-    attribute max_delay_to : string;
-    attribute max_delay_to of in_ptr_sync : signal is "TRUE";
+
+    attribute DONT_TOUCH of in_ptr_sync : signal is "TRUE";
+    attribute max_delay_from of in_ptr_sync : signal is "TRUE";
+
+    attribute DONT_TOUCH of data_o : signal is "TRUE";
+    -- Might be better as a max_delay...?
+    attribute false_path_to of data_o : signal is "TRUE";
 
     function add(value : std_ulogic_vector; step : integer := 1)
         return std_ulogic_vector is
@@ -67,18 +77,18 @@ begin
         if rising_edge(clk_in_i) then
             fifo(to_integer(unsigned(in_ptr))) <= data_i;
             in_ptr <= add(in_ptr, 1);
+            in_ptr_sync <= in_ptr;
         end if;
     end process;
 
     -- Bring in_ptr over to clk_out domain
-    -- This could just be an array of sync_bit entities, but we'll actually want
-    -- a max_delay attribute which will need to be managed separately
-    process (clk_out_i) begin
-        if rising_edge(clk_out_i) then
-            in_ptr_sync <= in_ptr;
-            in_ptr_out <= in_ptr_sync;
-        end if;
-    end process;
+    gen_sync : for i in in_ptr'RANGE generate
+        sync : entity work.sync_bit port map (
+            clk_i => clk_out_i,
+            bit_i => in_ptr_sync(i),
+            bit_o => in_ptr_out(i)
+        );
+    end generate;
 
     process (clk_out_i) begin
         if rising_edge(clk_out_i) then
@@ -87,8 +97,10 @@ begin
             else
                 out_ptr <= add(out_ptr, 1);
             end if;
-            depth <=
-                gray_to_unsigned(out_ptr) - gray_to_unsigned(in_ptr_out) - 1;
+            data_o <= fifo(to_integer(unsigned(out_ptr)));
+
+            depth <= DEPTH_OFFSET +
+                gray_to_unsigned(out_ptr) - gray_to_unsigned(in_ptr_out);
 
             -- Compute the status flags
             empty_o <= to_std_ulogic(depth >= EMPTY_OFFSET);
@@ -98,6 +110,5 @@ begin
         end if;
     end process;
 
-    data_o <= fifo(to_integer(unsigned(out_ptr)));
     depth_o <= depth;
 end;

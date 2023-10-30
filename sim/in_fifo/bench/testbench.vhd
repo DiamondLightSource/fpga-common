@@ -10,19 +10,19 @@ end testbench;
 architecture arch of testbench is
     constant FIFO_WIDTH : natural := 8;
     -- Scaling for random variation of clock in ps
-    constant RANDOM_SCALE : real := 1000.0;
+    constant RANDOM_SCALE : real := 1200.0;
 
-    signal clock_delay : time := 1 ns;
+    signal clock_delay : real := 0.0;   -- Delay in ns
     signal clock_skew : time := 0 ps;
 
     signal clk_in : std_ulogic := '0';
     signal clk_out : std_ulogic := '0';
-    signal data_in : std_ulogic_vector(FIFO_WIDTH-1 downto 0)
+    signal data_in : unsigned(FIFO_WIDTH-1 downto 0)
         := (others => '0');
-    signal last_data_out : std_ulogic_vector(FIFO_WIDTH-1 downto 0)
+    signal last_data_out : unsigned(FIFO_WIDTH-1 downto 0)
         := (others => '0');
-    signal data_out : std_ulogic_vector(FIFO_WIDTH-1 downto 0);
-    signal delta : unsigned(FIFO_WIDTH-1 downto 0) := (others => '0');
+    signal data_out : unsigned(FIFO_WIDTH-1 downto 0);
+    signal delta : signed(FIFO_WIDTH-1 downto 0) := (others => '0');
     signal reset : std_ulogic := '0';
     signal depth : unsigned(2 downto 0);
     signal nearly_empty : std_ulogic;
@@ -32,16 +32,17 @@ architecture arch of testbench is
 
 begin
     clk_out <= not clk_out after 2 ns;
-    clk_in <= transport clk_out after clock_delay + clock_skew;
+    clk_in <= transport clk_out after
+        1 ps * integer(1.0e3 * clock_delay) + clock_skew;
 
     fifo : entity work.in_fifo generic map (
         FIFO_WIDTH => FIFO_WIDTH
     ) port map (
         clk_in_i => clk_in,
-        data_i => data_in,
+        data_i => std_ulogic_vector(data_in),
 
         clk_out_i => clk_out,
-        data_o => data_out,
+        unsigned(data_o) => data_out,
 
         reset_i => reset,
 
@@ -52,7 +53,8 @@ begin
         full_o => full
     );
 
-    -- Data generation and clk_in skew generation
+
+    -- Data generation and clk_in random skew generation
     process (clk_in)
         variable seed1, seed2 : positive := 1;
         variable random : real;
@@ -61,15 +63,16 @@ begin
         clock_skew <= integer(random * RANDOM_SCALE) * 1 ps;
 
         if rising_edge(clk_in) then
-            data_in <= std_ulogic_vector(signed(data_in) + 1);
+            data_in <= data_in + 1;
         end if;
     end process;
+
 
     -- Data readout
     process (clk_out) begin
         if rising_edge(clk_out) then
             last_data_out <= data_out;
-            delta <= unsigned(data_out) - unsigned(last_data_out);
+            delta <= signed(data_out - last_data_out);
 
             if delta /= 1 then
                 report "Delta = " & to_string(delta);
@@ -96,20 +99,30 @@ begin
 
     begin
         reset <= '0';
-        clock_delay <= 5 ns;
+        clock_delay <= 5.0;
 
         clk_wait(10);
 
         reset_fifo;
 
-        -- Now let's mess with the clock delay
-        for n in 0 to 80 loop
-            clk_wait(5);
-            clock_delay <= n * 800 ps;
-        end loop;
+        loop
+            -- Now let's mess with the clock delay
+            for n in 0 to 85 loop
+                clk_wait(5);
+                clock_delay <= 0.95 * real(n);
+            end loop;
 
-        -- Reset the FIFO again
-        reset_fifo;
+            clk_wait(50);
+            -- Reset the FIFO again
+            reset_fifo;
+            clk_wait(50);
+
+            -- Bring the delay back down again
+            for n in 84 downto 0 loop
+                clk_wait(5);
+                clock_delay <= 0.95 * real(n);
+            end loop;
+        end loop;
 
         wait;
     end process;
