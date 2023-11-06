@@ -11,6 +11,28 @@ use work.register_defs.all;
 package sim_support is
     procedure clk_wait(signal clk_i : in std_ulogic; count : in natural := 1);
 
+    -- Register access for single register
+    procedure write_reg(
+        signal clk_i : in std_ulogic;
+        signal data_o : out reg_data_t;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        value : reg_data_t; quiet : boolean := false);
+    procedure read_reg(
+        signal clk_i : in std_ulogic;
+        signal data_i : in reg_data_t;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        quiet : boolean := false);
+    -- Same as read_reg, but returns result into result variable
+    procedure read_reg_result(
+        signal clk_i : in std_ulogic;
+        signal data_i : in reg_data_t;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        result : out reg_data_t; quiet : boolean := false);
+
+
     -- Register access for strobed registers
     procedure write_reg(
         signal clk_i : in std_ulogic;
@@ -74,7 +96,70 @@ package body sim_support is
 
 
     -- -------------------------------------------------------------------------
+    -- Single register
+
+    procedure write_reg(
+        signal clk_i : in std_ulogic;
+        signal data_o : out reg_data_t;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        value : reg_data_t; quiet : boolean := false) is
+    begin
+        data_o <= value;
+        strobe_o <= '1';
+        loop
+            clk_wait(clk_i);
+            strobe_o <= '0';
+            exit when ack_i;
+        end loop;
+        data_o <= (others => 'U');
+        if not quiet then
+            write("write_reg <= " & to_hstring(value), true);
+        end if;
+    end procedure;
+
+    procedure read_reg_result(
+        signal clk_i : in std_ulogic;
+        signal data_i : in reg_data_t;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        result : out reg_data_t; quiet : boolean := false) is
+    begin
+        strobe_o <= '1';
+        loop
+            clk_wait(clk_i);
+            strobe_o <= '0';
+            exit when ack_i;
+        end loop;
+        result := data_i;
+
+        if not quiet then
+            write("read_reg => " & to_hstring(result), true);
+        end if;
+    end procedure;
+
+    procedure read_reg(
+        signal clk_i : in std_ulogic;
+        signal data_i : in reg_data_t;
+        signal strobe_o : out std_ulogic;
+        signal ack_i : in std_ulogic;
+        quiet : boolean := false)
+    is
+        variable result : reg_data_t;
+    begin
+        read_reg_result(clk_i, data_i, strobe_o, ack_i, result, quiet);
+    end procedure;
+
+
+    -- -------------------------------------------------------------------------
     -- Decoded strobed registers
+
+    -- Annoyingly and disappointingly it isn't possible to reuse the
+    -- implementations above, eg writing
+    --
+    --  write_reg(clk_i, data_o(reg), strobe_o(reg), ack_i(reg), value, true);
+    --
+    -- because VHDL simply doesn't allow dynamic indexing of an array here.
 
     procedure write_reg(
         signal clk_i : in std_ulogic;
