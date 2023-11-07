@@ -16,6 +16,13 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity strobe_ack is
+    generic (
+        -- The busy_i signal can be stretched by this number of ticks to take
+        -- account of extra external delays
+        STRETCH_BUSY : natural := 0;
+        -- By default ack_o is generated one tick after strobe_o
+        ACK_DELAY : natural := 1
+    );
     port (
         clk_i : in std_ulogic;
 
@@ -31,16 +38,33 @@ entity strobe_ack is
 end;
 
 architecture arch of strobe_ack is
+    signal busy : std_ulogic;
     signal pending : std_ulogic := '0';
     signal ready : std_ulogic;
 
 begin
+    stretch : entity work.stretch_pulse generic map (
+        DELAY => STRETCH_BUSY,
+        REGISTER_OUT => false
+    ) port map (
+        clk_i => clk_i,
+        pulse_i => busy_i,
+        pulse_o => busy
+    );
+
     ready <= strobe_i or pending;
-    strobe_o <= not busy_i and ready;
+    strobe_o <= not busy and ready;
     process (clk_i) begin
         if rising_edge(clk_i) then
-            ack_o <= strobe_o;
-            pending <= busy_i and ready;
+            pending <= busy and ready;
         end if;
     end process;
+
+    delay : entity work.fixed_delay generic map (
+        DELAY => ACK_DELAY
+    ) port map (
+        clk_i => clk_i,
+        data_i(0) => strobe_o,
+        data_o(0) => ack_o
+    );
 end;
