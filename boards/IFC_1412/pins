@@ -1,7 +1,7 @@
 # Bank 44  VADJ1 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-pad_FMC1_PRSNT_M2C_L            AV24    LVCMOS18
-pad_FMC1_HSPC_PRSNT_M2C_L       AW24    LVCMOS18
+pad_FMC1_PRSNT_M2C_L            AV24    LVCMOS18        PULLUP
+pad_FMC1_HSPC_PRSNT_M2C_L       AW24    LVCMOS18        PULLUP
 
 pad_FMC1_CLK0_M2C_P             AK23    LVDS
 pad_FMC1_CLK0_M2C_N             AL23    LVDS

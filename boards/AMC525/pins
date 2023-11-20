@@ -67,7 +67,7 @@ LAD[6]                          AG33
 LAD[5]                          AH33
 LAD[4]                          AK35
 LAD[3]                          AL35
-nPRSNT_M2C0                     AH31
+nPRSNT_M2C0                     AH31    LVCMOS18    PULLUP
 LAD[2]                          AJ31
 LAD[1]                          AH34
 LAD[0]                          AJ35
@@ -118,7 +118,7 @@ ULED[0]                         AP40
 ULED[1]                         AR40
 ULED[2]                         AP41
 ULED[3]                         AP42
-nPRSNT_M2C1                     AT39
+nPRSNT_M2C1                     AT39    LVCMOS18    PULLUP
 CLK_DIR1                        AT40
 FPCLKE_P                        AU39
 FPCLKE_N                        AV39
