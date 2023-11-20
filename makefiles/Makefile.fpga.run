@@ -70,7 +70,6 @@ interconnect/BD_DONE: built_dir/metadata.coe
 
 # Load block designs from TCL sources
 %/BD_DONE: $(BD_DIR)/%.tcl
-	echo $$LM_LICENSE_FILE
 	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/create_bd.tcl \
             -tclargs $* -tclargs $< -tclargs $(FPGA_PART)
 	touch $@
