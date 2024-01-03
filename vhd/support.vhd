@@ -148,11 +148,12 @@ package support is
     -- Returns array of length bits with the indexed bit set
     function compute_strobe(
         index : natural; length : natural;
-        value : std_ulogic := '1') return std_ulogic_vector;
+        value : std_ulogic := '1'; initial : std_ulogic := '0')
+    return std_ulogic_vector;
 
     procedure compute_strobe(
-        signal output : out std_ulogic_vector;
-        index : natural; value : std_ulogic := '1');
+        signal output : out std_ulogic_vector; index : natural;
+        value : std_ulogic := '1'; initial : std_ulogic := '0');
 
     -- Reverses order of bits in vector
     function reverse(data : in std_ulogic_vector) return std_ulogic_vector;
@@ -455,9 +456,11 @@ package body support is
 
     function compute_strobe(
         index : natural; length : natural;
-        value : std_ulogic := '1') return std_ulogic_vector
+        value : std_ulogic := '1'; initial : std_ulogic := '0')
+    return std_ulogic_vector
     is
-        variable result : std_ulogic_vector(0 to length-1) := (others => '0');
+        variable result : std_ulogic_vector(0 to length-1)
+            := (others => initial);
     begin
         result(index) := value;
         return result;
@@ -465,11 +468,11 @@ package body support is
 
 
     procedure compute_strobe(
-        signal output : out std_ulogic_vector;
-        index : natural; value : std_ulogic := '1') is
+        signal output : out std_ulogic_vector; index : natural;
+        value : std_ulogic := '1'; initial : std_ulogic := '0') is
     begin
         for n in output'RANGE loop
-            output(n) <= value when index = n else '0';
+            output(n) <= value when index = n else initial;
         end loop;
     end;
 
