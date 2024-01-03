@@ -50,7 +50,7 @@ fpga: $(PROJECT_NAME).bit
 # normal build.
 ifdef _TARGET
     # Use eval to force expansion of the shell command right away
-    $(eval TARGET_FILES += $(shell find $(FPGA_TOP) -name \*$(_TARGET) -type f))
+    $(eval TARGET_FILES += $(shell find $(VHD_DIR) -name \*$(_TARGET) -type f))
 endif
 
 
