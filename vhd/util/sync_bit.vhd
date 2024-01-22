@@ -8,7 +8,8 @@ use ieee.std_logic_1164.all;
 
 entity sync_bit is
     generic (
-        INITIAL : std_ulogic := '0'
+        INITIAL : std_ulogic := '0';
+        DEPTH : natural := 2
     );
     port (
         clk_i : in std_ulogic;
@@ -21,12 +22,12 @@ end;
 
 architecture arch of sync_bit is
     signal bit_in : std_ulogic := INITIAL;
-    signal bit_out : std_ulogic := INITIAL;
+    signal sync_bits : std_ulogic_vector(1 to DEPTH-1);
 
     -- Tell synthesis to treat these bits a little specially
     attribute async_reg : string;
     attribute async_reg of bit_in : signal is "TRUE";
-    attribute async_reg of bit_out : signal is "TRUE";
+    attribute async_reg of sync_bits : signal is "TRUE";
 
     -- This custom attribute must be matched with the following entry in the
     -- constraints file:
@@ -36,14 +37,21 @@ architecture arch of sync_bit is
     attribute false_path_to of bit_in : signal is "TRUE";
 
 begin
+    assert DEPTH >= 2
+        report "Invalid depth " & to_string(DEPTH)
+        severity failure;
+
     process (clk_i, reset_i) begin
         if reset_i then
             bit_in <= INITIAL;
-            bit_out <= INITIAL;
+            sync_bits <= (others => INITIAL);
         elsif rising_edge(clk_i) then
             bit_in <= bit_i;
-            bit_out <= bit_in;
+            sync_bits(1) <= bit_in;
+            for i in 2 to DEPTH-1 loop
+                sync_bits(i) <= sync_bits(i - 1);
+            end loop;
         end if;
     end process;
-    bit_o <= bit_out;
+    bit_o <= sync_bits(DEPTH-1);
 end;
