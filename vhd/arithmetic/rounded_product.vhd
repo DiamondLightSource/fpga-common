@@ -12,15 +12,23 @@ entity rounded_product is
         -- Bits to discard from the top, giving extra output gain.  If this left
         -- equal to zero overflow_o can be ignored.
         DISCARD_TOP : natural := 0;
-        PROCESS_DELAY : natural := 3
+        PROCESS_DELAY : natural := 3;
+        -- If enable_i is unused this should be left as '1' to ensure that all
+        -- the enable registers are optimised out.  However, if enable_i is
+        -- used then this should probably be set to '0' to avoid a spurious
+        -- done output during startup.
+        DEFAULT_ENABLE : std_ulogic := '1'
     );
     port (
         clk_i : in std_ulogic;
 
-        a_i : in signed;            -- Wider term
-        b_i : in signed;            -- Narrow term
-        ab_o : out signed;          -- Rounded output
-        overflow_o : out std_ulogic
+        enable_i : in std_ulogic := '1';
+        a_i : in signed;                -- Wider term
+        b_i : in signed;                -- Narrow term
+
+        ab_o : out signed;              -- Rounded output
+        overflow_o : out std_ulogic;    -- Set if output has overflowed
+        done_o : out std_ulogic         -- enable_i delayed by PROCESS_DELAY
     );
 end;
 
@@ -42,9 +50,12 @@ architecture arch of rounded_product is
 
     signal a_in : a_i'SUBTYPE := (others => '0');
     signal b_in : b_i'SUBTYPE := (others => '0');
+    signal enable_product : std_ulogic := DEFAULT_ENABLE;
     signal product : signed(PRODUCT_WIDTH-1 downto 0) := (others => '0');
     signal ab : signed(PRODUCT_WIDTH-1 downto 0) := (others => '0');
+    signal enable_out : std_ulogic := DEFAULT_ENABLE;
     signal ab_out : signed(PRODUCT_WIDTH-1 downto 0) := (others => '0');
+    signal done : std_ulogic := DEFAULT_ENABLE;
 
     -- Overflow detection.  Written in this slightly weird way to ensure that it
     -- properly maps to the appropriate DSP48E resources.
@@ -79,15 +90,29 @@ begin
     ab <= product + rounding_bit;
     process (clk_i) begin
         if rising_edge(clk_i) then
-            a_in <= a_i;
-            b_in <= b_i;
-            product <= a_in * b_in;
-            ab_out <= ab;
-            all_ones <= to_std_ulogic(ab(OVF_RANGE) = ONES_MASK);
-            all_zeros <= to_std_ulogic(ab(OVF_RANGE) = 0);
+            if enable_i then
+                a_in <= a_i;
+                b_in <= b_i;
+            end if;
+            enable_product <= enable_i;
+            if enable_product then
+                product <= a_in * b_in;
+            end if;
+            enable_out <= enable_product;
+            if enable_out then
+                ab_out <= ab;
+                all_ones <= to_std_ulogic(ab(OVF_RANGE) = ONES_MASK);
+                all_zeros <= to_std_ulogic(ab(OVF_RANGE) = 0);
+            end if;
+            done <= enable_out;
         end if;
     end process;
 
     ab_o <= ab_out(PRODUCT_WIDTH-DISCARD_TOP-1 downto BOTTOM_BIT);
-    overflow_o <= not all_ones and not all_zeros;
+    gen_ovf : if DISCARD_TOP > 0 generate
+        overflow_o <= not all_ones and not all_zeros;
+    else generate
+        overflow_o <= '0';
+    end generate;
+    done_o <= done;
 end;
