@@ -34,6 +34,9 @@ architecture arch of testbench is
     signal read_data : unsigned(7 downto 0);
     signal reset_fifo : std_ulogic := '0';
 
+    signal read_reset : std_ulogic;
+    signal write_reset : std_ulogic;
+
     signal enable_read : std_ulogic;
     signal read_delay : natural;
 
@@ -41,19 +44,30 @@ begin
     write_clk <= not write_clk after 0.677 ns;
     read_clk <= not read_clk after 1 ns;
 
+
+    reset : entity work.async_fifo_reset port map (
+        reset_i => reset_fifo,
+        write_clk_i => write_clk,
+        write_reset_o => write_reset,
+        read_clk_i => read_clk,
+        read_reset_o => read_reset
+    );
+
     fifo : entity work.async_fifo generic map (
         FIFO_BITS => FIFO_BITS,
         DATA_WIDTH => 8
     ) port map (
         write_clk_i => write_clk,
+        write_reset_i => write_reset,
         write_valid_i => write_valid,
         write_ready_o => write_ready,
         write_data_i => std_ulogic_vector(write_data),
+
         read_clk_i => read_clk,
+        read_reset_i => read_reset,
         read_valid_o => read_valid,
         read_ready_i => read_ready,
-        unsigned(read_data_o) => read_data,
-        reset_fifo_i => reset_fifo
+        unsigned(read_data_o) => read_data
     );
 
 
@@ -131,7 +145,7 @@ begin
         reset_fifo <= '0';
 
         -- Realign the expected read data to account for data lost during reset
-        write_data <= to_unsigned(30, 8);
+        write_data <= to_unsigned(31, 8);
         write("Resetting write_data");
 
         clk_wait;

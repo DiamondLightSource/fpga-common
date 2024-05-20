@@ -166,6 +166,11 @@ package support is
     -- Gray code support
     function unsigned_to_gray(value : unsigned) return std_ulogic_vector;
     function gray_to_unsigned(value : std_ulogic_vector) return unsigned;
+
+    -- Up/Down counter support, returns value+up-down, generates assertion
+    -- failure on overflow
+    function up_down(
+        value : unsigned; up : std_ulogic; down : std_ulogic) return unsigned;
 end;
 
 
@@ -514,5 +519,20 @@ package body support is
             result(i) := result(i + 1) xor result(i);
         end loop;
         return result;
+    end;
+
+
+    function up_down(
+        value : unsigned; up : std_ulogic; down : std_ulogic) return unsigned is
+    begin
+        if up and not down then
+            assert value < (value'RANGE => '1') severity failure;
+            return value + 1;
+        elsif not up and down then
+            assert value > 0 severity failure;
+            return value - 1;
+        else
+            return value;
+        end if;
     end;
 end;

@@ -10,6 +10,7 @@ vcom -64 -2008 -work xil_defaultlib \
     $vhd_dir/support.vhd \
     $vhd_dir/util/sync_bit.vhd \
     $vhd_dir/async_fifo/async_fifo_address.vhd \
+    $vhd_dir/async_fifo/async_fifo_reset.vhd \
     $vhd_dir/async_fifo/async_fifo.vhd
 
 vcom -64 -2008 -work xil_defaultlib \
@@ -22,6 +23,7 @@ view wave
 
 add wave -group "FIFO Address" fifo/address/*
 add wave -group "FIFO" fifo/*
+add wave -group "FIFO Reset" reset/*
 add wave sim:*
 
 run 350ns

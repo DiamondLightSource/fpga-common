@@ -6,10 +6,16 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
+use work.support.all;
+
 entity sync_bit is
     generic (
         INITIAL : std_ulogic := '0';
-        DEPTH : natural := 2
+        DEPTH : natural := 2;
+        -- By default a false path from bit_i is configured, but if MAX_DELAY is
+        -- wanted this must be set to false and the source must be configured
+        -- outside this entity
+        FALSE_PATH : boolean := true
     );
     port (
         clk_i : in std_ulogic;
@@ -22,7 +28,7 @@ end;
 
 architecture arch of sync_bit is
     signal bit_in : std_ulogic := INITIAL;
-    signal sync_bits : std_ulogic_vector(1 to DEPTH-1);
+    signal sync_bits : std_ulogic_vector(1 to DEPTH-1) := (others => INITIAL);
 
     -- Tell synthesis to treat these bits a little specially
     attribute async_reg : string;
@@ -34,7 +40,8 @@ architecture arch of sync_bit is
     --  set_false_path \
     --      -to [get_cells -hierarchical -filter { false_path_to == "TRUE" }]
     attribute false_path_to : string;
-    attribute false_path_to of bit_in : signal is "TRUE";
+    attribute false_path_to of bit_in : signal
+        is choose(FALSE_PATH, "TRUE", "FALSE");
 
 begin
     assert DEPTH >= 2
