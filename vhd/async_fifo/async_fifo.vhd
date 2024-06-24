@@ -48,21 +48,21 @@ begin
     -- don't use the reserve feature.
     address : entity work.async_fifo_address generic map (
         ADDRESS_WIDTH => FIFO_BITS,
-        MAX_DELAY => MAX_DELAY
+        MAX_DELAY => MAX_DELAY,
+        ENABLE_READ_RESERVE => false,
+        ENABLE_WRITE_RESERVE => false
     ) port map (
         write_clk_i => write_clk_i,
         write_reset_i => write_reset_i,
-        write_reserve_i => write_valid_i,
-        write_enable_i => write_valid_i and write_ready_o,
+        write_access_i => write_valid_i,
         write_ready_o => write_ready_o,
-        write_address_o => write_address,
+        write_access_address_o => write_address,
 
         read_clk_i => read_clk_i,
         read_reset_i => read_reset_i,
-        read_reserve_i => read_enable,
-        read_enable_i => read_enable and read_ready,
+        read_access_i => read_enable,
         read_ready_o => read_ready,
-        read_address_o => read_address
+        read_access_address_o => read_address
     );
 
 

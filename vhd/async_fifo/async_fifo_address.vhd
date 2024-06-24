@@ -1,17 +1,23 @@
--- Clock Crossing FIFO address management with read and write reservation
+-- Clock Crossing FIFO address management with optional read and write
+-- reservation
 
+-- For both read and write ports there is the option of supporting reservation
+-- which provides access to a range of readable or writeable areas in the FIFO
+-- address space.  If ENABLE_{READ,WRITE}_RESERVE is set then follow this access
+-- pattern:
+--
 -- {read,write}_reserve_i must be successful (presented on the same cycle as the
 -- corresponding {read,write}_ready_o signal on the same tick as or before
--- {read,write}_enable_i.  In other words enable MUST NOT be asserted without a
--- corresponding enable and ready.  {read,write}_address_o will increment when
--- the corresponding enable is asserted.
+-- {read,write}_access_i.  In other words enable MUST NOT be asserted without a
+-- corresponding enable and ready.  {read,write}_access_address_o will 
+-- unconditionally increment -- when the corresponding enable is asserted,
+-- whereas {read,write}_reserve_address_o only increments on a successful
+-- reserve/ready handshake.
 --
--- For access without reservation assign:
---      _enable_i => valid and ready,
---      _reserve_i => valid,
---      _ready_o => ready,
--- Otherwise use reserve/ready handshake to ensure FIFO space is available
--- before advancing address with enable.
+--
+-- If ENABLE_{READ,WRITE}_RESERVE is not set then {read,write}_reserve_i and
+-- {read,write}_reserve_address_o should not be used and instead the access
+-- address will advance on a successful ready/access exchange.
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -22,22 +28,26 @@ use work.support.all;
 entity async_fifo_address is
     generic (
         ADDRESS_WIDTH : natural;
+        ENABLE_READ_RESERVE : boolean;
+        ENABLE_WRITE_RESERVE : boolean;
         MAX_DELAY : real := 4.0
     );
     port (
         write_clk_i : in std_ulogic;
         write_reset_i : in std_ulogic := '0';
-        write_reserve_i : in std_ulogic;
-        write_enable_i : in std_ulogic;
+        write_reserve_i : in std_ulogic := '0';
+        write_access_i : in std_ulogic;
         write_ready_o : out std_ulogic := '1';
-        write_address_o : out unsigned(ADDRESS_WIDTH-1 downto 0);
+        write_reserve_address_o : out unsigned(ADDRESS_WIDTH-1 downto 0);
+        write_access_address_o : out unsigned(ADDRESS_WIDTH-1 downto 0);
 
         read_clk_i : in std_ulogic;
         read_reset_i : in std_ulogic := '0';
-        read_reserve_i : in std_ulogic;
-        read_enable_i : in std_ulogic;
+        read_reserve_i : in std_ulogic := '0';
+        read_access_i : in std_ulogic;
         read_ready_o : out std_ulogic := '0';
-        read_address_o : out unsigned(ADDRESS_WIDTH-1 downto 0)
+        read_reserve_address_o : out unsigned(ADDRESS_WIDTH-1 downto 0);
+        read_access_address_o : out unsigned(ADDRESS_WIDTH-1 downto 0)
     );
 end;
 
@@ -57,6 +67,7 @@ architecture arch of async_fifo_address is
     signal sync_write_address : std_ulogic_vector(ADDRESS_RANGE);
     signal sync_read_address : std_ulogic_vector(ADDRESS_RANGE);
 
+    -- See comment below against write_ready_o calculation for this mask
     constant COMPARE_MASK : std_ulogic_vector(ADDRESS_RANGE) := (
         ADDRESS_WIDTH downto ADDRESS_WIDTH-1 => '1',
         others => '0');
@@ -95,8 +106,9 @@ architecture arch of async_fifo_address is
     -- advanced unconditionally, whereas the reserve address is guarded; see
     -- notes at top of this file for application notes.
     procedure advance(
+        enable_reserve : boolean;
         reset : std_ulogic; ready : std_ulogic;
-        reserve : std_ulogic; enable : std_ulogic;
+        do_reserve : std_ulogic; do_access : std_ulogic;
         access_address : unsigned; reserve_address : unsigned;
         variable next_access_address : out unsigned(ADDRESS_RANGE);
         variable next_reserve_address : out unsigned(ADDRESS_RANGE)) is
@@ -104,20 +116,35 @@ architecture arch of async_fifo_address is
         if reset then
             next_access_address := (others => '0');
             next_reserve_address := (others => '0');
-        else
-            next_access_address := access_address;
-            next_reserve_address := reserve_address;
-            if enable then
+        elsif enable_reserve then
+            -- Maintain reserve and access addresses separately.  Access address
+            -- advances without guard, relies on prior reservation.
+            if do_access then
                 next_access_address := access_address + 1;
+            else
+                next_access_address := access_address;
             end if;
-            if reserve and ready then
+            if do_reserve and ready then
                 next_reserve_address := reserve_address + 1;
+            else
+                next_reserve_address := reserve_address;
+            end if;
+        else
+            assert not do_reserve
+                report "Reservation not enabled in this mode"
+                severity failure;
+
+            -- Simplified access pattern when reserve disabled, do_reserve is
+            -- ignored, advance both addresses together.
+            if do_access and ready then
+                next_access_address := access_address + 1;
+                next_reserve_address := access_address + 1;
+            else
+                next_access_address := access_address;
+                next_reserve_address := access_address;
             end if;
         end if;
     end;
-
-    signal test_sync_write_address : unsigned(ADDRESS_RANGE);
-    signal test_sync_read_address : unsigned(ADDRESS_RANGE);
 
 begin
     -- Synchronise each bit individually.  It is essential that at most one bit
@@ -140,8 +167,6 @@ begin
             bit_o => sync_read_address(i)
         );
     end generate;
-    test_sync_write_address <= gray_to_unsigned(sync_write_address);
-    test_sync_read_address <= gray_to_unsigned(sync_read_address);
 
 
     -- Write
@@ -151,14 +176,15 @@ begin
     begin
         if rising_edge(write_clk_i) then
             advance(
+                ENABLE_WRITE_RESERVE,
                 write_reset_i, write_ready_o,
-                write_reserve_i, write_enable_i,
+                write_reserve_i, write_access_i,
                 write_address, write_reserve,
                 next_write_address, next_reserve_address);
 
             write_address <= next_write_address;
-            gray_write_address <= unsigned_to_gray(next_write_address);
             write_reserve <= next_reserve_address;
+            gray_write_address <= unsigned_to_gray(next_write_address);
 
             -- The FULL comparision is a bit more tricky than for EMPTY.  First
             -- of all, we need the top bits to be unequal, because the FIFO is
@@ -172,7 +198,8 @@ begin
                 (sync_read_address xor COMPARE_MASK));
         end if;
     end process;
-    write_address_o <= write_address(ADDRESS_WIDTH-1 downto 0);
+    write_reserve_address_o <= write_reserve(ADDRESS_WIDTH-1 downto 0);
+    write_access_address_o <= write_address(ADDRESS_WIDTH-1 downto 0);
 
 
     -- Read
@@ -182,14 +209,15 @@ begin
     begin
         if rising_edge(read_clk_i) then
             advance(
+                ENABLE_READ_RESERVE,
                 read_reset_i, read_ready_o,
-                read_reserve_i, read_enable_i,
+                read_reserve_i, read_access_i,
                 read_address, read_reserve,
                 next_read_address, next_reserve_address);
 
             read_address <= next_read_address;
-            gray_read_address <= unsigned_to_gray(next_read_address);
             read_reserve <= next_reserve_address;
+            gray_read_address <= unsigned_to_gray(next_read_address);
 
             -- FIFO is empty when read reserve has caught up with write address
             read_ready_o <= not to_std_ulogic(
@@ -197,5 +225,6 @@ begin
                 sync_write_address);
         end if;
     end process;
-    read_address_o <= read_address(ADDRESS_WIDTH-1 downto 0);
+    read_reserve_address_o <= read_reserve(ADDRESS_WIDTH-1 downto 0);
+    read_access_address_o <= read_address(ADDRESS_WIDTH-1 downto 0);
 end;
