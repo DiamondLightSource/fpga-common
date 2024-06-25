@@ -2,4 +2,6 @@
 
 FPGA_PART = xcku085-flva1517-1-c
 
+CONSTR_FILES += $(BOARD_DIR)/config.xdc
+
 # vim: set filetype=make:

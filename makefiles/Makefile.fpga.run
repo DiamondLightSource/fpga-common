@@ -4,25 +4,28 @@ include $(CONFIG)
 include $(FPGA_COMMON)/makefiles/Makefile.core
 include $(FPGA_COMMON)/makefiles/Makefile.common
 
+
+# ------------------------------------------------------------------------------
+# Create default settings for builds
+
+BLOCK_DESIGNS =
+
+CONSTR_FILES = built_dir/top_pins.xdc
+CONSTR_FILES += $(wildcard $(CONSTR_DIR)/*.xdc)
+
+VHD_DIRS = $(VHD_DIR)
+
+BUILT = top_entity.vhd
+
+
+# ------------------------------------------------------------------------------
+# Overrides for defaults
+
 # Pull in any project VHDL definitions
 -include $(CALLER_TOP)/FPGA_DEFS
 
 # Pick up board specific definitions
 include $(BOARD_DIR)/CONFIG
-
-
-# ------------------------------------------------------------------------------
-
-CONSTR_FILES += built_dir/top_pins.xdc
-CONSTR_FILES += $(wildcard $(CONSTR_DIR)/*.xdc)
-
-VHD_DIRS += $(VHD_DIR)
-VHD_DIRS += $(FPGA_COMMON)/vhd
-
-BUILT += top_entity.vhd
-BUILT += make_version.tcl
-
-SOURCES := $(shell find $(VHD_DIRS) -name \*.vhd)
 
 
 # ------------------------------------------------------------------------------
@@ -83,9 +86,11 @@ BUILD_TOP_ARGS += BLOCK_DESIGNS
 BUILD_TOP_ARGS += VHD_DIRS
 BUILD_TOP_ARGS += CONSTR_FILES
 
+SOURCES := $(shell find $(VHD_DIRS) -name \*.vhd)
 BITFILE_DEPENDS += $(BUILT:%=built_dir/%)
 BITFILE_DEPENDS += $(BLOCK_DESIGNS:%=%/BD_DONE)
 BITFILE_DEPENDS += $(SOURCES)
+
 
 # Build final target
 $(PROJECT_NAME).bit: $(BITFILE_DEPENDS)

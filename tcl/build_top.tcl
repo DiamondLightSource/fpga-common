@@ -84,10 +84,12 @@ set_property STEPS.SYNTH_DESIGN.ARGS.ASSERT true [get_runs synth_1]
 set_property STEPS.SYNTH_DESIGN.ARGS.FLATTEN_HIERARCHY none [get_runs synth_1]
 
 
-# Add script for rebuilding version file to synthesis step
+# Add script for rebuilding version file to synthesis step, if required
 set make_version \
-    [add_files -norecurse built_dir/make_version.tcl -fileset utils_1]
-set_property STEPS.SYNTH_DESIGN.TCL.PRE $make_version [get_runs synth_1]
+    [add_files -quiet -norecurse built_dir/make_version.tcl -fileset utils_1]
+if {[llength $make_version]} {
+    set_property STEPS.SYNTH_DESIGN.TCL.PRE $make_version [get_runs synth_1]
+}
 
 
 # This setting is recommended by Xilinx to help achieve timing closure for the
