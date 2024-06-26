@@ -3,7 +3,9 @@ set project_name $env(PROJECT_NAME)
 set fpga_part $env(FPGA_PART)
 set block_designs $env(BLOCK_DESIGNS)
 set vhd_dirs $env(VHD_DIRS)
+set vhd_files $env(VHD_FILES)
 set constr_files $env(CONSTR_FILES)
+set constr_tcl $env(CONSTR_TCL)
 
 
 set hierarchy rebuilt
@@ -45,7 +47,10 @@ set_msg_config -id {Vivado 12-1790} -suppress
 # Add our files and set them to VHDL 2008.  This needs to be done before reading
 # any externally generated files, particularly the interconnect.
 add_files built_dir
-foreach dir $vhd_dirs { add_files $dir }
+# foreach dir $vhd_dirs { add_files $dir }
+add_files $vhd_dirs
+
+if [llength $vhd_files] { add_files -norecurse $vhd_files }
 set_property FILE_TYPE "VHDL 2008" [get_files *.vhd]
 
 
@@ -60,6 +65,7 @@ set_property top top [current_fileset]
 
 # Load the constraints
 read_xdc $constr_files
+add_files -fileset constrs_1 -norecurse $constr_tcl
 
 foreach name {post_synth pblocks} {
     set xdc [get_files -quiet $name.xdc]
@@ -87,7 +93,7 @@ set_property STEPS.SYNTH_DESIGN.ARGS.FLATTEN_HIERARCHY none [get_runs synth_1]
 # Add script for rebuilding version file to synthesis step, if required
 set make_version \
     [add_files -quiet -norecurse built_dir/make_version.tcl -fileset utils_1]
-if {[llength $make_version]} {
+if [llength $make_version] {
     set_property STEPS.SYNTH_DESIGN.TCL.PRE $make_version [get_runs synth_1]
 }
 
