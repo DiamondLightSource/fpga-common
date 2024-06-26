@@ -286,22 +286,22 @@ pad_FMC2_HB_N[21]               G25
 
 # Bank 64  2.5V  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-pad_AMC_TX_WEN[17]              AK18    LVCMOS25
-pad_AMC_TX_WEN[18]              AH17    LVCMOS25
-pad_AMC_TX_WEN[19]              AF18    LVCMOS25
-pad_AMC_TX_WEN[20]              AD16    LVCMOS25
-pad_AMC_TX_DATA[17]             AK17    LVCMOS25
-pad_AMC_TX_DATA[18]             AJ18    LVCMOS25
-pad_AMC_TX_DATA[19]             AH19    LVCMOS25
-pad_AMC_TX_DATA[20]             AE16    LVCMOS25
-pad_AMC_RX_WEN[17]              AP16    LVCMOS25
-pad_AMC_RX_WEN[18]              AJ16    LVCMOS25
-pad_AMC_RX_WEN[19]              AG17    LVCMOS25
-pad_AMC_RX_WEN[20]              AE18    LVCMOS25
-pad_AMC_RX_DATA[17]             AR16    LVCMOS25
-pad_AMC_RX_DATA[18]             AK16    LVCMOS25
-pad_AMC_RX_DATA[19]             AJ19    LVCMOS25
-pad_AMC_RX_DATA[20]             AF19    LVCMOS25
+pad_AMC_MLVDS_TX_WEN[17]              AK18    LVCMOS25
+pad_AMC_MLVDS_TX_WEN[18]              AH17    LVCMOS25
+pad_AMC_MLVDS_TX_WEN[19]              AF18    LVCMOS25
+pad_AMC_MLVDS_TX_WEN[20]              AD16    LVCMOS25
+pad_AMC_MLVDS_TX_DATA[17]             AK17    LVCMOS25
+pad_AMC_MLVDS_TX_DATA[18]             AJ18    LVCMOS25
+pad_AMC_MLVDS_TX_DATA[19]             AH19    LVCMOS25
+pad_AMC_MLVDS_TX_DATA[20]             AE16    LVCMOS25
+pad_AMC_MLVDS_RX_WEN[17]              AP16    LVCMOS25
+pad_AMC_MLVDS_RX_WEN[18]              AJ16    LVCMOS25
+pad_AMC_MLVDS_RX_WEN[19]              AG17    LVCMOS25
+pad_AMC_MLVDS_RX_WEN[20]              AE18    LVCMOS25
+pad_AMC_MLVDS_RX_DATA[17]             AR16    LVCMOS25
+pad_AMC_MLVDS_RX_DATA[18]             AK16    LVCMOS25
+pad_AMC_MLVDS_RX_DATA[19]             AJ19    LVCMOS25
+pad_AMC_MLVDS_RX_DATA[20]             AF19    LVCMOS25
 
 pad_FPGA_UART_RX                AP19    LVCMOS25
 pad_FPGA_UART_TX                AP18    LVCMOS25
@@ -312,22 +312,22 @@ pad_EXT_SDA                     AU20    LVCMOS25        PULLUP
 pad_SLAVE_SCL                   AN16    LVCMOS25        PULLUP
 pad_SLAVE_SDA                   AM16    LVCMOS25        PULLUP
 
-pad_AMC_TX_P[12]                AW20    LVDS_25
-pad_AMC_TX_N[12]                AW19    LVDS_25
-pad_AMC_TX_P[13]                AV19    LVDS_25
-pad_AMC_TX_N[13]                AW18    LVDS_25
-pad_AMC_TX_P[14]                AT19    LVDS_25
-pad_AMC_TX_N[14]                AU19    LVDS_25
-pad_AMC_TX_P[15]                AR20    LVDS_25
-pad_AMC_TX_N[15]                AT20    LVDS_25
-pad_AMC_RX_P[12]                AV18    LVDS_25
-pad_AMC_RX_N[12]                AV17    LVDS_25
-pad_AMC_RX_P[13]                AU17    LVDS_25
-pad_AMC_RX_N[13]                AU16    LVDS_25
-pad_AMC_RX_P[14]                AT18    LVDS_25
-pad_AMC_RX_N[14]                AT17    LVDS_25
-pad_AMC_RX_P[15]                AR18    LVDS_25
-pad_AMC_RX_N[15]                AR17    LVDS_25
+pad_AMC_LVDS_TX_P[12]                AW20    LVDS_25
+pad_AMC_LVDS_TX_N[12]                AW19    LVDS_25
+pad_AMC_LVDS_TX_P[13]                AV19    LVDS_25
+pad_AMC_LVDS_TX_N[13]                AW18    LVDS_25
+pad_AMC_LVDS_TX_P[14]                AT19    LVDS_25
+pad_AMC_LVDS_TX_N[14]                AU19    LVDS_25
+pad_AMC_LVDS_TX_P[15]                AR20    LVDS_25
+pad_AMC_LVDS_TX_N[15]                AT20    LVDS_25
+pad_AMC_LVDS_RX_P[12]                AV18    LVDS_25
+pad_AMC_LVDS_RX_N[12]                AV17    LVDS_25
+pad_AMC_LVDS_RX_P[13]                AU17    LVDS_25
+pad_AMC_LVDS_RX_N[13]                AU16    LVDS_25
+pad_AMC_LVDS_RX_P[14]                AT18    LVDS_25
+pad_AMC_LVDS_RX_N[14]                AT17    LVDS_25
+pad_AMC_LVDS_RX_P[15]                AR18    LVDS_25
+pad_AMC_LVDS_RX_N[15]                AR17    LVDS_25
 
 pad_SYSCLK100_P                 AM19    LVDS_25
 pad_SYSCLK100_N                 AN19    LVDS_25
@@ -403,7 +403,7 @@ pad_FP_LED2B_K                  AG15    LVCMOS25
 pad_SHARED_PAYLOAD_SCL          AF12    LVCMOS25        PULLUP
 pad_SHARED_PAYLOAD_SDA          AD14    LVCMOS25        PULLUP
 
-pad_PERST_n                     AM15    LVCMOS25
+pad_PERSTN0                     AM15    LVCMOS25
 
 pad_SYSRESET_L                  AD13    LVCMOS25        PULLUP
 
@@ -585,14 +585,14 @@ pad_MGT126_REFCLK_N             AD33
 pad_RTM_GTP_CLK3_IN_P           AB32
 pad_RTM_GTP_CLK3_IN_N           AB33
 
-pad_AMC_TX_1_0_P[0]             AD36
-pad_AMC_TX_1_0_N[0]             AD37
-pad_AMC_TX_1_0_P[1]             AE34
-pad_AMC_TX_1_0_N[1]             AE35
-pad_AMC_RX_1_0_P[0]             AC38
-pad_AMC_RX_1_0_N[0]             AC39
-pad_AMC_RX_1_0_P[1]             AE38
-pad_AMC_RX_1_0_N[1]             AE39
+pad_AMC_ETH_TX_P[0]             AD36
+pad_AMC_ETH_TX_N[0]             AD37
+pad_AMC_ETH_TX_P[1]             AE34
+pad_AMC_ETH_TX_N[1]             AE35
+pad_AMC_ETH_RX_P[0]             AC38
+pad_AMC_ETH_RX_N[0]             AC39
+pad_AMC_ETH_RX_P[1]             AE38
+pad_AMC_ETH_RX_N[1]             AE39
 
 pad_RTM_GTP13_TX_P              AG34
 pad_RTM_GTP13_TX_N              AG35
@@ -659,43 +659,43 @@ pad_FMC2_DP_M2C_N[7]            U39
 pad_MGT224_REFCLK_P             AT10
 pad_MGT224_REFCLK_N             AT9
 
-pad_AMC_TX_7_4_P[4]             AW8
-pad_AMC_TX_7_4_N[4]             AW7
-pad_AMC_TX_7_4_P[5]             AV6
-pad_AMC_TX_7_4_N[5]             AV5
-pad_AMC_TX_7_4_P[6]             AU8
-pad_AMC_TX_7_4_N[6]             AU7
-pad_AMC_TX_7_4_P[7]             AT6
-pad_AMC_TX_7_4_N[7]             AT5
+pad_AMC_PCI_TX_P[4]             AW8
+pad_AMC_PCI_TX_N[4]             AW7
+pad_AMC_PCI_TX_P[5]             AV6
+pad_AMC_PCI_TX_N[5]             AV5
+pad_AMC_PCI_TX_P[6]             AU8
+pad_AMC_PCI_TX_N[6]             AU7
+pad_AMC_PCI_TX_P[7]             AT6
+pad_AMC_PCI_TX_N[7]             AT5
 
-pad_AMC_RX_7_4_P[4]             AW4
-pad_AMC_RX_7_4_N[4]             AW3
-pad_AMC_RX_7_4_P[5]             AV2
-pad_AMC_RX_7_4_N[5]             AV1
-pad_AMC_RX_7_4_P[6]             AU4
-pad_AMC_RX_7_4_N[6]             AU3
-pad_AMC_RX_7_4_P[7]             AT2
-pad_AMC_RX_7_4_N[7]             AT1
+pad_AMC_PCI_RX_P[4]             AW4
+pad_AMC_PCI_RX_N[4]             AW3
+pad_AMC_PCI_RX_P[5]             AV2
+pad_AMC_PCI_RX_N[5]             AV1
+pad_AMC_PCI_RX_P[6]             AU4
+pad_AMC_PCI_RX_N[6]             AU3
+pad_AMC_PCI_RX_P[7]             AT2
+pad_AMC_PCI_RX_N[7]             AT1
 
 
 # Quad 225 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-pad_AMC_TX_11_8_P[8]            AR8
-pad_AMC_TX_11_8_N[8]            AR7
-pad_AMC_TX_11_8_P[9]            AP6
-pad_AMC_TX_11_8_N[9]            AP5
-pad_AMC_TX_11_8_P[10]           AN8
-pad_AMC_TX_11_8_N[10]           AN7
-pad_AMC_TX_11_8_P[11]           AM6
-pad_AMC_TX_11_8_N[11]           AM5
-pad_AMC_RX_11_8_P[8]            AR4
-pad_AMC_RX_11_8_N[8]            AR3
-pad_AMC_RX_11_8_P[9]            AP2
-pad_AMC_RX_11_8_N[9]            AP1
-pad_AMC_RX_11_8_P[10]           AN4
-pad_AMC_RX_11_8_N[10]           AN3
-pad_AMC_RX_11_8_P[11]           AM2
-pad_AMC_RX_11_8_N[11]           AM1
+pad_AMC_PCI_TX_P[8]            AR8
+pad_AMC_PCI_TX_N[8]            AR7
+pad_AMC_PCI_TX_P[9]            AP6
+pad_AMC_PCI_TX_N[9]            AP5
+pad_AMC_PCI_TX_P[10]           AN8
+pad_AMC_PCI_TX_N[10]           AN7
+pad_AMC_PCI_TX_P[11]           AM6
+pad_AMC_PCI_TX_N[11]           AM5
+pad_AMC_PCI_RX_P[8]            AR4
+pad_AMC_PCI_RX_N[8]            AR3
+pad_AMC_PCI_RX_P[9]            AP2
+pad_AMC_PCI_RX_N[9]            AP1
+pad_AMC_PCI_RX_P[10]           AN4
+pad_AMC_PCI_RX_N[10]           AN3
+pad_AMC_PCI_RX_P[11]           AM2
+pad_AMC_PCI_RX_N[11]           AM1
 
 
 # Quad 226 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
