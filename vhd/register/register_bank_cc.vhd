@@ -7,6 +7,10 @@ use ieee.numeric_std.all;
 use work.register_defs.all;
 
 entity register_bank_cc is
+    generic (
+        -- Should match period of the fastest clock frequency
+        MAX_DELAY : real := 4.0
+    );
     port (
         clk_in_i : in std_ulogic;       -- Master clock
         clk_out_i : in std_ulogic;      -- Slave clock
@@ -52,7 +56,9 @@ architecture arch of register_bank_cc is
 
 begin
     -- Writing: need to send data and address together
-    write_cc : entity work.cross_clocks_write port map (
+    write_cc : entity work.cross_clocks_write generic map (
+        MAX_DELAY => MAX_DELAY
+    ) port map (
         clk_in_i => clk_in_i,
         clk_out_ok_i => clk_out_ok_i,
         strobe_i => write_strobe_i,
@@ -73,7 +79,9 @@ begin
 
 
     -- Reading: need special entity for bidirection sending
-    read_cc : entity work.cross_clocks_write_read port map (
+    read_cc : entity work.cross_clocks_write_read generic map (
+        MAX_DELAY => MAX_DELAY
+    ) port map (
         clk_in_i => clk_in_i,
         clk_out_ok_i => clk_out_ok_i,
         strobe_i => read_strobe_i,

@@ -39,6 +39,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity cross_clocks_write_read is
+    generic (
+        -- Should match period of the fastest clock frequency
+        MAX_DELAY : real := 4.0
+    );
     port (
         clk_in_i : in std_ulogic;
         -- clk_out status on clk_in domain.  If this is '0' then all register
@@ -75,8 +79,8 @@ architecture arch of cross_clocks_write_read is
     -- Ensure data is valid for receiver.  This custom attribute is picked up
     -- by the appropriate matching constraint
     attribute max_delay_from : string;
-    attribute max_delay_from of write_data : signal is "TRUE";
-    attribute max_delay_from of read_data : signal is "TRUE";
+    attribute max_delay_from of write_data : signal is to_string(MAX_DELAY);
+    attribute max_delay_from of read_data : signal is to_string(MAX_DELAY);
 
 begin
     sync : entity work.cross_clocks port map (

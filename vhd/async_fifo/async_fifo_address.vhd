@@ -85,8 +85,10 @@ architecture arch of async_fifo_address is
     -- onto the source bit; and 2/ we cannot set DONT_TOUCH on input ports (and
     -- this is required).
     attribute max_delay_from : string;
-    attribute max_delay_from of gray_write_address : signal is "TRUE";
-    attribute max_delay_from of gray_read_address : signal is "TRUE";
+    attribute max_delay_from of gray_write_address :
+        signal is to_string(MAX_DELAY);
+    attribute max_delay_from of gray_read_address :
+        signal is to_string(MAX_DELAY);
     --
     -- The attribute values above need to be replaced with to_string(MAX_DELAY)
     -- and the constraints file entry needs to be replaced with a special

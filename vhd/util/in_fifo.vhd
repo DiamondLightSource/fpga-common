@@ -10,7 +10,9 @@ use work.support.all;
 
 entity in_fifo is
     generic (
-        FIFO_WIDTH : natural
+        FIFO_WIDTH : natural;
+        -- Should match period of the fastest clock frequency
+        MAX_DELAY : real := 4.0
     );
     port (
         clk_in_i : in std_ulogic;
@@ -59,7 +61,7 @@ architecture arch of in_fifo is
     attribute ASYNC_REG of in_ptr_out : signal is "TRUE";
 
     attribute DONT_TOUCH of in_ptr_sync : signal is "TRUE";
-    attribute max_delay_from of in_ptr_sync : signal is "TRUE";
+    attribute max_delay_from of in_ptr_sync : signal is to_string(MAX_DELAY);
 
     attribute DONT_TOUCH of data_o : signal is "TRUE";
     -- Might be better as a max_delay...?

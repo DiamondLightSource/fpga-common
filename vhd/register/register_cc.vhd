@@ -7,6 +7,10 @@ use ieee.numeric_std.all;
 use work.register_defs.all;
 
 entity register_cc is
+    generic (
+        -- Should match period of the fastest clock frequency
+        MAX_DELAY : real := 4.0
+    );
     port (
         clk_in_i : in std_ulogic;       -- Master clock
         clk_out_i : in std_ulogic;      -- Slave clock
@@ -37,7 +41,9 @@ end;
 architecture arch of register_cc is
 begin
     gen_write : for i in write_strobe_i'RANGE generate
-        write : entity work.cross_clocks_write port map (
+        write : entity work.cross_clocks_write generic map (
+            MAX_DELAY => MAX_DELAY
+        ) port map (
             clk_in_i => clk_in_i,
             clk_out_ok_i => clk_out_ok_i,
             strobe_i => write_strobe_i(i),
@@ -52,7 +58,9 @@ begin
     end generate;
 
     gen_read : for i in read_strobe_i'RANGE generate
-        read : entity work.cross_clocks_read port map (
+        read : entity work.cross_clocks_read generic map (
+            MAX_DELAY => MAX_DELAY
+        ) port map (
             clk_in_i => clk_in_i,
             clk_out_ok_i => clk_out_ok_i,
             strobe_i => read_strobe_i(i),
