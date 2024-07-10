@@ -1,5 +1,11 @@
 -- Board specific pin swaps on FMC pins
 
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+use work.support.all;
+
 package board_fmc_swaps is
     -- Array of bits identifying for each FMC user IO bank which lanes are
     -- swapped on input to the board.  Affected pairs need to be swapped when

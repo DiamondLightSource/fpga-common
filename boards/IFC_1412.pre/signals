@@ -76,6 +76,7 @@ pad_MGT224_REFCLK_{P,N}         in
 # Acquisition clock from LMK U173 CLKOUT0
 pad_FPGA_ACQCLK_{P,N}           in
 
+# AMC TCLKB routeable from backplane
 pad_AMC_TCLKB_IN_{P,N}          in
 
 pad_E10G_CLK{1,2,3}_{P,N}       in

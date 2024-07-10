@@ -155,8 +155,8 @@ pad_RTM_GTP_CLK3_IN_{P,N}       in
 # FMC presence pins, pulled to ground when card is present.  Note that there
 # doesn't appear to be a pull-up on these signals, so may need to be pulled up
 # by the IO port
-pad_FMC{1,2}_PRSNT_M2C_L            in
-pad_FMC{1,2}_HSPC_PRSNT_M2C_L       in
+pad_FMC{1,2}_PRSNT_L                in
+pad_FMC{1,2}_HSPC_PRSNT_L           in
 
 # Power supply status
 #   I'm not happy that PG_C2M is driven by the FPGA
