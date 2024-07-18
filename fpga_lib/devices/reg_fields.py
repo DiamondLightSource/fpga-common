@@ -179,17 +179,6 @@ class FieldWriter(object):
                 self._write_register(reg, self.__registers[reg])
 
 
-    # Context manager support
-    def __enter__(self):
-        self.enable_write(False)
-
-    def __exit__(self, *args):
-        self.enable_write(True)
-
-        # Flush all dirty registers
-        self._write_fields()
-
-
     # Returns a list of all the field names
     def _get_fields(self):
         return self.__fields.keys()

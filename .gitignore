@@ -1,3 +1,10 @@
 # Python droppings need to be ignored
 *.pyc
 __pycache__
+
+# Somewhere to put stuff out of the way for now
+/ignore
+
+# Other stuff to ignore for now
+/IFC-misc
+/docs
