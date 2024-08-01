@@ -24,6 +24,7 @@ from .setup_lmk import *
 #   CLKOUT14 @ 250 MHz  => CK to bank 24 GC
 #   CLKOUT15            => (unused)
 
+# VCO runs at 6GHz with 2GHz intermediate frequency locked to 100MHz crystal
 class SysPll2Config(Pll2Config):
     d = 3
     double_r = True
@@ -65,12 +66,48 @@ class SysConfig(Config):
     outputs = SysClockConfig
     sync_ports = [4, 5, 6, 7]
 
-# # Test hacks
-# SysConfig.pll2 = None
-# SysClockCK.div = 1
-# SysClockWCK.div = 1
-# SysConfig.sync_ports = []
 
 
-def setup_sys_lmk(_lmk):
-    return setup_lmk(_lmk, SysConfig)
+class SysPll2Config300(Pll2Config):
+    d = 5
+    double_r = True
+    n = 6
+    prop = 37
+
+class SysClockCK300(ClockOut):
+    div = 4
+    drv0 = 'HSDS8mA'
+    slew = 0
+
+class SysClockWCK300(ClockOut):
+    div = 1
+    drv0 = 'HSDS8mA'
+    drv1 = 'HSDS8mA'
+    slew = 0
+
+SysClockConfig300 = [
+    None,
+    None,
+    None,
+    None,
+    SysClockWCK300,    # 8, 9: WCK_A to SGRAM bank A and QBC bank 24
+    SysClockWCK300,    # 10, 11: WCK_B to SGRAM bank B and QBC bank 25
+    SysClockCK300,     # 12: CK to SGRAM
+    SysClockCK300,     # 14: CLK to GC bank 24
+]
+
+
+# Special 300 MHz configuration with 1.2GHz intermediate frequency
+class SysConfig300(SysConfig):
+    pll2 = SysPll2Config300
+    outputs = SysClockConfig300
+
+CONFIGS = {
+    '250' : SysConfig,
+    '300' : SysConfig300,
+}
+
+def setup_sys_lmk(_lmk, config = '250'):
+    if isinstance(config, str):
+        config = CONFIGS[config]
+    return setup_lmk(_lmk, config)
