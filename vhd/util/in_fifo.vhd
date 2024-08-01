@@ -10,107 +10,97 @@ use work.support.all;
 
 entity in_fifo is
     generic (
-        FIFO_WIDTH : natural;
-        -- Should match period of the fastest clock frequency
-        MAX_DELAY : real := 4.0
+        FIFO_WIDTH : natural
     );
     port (
         clk_in_i : in std_ulogic;
         data_i : in std_ulogic_vector(FIFO_WIDTH-1 downto 0);
 
         clk_out_i : in std_ulogic;
-        data_o : out std_ulogic_vector(FIFO_WIDTH-1 downto 0);
-
+        data_o : out std_ulogic_vector(FIFO_WIDTH-1 downto 0)
+            := (others => '0');
+        -- reset_i must be strobed to establish normal operation.  error_o may
+        -- be asserted for about 12 ticks until reset is complete
         reset_i : in std_ulogic;
-
-        -- The following reports are somewhat approximate.
-        depth_o : out unsigned(2 downto 0);
-        empty_o : out std_ulogic := '0';
-        nearly_empty_o : out std_ulogic := '0';
-        nearly_full_o : out std_ulogic := '0';
-        full_o : out std_ulogic := '0'
+        -- This error indication will detect gross errors in phase between
+        -- clk_in_i and clk_out_i and may detect most other errors.
+        error_o : out std_ulogic := '0'
     );
 end;
 
 architecture arch of in_fifo is
-    -- The following constants are fudge factors for safely locating the in and
-    -- out pointers and detecting underflow or overflow
-    constant RESET_OFFSET : natural := 7;
-    constant DEPTH_OFFSET : natural := 5;
-    constant EMPTY_OFFSET : natural := 7;
-    constant NEARLY_EMPTY_OFFSET : natural := 6;
-    constant NEARLY_FULL_OFFSET : natural := 1;
-    constant FULL_OFFSET : natural := 0;
-
-    signal fifo : vector_array(0 to 7)(FIFO_WIDTH-1 downto 0)
+    constant FIFO_DEPTH : natural := 8;
+    subtype FIFO_PTR is natural range 0 to FIFO_DEPTH-1;
+    signal fifo : vector_array(FIFO_PTR)(FIFO_WIDTH-1 downto 0)
         := (others => (others => '0'));
-    signal in_ptr : std_ulogic_vector(2 downto 0) := "000";
-    signal out_ptr : std_ulogic_vector(2 downto 0) := "000";
 
-    signal in_ptr_sync : std_ulogic_vector(2 downto 0) := "000";
-    signal in_ptr_out : std_ulogic_vector(2 downto 0) := "000";
+    signal in_ptr : FIFO_PTR := 0;
+    signal out_ptr : FIFO_PTR := 0;
 
-    signal depth : unsigned(2 downto 0) := "000";
+    -- Stretched and synchronised resets
+    signal in_reset : std_ulogic;
+    signal out_reset : std_ulogic;
 
-    attribute ASYNC_REG : string;
-    attribute DONT_TOUCH : string;
-    attribute max_delay_from : string;
-    attribute false_path_to : string;
+    -- If the input and output clocks are out of step there will be a
+    -- discrepancy between the input and output phases
+    signal phase_fifo : std_ulogic_vector(FIFO_PTR) := (others => '0');
+    signal in_phase : std_ulogic := '0';
+    signal out_phase : std_ulogic := '0';
 
-    attribute ASYNC_REG of in_ptr_sync : signal is "TRUE";
-    attribute ASYNC_REG of in_ptr_out : signal is "TRUE";
-
-    attribute DONT_TOUCH of in_ptr_sync : signal is "TRUE";
-    attribute max_delay_from of in_ptr_sync : signal is to_string(MAX_DELAY);
-
-    attribute DONT_TOUCH of data_o : signal is "TRUE";
-    -- Might be better as a max_delay...?
-    attribute false_path_to of data_o : signal is "TRUE";
-
-    function add(value : std_ulogic_vector; step : integer := 1)
-        return std_ulogic_vector is
-    begin
-        return unsigned_to_gray(gray_to_unsigned(value) + step);
-    end;
+    -- It will take one or two ticks of the common clock for reset to propagate
+    -- from out to in, after which we want the in pointer to be around half the
+    -- FIFO ahead.
+    constant IN_PTR_RESET : FIFO_PTR := FIFO_DEPTH/2 + 2;
+    constant OUT_PTR_RESET : FIFO_PTR := 0;
 
 begin
-    -- Writing to the FIFO is simply free running
+    -- Stretch reset long enough to safely cross through sync_bit
+    stretch : entity work.stretch_pulse generic map (
+        DELAY => 4
+    ) port map (
+        clk_i => clk_out_i,
+        pulse_i => reset_i,
+        pulse_o => out_reset
+    );
+
+    -- Carry reset over to input clock domain
+    sync : entity work.sync_bit port map (
+        clk_i => clk_in_i,
+        bit_i => out_reset,
+        bit_o => in_reset
+    );
+
+
     process (clk_in_i) begin
         if rising_edge(clk_in_i) then
-            fifo(to_integer(unsigned(in_ptr))) <= data_i;
-            in_ptr <= add(in_ptr, 1);
-            in_ptr_sync <= in_ptr;
+            if in_reset then
+                in_ptr <= IN_PTR_RESET;
+                in_phase <= '0';
+            else
+                in_ptr <= (in_ptr + 1) mod FIFO_DEPTH;
+                if in_ptr = FIFO_DEPTH - 1 then
+                    in_phase <= not in_phase;
+                end if;
+            end if;
+            fifo(in_ptr) <= data_i;
+            phase_fifo(in_ptr) <= in_phase;
         end if;
     end process;
 
-    -- Bring in_ptr over to clk_out domain
-    gen_sync : for i in in_ptr'RANGE generate
-        sync : entity work.sync_bit port map (
-            clk_i => clk_out_i,
-            bit_i => in_ptr_sync(i),
-            bit_o => in_ptr_out(i)
-        );
-    end generate;
 
     process (clk_out_i) begin
         if rising_edge(clk_out_i) then
-            if reset_i then
-                out_ptr <= add(in_ptr_out, RESET_OFFSET);
+            if out_reset then
+                out_ptr <= OUT_PTR_RESET;
+                out_phase <= '0';
             else
-                out_ptr <= add(out_ptr, 1);
+                out_ptr <= (out_ptr + 1) mod FIFO_DEPTH;
+                if out_ptr = FIFO_DEPTH - 1 then
+                    out_phase <= not out_phase;
+                end if;
             end if;
-            data_o <= fifo(to_integer(unsigned(out_ptr)));
-
-            depth <= DEPTH_OFFSET +
-                gray_to_unsigned(out_ptr) - gray_to_unsigned(in_ptr_out);
-
-            -- Compute the status flags
-            empty_o <= to_std_ulogic(depth >= EMPTY_OFFSET);
-            nearly_empty_o <= to_std_ulogic(depth >= NEARLY_EMPTY_OFFSET);
-            nearly_full_o <= to_std_ulogic(depth <= NEARLY_FULL_OFFSET);
-            full_o <= to_std_ulogic(depth <= FULL_OFFSET);
+            data_o <= fifo(out_ptr);
+            error_o <= to_std_ulogic(phase_fifo(out_ptr) /= out_phase);
         end if;
     end process;
-
-    depth_o <= depth;
 end;
