@@ -1,10 +1,10 @@
--- FIFO helper definitions
+-- Flow Control helper definitions
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-package fifo_defs is
+package flow_control is
     -- Helper procedure for implementing a simple "ping-pong" buffer.  This
     -- procedure must be called unconditionally in a clocked process and can
     -- be followed by conditionally loading the buffer.  This can safely be used
@@ -25,7 +25,7 @@ package fifo_defs is
         variable load_value : out std_ulogic);
 end;
 
-package body fifo_defs is
+package body flow_control is
     -- Implements a subtly optimised variant of the standard "ping-pong" buffer.
     -- The standard buffer alternates between two states: (input ready, output
     -- not valid), and (input not ready, output valid), with a sustained
