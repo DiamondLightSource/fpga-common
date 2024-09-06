@@ -23,6 +23,53 @@ package flow_control is
         signal valid_out : inout std_ulogic;
         signal ready_out : inout std_ulogic;
         variable load_value : out std_ulogic);
+    procedure update_ping_pong_ready_out(
+        valid_in : std_ulogic;
+        ready_in : std_ulogic;
+        valid_out : std_ulogic;
+        signal ready_out : inout std_ulogic);
+
+
+    -- Implements flow control for a skid buffer.  Designed to be invoked thus:
+    --
+    --  advance_half_skid_buffer(
+    --      data_i.valid, ready,            -- Data in valid, consumer ready
+    --      data_ready_o,                   -- Ready handshake to provider
+    --      skid.valid, load_skid);
+    --  if load_skid then skid <= data_i; end if;
+    --
+    --  if skid.valid then data := skid; else data := data_i; end if;
+    --
+    procedure advance_half_skid_buffer(
+        valid_in : std_ulogic;
+        ready_in : std_ulogic;
+        signal ready_out : inout std_ulogic;
+        signal skid_valid : inout std_ulogic;
+        variable load_skid : out std_ulogic);
+
+
+    -- Helper procedure for state machine advance.  Designed to be called with
+    -- the following pattern of operation:
+    --
+    --      advance_state_machine(
+    --          data_i.valid, ready_i,      -- Incoming state
+    --          state_end, data_o.valid,    -- Current state
+    --          ready_out, load_value)      -- Control
+    --      if load_value then
+    --          if state_end then
+    --              data_o <= advance_data(data_o);
+    --          else
+    --              data_o <= data_i;
+    --          end if;
+    --      end if;
+    --
+    procedure advance_state_machine(
+        valid_in : std_ulogic;                  -- Incoming fresh state valid
+        ready_in : std_ulogic;                  -- Consumer of state is ready
+        state_end : std_ulogic;                 -- Fresh state must be loaded
+        signal valid_out : inout std_ulogic;    -- State machine is valid
+        variable ready_out : out std_ulogic;    -- Ready to consume incoming
+        variable load_value : out std_ulogic);  -- State must be updated
 end;
 
 package body flow_control is
@@ -64,7 +111,7 @@ package body flow_control is
             when "10" =>    -- IDLE: accepting and nothing to send
                 if valid_in then
                     ready_out <= '0';       -- state <= ACTIVE
-                    valid_out <= '1';      --
+                    valid_out <= '1';       --
                     load_value := '1';
                 end if;
             when "01" =>    -- ACTIVE: sending and not accepting
@@ -89,5 +136,64 @@ package body flow_control is
                 ready_out <= '1';
                 valid_out <= '0';
         end case;
+    end;
+
+    procedure update_ping_pong_ready_out(
+        valid_in : std_ulogic;
+        ready_in : std_ulogic;
+        valid_out : std_ulogic;
+        signal ready_out : inout std_ulogic) is
+    begin
+        case std_ulogic_vector'(ready_out & valid_out) is
+            when "10" =>   ready_out <= not valid_in;
+            when "01" =>   ready_out <= ready_in;
+            when "11" =>   ready_out <= ready_in;
+            when others => ready_out <= '1';
+        end case;
+    end;
+
+
+    procedure advance_half_skid_buffer(
+        valid_in : std_ulogic;
+        ready_in : std_ulogic;
+        signal ready_out : inout std_ulogic;
+        signal skid_valid : inout std_ulogic;
+        variable load_skid : out std_ulogic) is
+    begin
+        load_skid := '0';
+        if ready_in then
+            skid_valid <= '0';
+            ready_out <= '1';
+        elsif valid_in and ready_out then
+            skid_valid <= '1';
+            ready_out <= '0';
+            load_skid := '1';
+        end if;
+        assert skid_valid = not ready_out severity failure;
+    end;
+
+
+    procedure advance_state_machine(
+        valid_in : std_ulogic;
+        ready_in : std_ulogic;
+        state_end : std_ulogic;
+        signal valid_out : inout std_ulogic;
+        variable ready_out : out std_ulogic;
+        variable load_value : out std_ulogic) is
+    begin
+        if not ready_in and valid_out then
+            -- We have valid data and no taker, just stand still
+            ready_out := '0';
+            load_value := '0';
+        elsif valid_out and not state_end then
+            -- Advance the state machine, don't fetch fresh data
+            ready_out := '0';
+            load_value := '1';
+        else
+            -- End of state machine, load fresh data
+            ready_out := '1';
+            load_value := '1';
+            valid_out <= valid_in;
+        end if;
     end;
 end;
