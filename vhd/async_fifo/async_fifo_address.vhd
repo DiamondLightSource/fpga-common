@@ -7,13 +7,12 @@
 -- pattern:
 --
 -- {read,write}_reserve_i must be successful (presented on the same cycle as the
--- corresponding {read,write}_ready_o signal on the same tick as or before
--- {read,write}_access_i.  In other words enable MUST NOT be asserted without a
--- corresponding enable and ready.  {read,write}_access_address_o will 
--- unconditionally increment -- when the corresponding enable is asserted,
--- whereas {read,write}_reserve_address_o only increments on a successful
--- reserve/ready handshake.
---
+-- corresponding write_ready_o,ready_valid_o signal on the same tick as or
+-- before {read,write}_access_i.  In other words enable MUST NOT be asserted
+-- without a corresponding enable and ready.  {read,write}_access_address_o will
+-- unconditionally increment when the corresponding enable is asserted, whereas
+-- {read,write}_reserve_address_o only increments on a successful reserve/ready
+-- handshake.
 --
 -- If ENABLE_{READ,WRITE}_RESERVE is not set then {read,write}_reserve_i and
 -- {read,write}_reserve_address_o should not be used and instead the access
@@ -45,7 +44,7 @@ entity async_fifo_address is
         read_reset_i : in std_ulogic := '0';
         read_reserve_i : in std_ulogic := '0';
         read_access_i : in std_ulogic;
-        read_ready_o : out std_ulogic := '0';
+        read_valid_o : out std_ulogic := '0';
         read_reserve_address_o : out unsigned(ADDRESS_WIDTH-1 downto 0);
         read_access_address_o : out unsigned(ADDRESS_WIDTH-1 downto 0)
     );
@@ -195,9 +194,9 @@ begin
             -- because, as explained in Clifford Cummings, "Simulation and
             -- Synthesis Techniques for Asynchronous FIFO Design", the top bit
             -- of the Gray code is back to front.  Other bits must simply agree.
-            write_ready_o <= not write_reset_i and not to_std_ulogic(
-                unsigned_to_gray(next_reserve_address) =
-                (sync_read_address xor COMPARE_MASK));
+            write_ready_o <= not write_reset_i and
+                unsigned_to_gray(next_reserve_address) ?/=
+                    (sync_read_address xor COMPARE_MASK);
         end if;
     end process;
     write_reserve_address_o <= write_reserve(ADDRESS_WIDTH-1 downto 0);
@@ -212,7 +211,7 @@ begin
         if rising_edge(read_clk_i) then
             advance(
                 ENABLE_READ_RESERVE,
-                read_reset_i, read_ready_o,
+                read_reset_i, read_valid_o,
                 read_reserve_i, read_access_i,
                 read_address, read_reserve,
                 next_read_address, next_reserve_address);
@@ -222,9 +221,8 @@ begin
             gray_read_address <= unsigned_to_gray(next_read_address);
 
             -- FIFO is empty when read reserve has caught up with write address
-            read_ready_o <= not to_std_ulogic(
-                unsigned_to_gray(next_reserve_address) =
-                sync_write_address);
+            read_valid_o <=
+                unsigned_to_gray(next_reserve_address) ?/= sync_write_address;
         end if;
     end process;
     read_reserve_address_o <= read_reserve(ADDRESS_WIDTH-1 downto 0);

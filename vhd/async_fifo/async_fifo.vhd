@@ -41,7 +41,7 @@ architecture arch of async_fifo is
     signal read_address : unsigned(FIFO_BITS-1 downto 0);
 
     signal read_enable : std_ulogic;
-    signal read_ready : std_ulogic;
+    signal read_valid : std_ulogic;
 
 begin
     -- Computes in and out addresses together with read/write ready flags.  We
@@ -61,7 +61,7 @@ begin
         read_clk_i => read_clk_i,
         read_reset_i => read_reset_i,
         read_access_i => read_enable,
-        read_ready_o => read_ready,
+        read_valid_o => read_valid,
         read_access_address_o => read_address
     );
 
@@ -78,7 +78,7 @@ begin
 
     -- Read buffering is straightforward: keep the output buffer filled when
     -- possible, refill when consumed.
-    read_enable <= read_ready and (read_ready_i or not read_valid_o);
+    read_enable <= read_valid and (read_ready_i or not read_valid_o);
     process (read_clk_i) begin
         if rising_edge(read_clk_i) then
             if read_reset_i then
