@@ -56,13 +56,15 @@ package flow_control is
     --          state_end, data_o.valid,    -- Current state
     --          ready_out, load_value)      -- Control
     --      if load_value then
-    --          if state_end then
+    --          if data_o.valid and not state_end then
     --              data_o <= advance_data(data_o);
     --          else
     --              data_o <= data_i;
     --          end if;
     --      end if;
     --
+    -- Note that state_end is automatically qualified by valid_out inside this
+    -- procedure, but this test must be added to the conditional state update.
     procedure advance_state_machine(
         valid_in : std_ulogic;                  -- Incoming fresh state valid
         ready_in : std_ulogic;                  -- Consumer of state is ready
@@ -70,6 +72,14 @@ package flow_control is
         signal valid_out : inout std_ulogic;    -- State machine is valid
         variable ready_out : out std_ulogic;    -- Ready to consume incoming
         variable load_value : out std_ulogic);  -- State must be updated
+
+    procedure advance_state_machine_and_ping_pong(
+        valid_in : std_ulogic;
+        ready_in : std_ulogic;
+        state_end : std_ulogic;
+        signal valid_out : inout std_ulogic;
+        signal ready_out : out std_ulogic;
+        variable load_value : out std_ulogic);
 end;
 
 package body flow_control is
@@ -195,5 +205,22 @@ package body flow_control is
             load_value := '1';
             valid_out <= valid_in;
         end if;
+    end;
+
+    procedure advance_state_machine_and_ping_pong(
+        valid_in : std_ulogic;
+        ready_in : std_ulogic;
+        state_end : std_ulogic;
+        signal valid_out : inout std_ulogic;
+        signal ready_out : out std_ulogic;
+        variable load_value : out std_ulogic)
+    is
+        variable next_state_ready : std_ulogic;
+    begin
+        advance_state_machine(
+            valid_in, ready_in, state_end, valid_out,
+            next_state_ready, load_value);
+        update_ping_pong_ready_out(
+            valid_in, next_state_ready, valid_out, ready_out);
     end;
 end;
