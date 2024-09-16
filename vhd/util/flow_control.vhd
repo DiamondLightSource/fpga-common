@@ -20,14 +20,9 @@ package flow_control is
     procedure advance_ping_pong_buffer(
         valid_in : std_ulogic;
         ready_in : std_ulogic;
-        signal valid_out : inout std_ulogic;
-        signal ready_out : inout std_ulogic;
+        signal valid_out : out std_ulogic;
+        signal ready_out : out std_ulogic;
         variable load_value : out std_ulogic);
-    procedure update_ping_pong_ready_out(
-        valid_in : std_ulogic;
-        ready_in : std_ulogic;
-        valid_out : std_ulogic;
-        signal ready_out : inout std_ulogic);
 
 
     -- Implements flow control for a skid buffer.  Designed to be invoked thus:
@@ -43,8 +38,8 @@ package flow_control is
     procedure advance_half_skid_buffer(
         valid_in : std_ulogic;
         ready_in : std_ulogic;
-        signal ready_out : inout std_ulogic;
-        signal skid_valid : inout std_ulogic;
+        signal ready_out : out std_ulogic;
+        signal skid_valid : out std_ulogic;
         variable load_skid : out std_ulogic);
 
 
@@ -69,15 +64,16 @@ package flow_control is
         valid_in : std_ulogic;                  -- Incoming fresh state valid
         ready_in : std_ulogic;                  -- Consumer of state is ready
         state_end : std_ulogic;                 -- Fresh state must be loaded
-        signal valid_out : inout std_ulogic;    -- State machine is valid
+        signal valid_out : out std_ulogic;    -- State machine is valid
         variable ready_out : out std_ulogic;    -- Ready to consume incoming
         variable load_value : out std_ulogic);  -- State must be updated
 
+    -- Advances a state machine directly fed by a ping-pong buffer
     procedure advance_state_machine_and_ping_pong(
         valid_in : std_ulogic;
         ready_in : std_ulogic;
         state_end : std_ulogic;
-        signal valid_out : inout std_ulogic;
+        signal valid_out : out std_ulogic;
         signal ready_out : out std_ulogic;
         variable load_value : out std_ulogic);
 end;
@@ -112,8 +108,8 @@ package body flow_control is
     procedure advance_ping_pong_buffer(
         valid_in : std_ulogic;
         ready_in : std_ulogic;
-        signal valid_out : inout std_ulogic;
-        signal ready_out : inout std_ulogic;
+        signal valid_out : out std_ulogic;
+        signal ready_out : out std_ulogic;
         variable load_value : out std_ulogic) is
     begin
         load_value := '0';
@@ -143,22 +139,9 @@ package body flow_control is
             when others =>
                 -- This is an invalid state, but going straight to IDLE is not
                 -- a bad idea in this case.
+                assert false report "Invalid ping-poing state" severity error;
                 ready_out <= '1';
                 valid_out <= '0';
-        end case;
-    end;
-
-    procedure update_ping_pong_ready_out(
-        valid_in : std_ulogic;
-        ready_in : std_ulogic;
-        valid_out : std_ulogic;
-        signal ready_out : inout std_ulogic) is
-    begin
-        case std_ulogic_vector'(ready_out & valid_out) is
-            when "10" =>   ready_out <= not valid_in;
-            when "01" =>   ready_out <= ready_in;
-            when "11" =>   ready_out <= ready_in;
-            when others => ready_out <= '1';
         end case;
     end;
 
@@ -166,8 +149,8 @@ package body flow_control is
     procedure advance_half_skid_buffer(
         valid_in : std_ulogic;
         ready_in : std_ulogic;
-        signal ready_out : inout std_ulogic;
-        signal skid_valid : inout std_ulogic;
+        signal ready_out : out std_ulogic;
+        signal skid_valid : out std_ulogic;
         variable load_skid : out std_ulogic) is
     begin
         load_skid := '0';
@@ -187,7 +170,7 @@ package body flow_control is
         valid_in : std_ulogic;
         ready_in : std_ulogic;
         state_end : std_ulogic;
-        signal valid_out : inout std_ulogic;
+        signal valid_out : out std_ulogic;
         variable ready_out : out std_ulogic;
         variable load_value : out std_ulogic) is
     begin
@@ -211,16 +194,23 @@ package body flow_control is
         valid_in : std_ulogic;
         ready_in : std_ulogic;
         state_end : std_ulogic;
-        signal valid_out : inout std_ulogic;
+        signal valid_out : out std_ulogic;
         signal ready_out : out std_ulogic;
         variable load_value : out std_ulogic)
     is
         variable next_state_ready : std_ulogic;
+        variable load_buffer : std_ulogic;
     begin
         advance_state_machine(
             valid_in, ready_in, state_end, valid_out,
             next_state_ready, load_value);
-        update_ping_pong_ready_out(
-            valid_in, next_state_ready, valid_out, ready_out);
+        advance_ping_pong_buffer(
+            valid_in, next_state_ready, valid_out, ready_out, load_buffer);
+        -- This is a bit tricky: in the case where the state machine has asked
+        -- for a new value we need to defer to the ping pong buffer to determine
+        -- if the new state can actually be loaded.
+        if next_state_ready then
+            load_value := load_buffer;
+        end if;
     end;
 end;
