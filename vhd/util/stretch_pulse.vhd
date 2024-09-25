@@ -1,13 +1,12 @@
 -- Simple pulse stretching
 --
 -- Lengthens pulse_i by DELAY extra ticks
---
--- Note that if pulse_i retriggers before pulse_o is complete it is possible for
--- unstretched pulses to be generated
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+
+use work.support.all;
 
 entity stretch_pulse is
     generic (
@@ -22,39 +21,28 @@ entity stretch_pulse is
 end;
 
 architecture arch of stretch_pulse is
-    signal pulse_delay : std_ulogic;
-    signal pulse : std_ulogic;
-    signal stretch : std_ulogic := '0';
-    signal pulse_out : std_ulogic := '0';
+    constant COUNTER_WIDTH : natural := bits(DELAY);
+    signal counter : unsigned(COUNTER_WIDTH-1 downto 0) := (others => '0');
+    signal pulse_out : std_ulogic;
+    signal pulse_reg : std_ulogic := '0';
 
 begin
-    delayline : entity work.fixed_delay generic map (
-        DELAY => DELAY
-    ) port map (
-        clk_i => clk_i,
-        data_i(0) => pulse_i,
-        data_o(0) => pulse_delay
-    );
-
-    -- Stretch the pulse.  The stretch flag extends the pulse until the delayed
-    -- pulse is seen: this is only useful when the incoming pulse is shorter
-    -- than the requested delay.
-    pulse <= pulse_i or stretch or pulse_delay;
+    pulse_out <= pulse_i or counter ?> 0;
 
     process (clk_i) begin
         if rising_edge(clk_i) then
-            if pulse_delay then
-                stretch <= '0';
-            elsif pulse_i then
-                stretch <= '1';
+            if pulse_i then
+                counter <= to_unsigned(DELAY, COUNTER_WIDTH);
+            elsif counter > 0 then
+                counter <= counter - 1;
             end if;
-            pulse_out <= pulse;
+            pulse_reg <= pulse_out;
         end if;
     end process;
 
     gen_out : if REGISTER_OUT generate
-        pulse_o <= pulse_out;
+        pulse_o <= pulse_reg;
     else generate
-        pulse_o <= pulse;
+        pulse_o <= pulse_out;
     end generate;
 end;
