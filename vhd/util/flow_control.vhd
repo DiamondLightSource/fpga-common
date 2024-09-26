@@ -20,8 +20,8 @@ package flow_control is
     procedure advance_ping_pong_buffer(
         valid_in : std_ulogic;
         ready_in : std_ulogic;
-        signal valid_out : out std_ulogic;
-        signal ready_out : out std_ulogic;
+        signal valid_out : inout std_ulogic;
+        signal ready_out : inout std_ulogic;
         variable load_value : out std_ulogic);
 
 
@@ -38,8 +38,8 @@ package flow_control is
     procedure advance_half_skid_buffer(
         valid_in : std_ulogic;
         ready_in : std_ulogic;
-        signal ready_out : out std_ulogic;
-        signal skid_valid : out std_ulogic;
+        signal ready_out : inout std_ulogic;
+        signal skid_valid : inout std_ulogic;
         variable load_skid : out std_ulogic);
 
 
@@ -64,7 +64,7 @@ package flow_control is
         valid_in : std_ulogic;                  -- Incoming fresh state valid
         ready_in : std_ulogic;                  -- Consumer of state is ready
         state_end : std_ulogic;                 -- Fresh state must be loaded
-        signal valid_out : out std_ulogic;    -- State machine is valid
+        signal valid_out : inout std_ulogic;    -- State machine is valid
         variable ready_out : out std_ulogic;    -- Ready to consume incoming
         variable load_value : out std_ulogic);  -- State must be updated
 
@@ -73,8 +73,8 @@ package flow_control is
         valid_in : std_ulogic;
         ready_in : std_ulogic;
         state_end : std_ulogic;
-        signal valid_out : out std_ulogic;
-        signal ready_out : out std_ulogic;
+        signal valid_out : inout std_ulogic;
+        signal ready_out : inout std_ulogic;
         variable load_value : out std_ulogic);
 end;
 
@@ -88,7 +88,7 @@ package body flow_control is
     -- presented without losing throughput.
     --
     -- This implementation supports three states, all encoded in values of the
-    -- signals ready_out, valid out:
+    -- signals ready_out, valid_out:
     --
     --      IDLE:   ready_out and not valid_out
     --      ACTIVE: not ready_out and valid_out
@@ -108,8 +108,8 @@ package body flow_control is
     procedure advance_ping_pong_buffer(
         valid_in : std_ulogic;
         ready_in : std_ulogic;
-        signal valid_out : out std_ulogic;
-        signal ready_out : out std_ulogic;
+        signal valid_out : inout std_ulogic;
+        signal ready_out : inout std_ulogic;
         variable load_value : out std_ulogic) is
     begin
         load_value := '0';
@@ -149,8 +149,8 @@ package body flow_control is
     procedure advance_half_skid_buffer(
         valid_in : std_ulogic;
         ready_in : std_ulogic;
-        signal ready_out : out std_ulogic;
-        signal skid_valid : out std_ulogic;
+        signal ready_out : inout std_ulogic;
+        signal skid_valid : inout std_ulogic;
         variable load_skid : out std_ulogic) is
     begin
         load_skid := '0';
@@ -170,7 +170,7 @@ package body flow_control is
         valid_in : std_ulogic;
         ready_in : std_ulogic;
         state_end : std_ulogic;
-        signal valid_out : out std_ulogic;
+        signal valid_out : inout std_ulogic;
         variable ready_out : out std_ulogic;
         variable load_value : out std_ulogic) is
     begin
@@ -194,8 +194,8 @@ package body flow_control is
         valid_in : std_ulogic;
         ready_in : std_ulogic;
         state_end : std_ulogic;
-        signal valid_out : out std_ulogic;
-        signal ready_out : out std_ulogic;
+        signal valid_out : inout std_ulogic;
+        signal ready_out : inout std_ulogic;
         variable load_value : out std_ulogic)
     is
         variable next_state_ready : std_ulogic;

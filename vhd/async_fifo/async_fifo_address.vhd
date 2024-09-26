@@ -67,9 +67,23 @@ architecture arch of async_fifo_address is
     signal sync_read_address : std_ulogic_vector(ADDRESS_RANGE);
 
     -- See comment below against write_ready_o calculation for this mask
-    constant COMPARE_MASK : std_ulogic_vector(ADDRESS_RANGE) := (
-        ADDRESS_WIDTH downto ADDRESS_WIDTH-1 => '1',
-        others => '0');
+    --
+    -- This is a bit irritating, would like to simply write
+    --
+    --     constant COMPARE_MASK : std_ulogic_vector(ADDRESS_RANGE) := (
+    --         ADDRESS_WIDTH downto ADDRESS_WIDTH-1 => '1', others => '0');
+    --
+    -- and this is accepted by both ModelSim and Vivado (though ModelSim does
+    -- generate a warning).  However, GHDL doesn't like this, so we work around
+    -- with the function below.
+    function COMPARE_MASK return std_ulogic_vector
+    is
+        variable result : std_ulogic_vector(ADDRESS_RANGE);
+    begin
+        result := (others => '0');
+        result(ADDRESS_WIDTH downto ADDRESS_WIDTH-1) := "11";
+        return result;
+    end;
 
     -- It is essential that the transfer from gray to sync does not see more
     -- than one bit change on any clock tick.  This *can* be constrained by use
