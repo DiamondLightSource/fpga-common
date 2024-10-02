@@ -21,5 +21,23 @@ foreach cell [get_cells -hierarchical -filter { max_delay_from != "" }] {
         -datapath_only -from $cell
 }
 
+# Special false path constraint handling for asynchronous DRAM: apply the
+# attribute false_path_dram_to="TRUE" to the destination register when reading
+# from an asynchronously written distributed memory.
+#     The false path setting is documented in UG903 as a special exception for
+# asynchronous dual-ports distributed RAM.
+set cells [get_cells -hier -filter { false_path_dram_to == "TRUE" }]
+if [llength $cells] {
+    # Walk our way to any RAMD driving this cell:
+    #   cell => cell.D => net => ramd.O => ramd
+    # and set the false path from the result if present
+    set d_pins [get_pins -of $cells -filter {REF_PIN_NAME == D}]
+    set nets [get_nets -of $d_pins -segments]
+    set o_pins [get_pins -of $nets -filter {
+        DIRECTION == OUT  &&  REF_NAME =~ RAMD*  && REF_PIN_NAME == O}]
+    set cells [get_cell -of $o_pins]
+    # If anything found set the required false path
+    if [llength $cells] { set_false_path -from $cells }
+}
 
 # vim: set filetype=tcl:

@@ -54,12 +54,9 @@ architecture arch of in_fifo is
     constant OUT_PTR_RESET : FIFO_PTR := 0;
 
     -- Timing constraint from FIFO
-    -- I would prefer to have used a max_delay_from attribute here on the fifos,
-    -- but it would appear that attributes on Distributed RAM elements simply
-    -- don't take and are lost.
-    attribute false_path_to : string;
-    attribute false_path_to of data_o : signal is "TRUE";
-    attribute false_path_to of error_o : signal is "TRUE";
+    attribute false_path_dram_to : string;
+    attribute false_path_dram_to of data_o : signal is "TRUE";
+    attribute false_path_dram_to of error_o : signal is "TRUE";
     attribute DONT_TOUCH : string;
     attribute DONT_TOUCH of data_o : signal is "TRUE";
     attribute DONT_TOUCH of error_o : signal is "TRUE";

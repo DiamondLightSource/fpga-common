@@ -26,12 +26,6 @@ entity memory_array_dual is
         --      read_strobe_i
         OUTPUT_REG : string := "LATCHED"; -- or REGISTER
 
-        -- For distributed memory we need to mark the read_data register as
-        -- FALSE_PATH_TO, and we also need to mark it as DONT_TOUCH so that this
-        -- attribute is not lost.  Unfortunately we must NOT do this when
-        -- generating BRAM as otherwise distributed memory is generated!
-        MARK_FALSE_PATH : boolean := false;
-
         -- Initial value for memory array
         INITIAL : std_ulogic_vector(DATA_BITS-1 downto 0) := (others => '0');
         READ_DELAY : natural := 0   -- Validation parameter only
@@ -63,11 +57,10 @@ architecture arch of memory_array_dual is
 
     -- Mark read_data for false path target, this is needed for timing closure
     -- when the source is distributed RAM
-    attribute false_path_to : string;
-    attribute false_path_to of read_data : signal is "TRUE";
-    attribute dont_touch : string;
-    attribute dont_touch of read_data : signal is
-        choose(MARK_FALSE_PATH, "YES", "NO");
+    attribute false_path_dram_to : string;
+    attribute false_path_dram_to of read_data : signal is "TRUE";
+    attribute DONT_TOUCH : string;
+    attribute DONT_TOUCH of read_data : signal is "TRUE";
 
 begin
     -- For callers to verify if required:
