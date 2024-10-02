@@ -139,10 +139,11 @@ package support is
     function left_align(value : unsigned; length : natural)
         return unsigned;
 
-    -- Functions for signed max and min int values.  For unsigned we don't need
-    -- these as we can just write (others => '1') and (others => '0').
+    -- Functions for signed and unsigned max and min int values.
     function max_int(size : natural) return signed;
     function min_int(size : natural) return signed;
+    function max_uint(size : natural) return unsigned;
+    function min_uint(size : natural) return unsigned;
 
 
     -- Returns array of length bits with the indexed bit set
@@ -445,17 +446,29 @@ package body support is
 
 
     function max_int(size : natural) return signed is
-        variable result : std_ulogic_vector(size-1 downto 0) := (others => '1');
+        variable result : signed(size-1 downto 0) := (others => '1');
     begin
         result(size-1) := '0';
-        return signed(result);
+        return result;
     end;
 
     function min_int(size : natural) return signed is
-        variable result : std_ulogic_vector(size-1 downto 0) := (others => '0');
+        variable result : signed(size-1 downto 0) := (others => '0');
     begin
         result(size-1) := '1';
-        return signed(result);
+        return result;
+    end;
+
+    function max_uint(size : natural) return unsigned is
+        variable result : unsigned(size-1 downto 0) := (others => '1');
+    begin
+        return result;
+    end;
+
+    function min_uint(size : natural) return unsigned is
+        variable result : unsigned(size-1 downto 0) := (others => '0');
+    begin
+        return result;
     end;
 
 
