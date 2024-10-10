@@ -43,6 +43,12 @@ architecture arch of async_fifo is
     signal read_enable : std_ulogic;
     signal read_valid : std_ulogic;
 
+    -- Timing constraint from FIFO
+    attribute false_path_dram_to : string;
+    attribute false_path_dram_to of read_data_o : signal is "TRUE";
+    attribute DONT_TOUCH : string;
+    attribute DONT_TOUCH of read_data_o : signal is "TRUE";
+
 begin
     -- Computes in and out addresses together with read/write ready flags.  We
     -- don't use the reserve feature.
