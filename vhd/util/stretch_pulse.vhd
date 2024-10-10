@@ -21,18 +21,18 @@ entity stretch_pulse is
 end;
 
 architecture arch of stretch_pulse is
-    constant COUNTER_WIDTH : natural := bits(DELAY);
-    signal counter : unsigned(COUNTER_WIDTH-1 downto 0) := (others => '0');
+    signal counter : natural range 0 to DELAY := 0;
     signal pulse_out : std_ulogic;
     signal pulse_reg : std_ulogic := '0';
 
 begin
-    pulse_out <= pulse_i or counter ?> 0;
+    -- Need to be a bit careful about handling zero delay!
+    pulse_out <= pulse_i or to_std_ulogic(counter > 0);
 
     process (clk_i) begin
         if rising_edge(clk_i) then
             if pulse_i then
-                counter <= to_unsigned(DELAY, COUNTER_WIDTH);
+                counter <= DELAY;
             elsif counter > 0 then
                 counter <= counter - 1;
             end if;
