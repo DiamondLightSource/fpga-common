@@ -208,9 +208,9 @@ begin
             -- because, as explained in Clifford Cummings, "Simulation and
             -- Synthesis Techniques for Asynchronous FIFO Design", the top bit
             -- of the Gray code is back to front.  Other bits must simply agree.
-            write_ready_o <= not write_reset_i and
-                unsigned_to_gray(next_reserve_address) ?/=
-                    (sync_read_address xor COMPARE_MASK);
+            write_ready_o <= not write_reset_i and to_std_ulogic(
+                unsigned_to_gray(next_reserve_address) /=
+                    (sync_read_address xor COMPARE_MASK));
         end if;
     end process;
     write_reserve_address_o <= write_reserve(ADDRESS_WIDTH-1 downto 0);
@@ -235,8 +235,8 @@ begin
             gray_read_address <= unsigned_to_gray(next_read_address);
 
             -- FIFO is empty when read reserve has caught up with write address
-            read_valid_o <=
-                unsigned_to_gray(next_reserve_address) ?/= sync_write_address;
+            read_valid_o <= to_std_ulogic(
+                unsigned_to_gray(next_reserve_address) /= sync_write_address);
         end if;
     end process;
     read_reserve_address_o <= read_reserve(ADDRESS_WIDTH-1 downto 0);
