@@ -36,21 +36,20 @@ entity memory_array_dual is
 end;
 
 architecture arch of memory_array_dual is
-    signal memory : vector_array(0 to 2**ADDR_BITS-1)(DATA_BITS-1 downto 0)
+    -- This special name is picked up by paths.tcl to automatically assign a
+    -- false path from this memory in the special case that DRAM is inferred
+    signal memory_array_dual_memory :
+        vector_array(0 to 2**ADDR_BITS-1)(DATA_BITS-1 downto 0)
         := (others => INITIAL);
     attribute ram_style : string;
-    attribute ram_style of memory : signal is MEM_STYLE;
-
-    -- when the source is distributed RAM
-    attribute false_path_dram_to : string;
-    attribute false_path_dram_to of read_data_o : signal
-        is choose(ADDR_BITS <= 6, "TRUE", "FALSE");
+    attribute ram_style of memory_array_dual_memory : signal is MEM_STYLE;
 
 begin
     process (write_clk_i) begin
         if rising_edge(write_clk_i) then
             if write_strobe_i then
-                memory(to_integer(write_addr_i)) <= write_data_i;
+                memory_array_dual_memory(to_integer(write_addr_i)) <=
+                    write_data_i;
             end if;
         end if;
     end process;
@@ -58,7 +57,8 @@ begin
     process (read_clk_i) begin
         if rising_edge(read_clk_i) then
             if read_strobe_i then
-                read_data_o <= memory(to_integer(read_addr_i));
+                read_data_o <=
+                    memory_array_dual_memory(to_integer(read_addr_i));
             end if;
         end if;
     end process;
