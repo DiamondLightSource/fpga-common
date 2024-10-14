@@ -139,7 +139,7 @@ package body flow_control is
             when others =>
                 -- This is an invalid state, but going straight to IDLE is not
                 -- a bad idea in this case.
-                assert false report "Invalid ping-poing state" severity error;
+                assert false report "Invalid ping-pong state" severity error;
                 ready_out <= '1';
                 valid_out <= '0';
         end case;
