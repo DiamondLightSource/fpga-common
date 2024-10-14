@@ -10,7 +10,10 @@ use work.support.all;
 
 entity in_fifo is
     generic (
-        FIFO_WIDTH : natural
+        FIFO_WIDTH : natural;
+        -- This should be ample, but if there is a lot of jitter between the two
+        -- clocks this can be set to 4.
+        FIFO_BITS : natural := 3
     );
     port (
         clk_in_i : in std_ulogic;
@@ -29,13 +32,10 @@ entity in_fifo is
 end;
 
 architecture arch of in_fifo is
-    constant FIFO_DEPTH : natural := 8;
-    subtype FIFO_PTR is natural range 0 to FIFO_DEPTH-1;
-    signal fifo : vector_array(FIFO_PTR)(FIFO_WIDTH-1 downto 0)
-        := (others => (others => '0'));
+    subtype fifo_ptr_t is unsigned(FIFO_BITS-1 downto 0);
 
-    signal in_ptr : FIFO_PTR := 0;
-    signal out_ptr : FIFO_PTR := 0;
+    signal in_ptr : fifo_ptr_t := (others => '0');
+    signal out_ptr : fifo_ptr_t := (others => '0');
 
     -- Stretched and synchronised resets
     signal in_reset : std_ulogic;
@@ -43,23 +43,23 @@ architecture arch of in_fifo is
 
     -- If the input and output clocks are out of step there will be a
     -- discrepancy between the input and output phases
-    signal phase_fifo : std_ulogic_vector(FIFO_PTR) := (others => '0');
     signal in_phase : std_ulogic := '0';
     signal out_phase : std_ulogic := '0';
+    signal out_phase_fifo : std_ulogic;
 
     -- It will take one or two ticks of the common clock for reset to propagate
     -- from out to in, after which we want the in pointer to be around half the
     -- FIFO ahead.
-    constant IN_PTR_RESET : FIFO_PTR := FIFO_DEPTH/2 + 2;
-    constant OUT_PTR_RESET : FIFO_PTR := 0;
-
-    -- Timing constraint from FIFO
-    attribute false_path_dram_to : string;
-    attribute false_path_dram_to of data_o : signal is "TRUE";
-    attribute false_path_dram_to of error_o : signal is "TRUE";
-    attribute DONT_TOUCH : string;
-    attribute DONT_TOUCH of data_o : signal is "TRUE";
-    attribute DONT_TOUCH of error_o : signal is "TRUE";
+    function IN_PTR_RESET return fifo_ptr_t
+    is
+        variable result : fifo_ptr_t := (others => '0');
+    begin
+        -- Want to return (2**FIFO_BITS)/2 + 2
+        result(FIFO_BITS-1) := '1';
+        result(1) := '1';
+        return result;
+    end;
+    constant OUT_PTR_RESET : fifo_ptr_t := (others => '0');
 
 begin
     -- Stretch reset long enough to safely cross through sync_bit
@@ -78,6 +78,35 @@ begin
         bit_o => in_reset
     );
 
+    data_fifo : entity work.memory_array_dual generic map (
+        ADDR_BITS => FIFO_BITS,
+        DATA_BITS => FIFO_WIDTH,
+        MEM_STYLE => "DISTRIBUTED"
+    ) port map (
+        write_clk_i => clk_in_i,
+        write_addr_i => in_ptr,
+        write_data_i => data_i,
+
+        read_clk_i => clk_out_i,
+        read_addr_i => out_ptr,
+        read_data_o => data_o
+    );
+
+    phase_fifo : entity work.memory_array_dual generic map (
+        ADDR_BITS => FIFO_BITS,
+        DATA_BITS => 1,
+        MEM_STYLE => "DISTRIBUTED",
+        OUTPUT_REG => false
+    ) port map (
+        write_clk_i => clk_in_i,
+        write_addr_i => in_ptr,
+        write_data_i(0) => in_phase,
+
+        read_clk_i => clk_out_i,
+        read_addr_i => out_ptr,
+        read_data_o(0) => out_phase_fifo
+    );
+
 
     process (clk_in_i) begin
         if rising_edge(clk_in_i) then
@@ -85,16 +114,13 @@ begin
                 in_ptr <= IN_PTR_RESET;
                 in_phase <= '0';
             else
-                in_ptr <= (in_ptr + 1) mod FIFO_DEPTH;
-                if in_ptr = FIFO_DEPTH - 1 then
+                in_ptr <= in_ptr + 1;
+                if in_ptr + 1 = 0 then
                     in_phase <= not in_phase;
                 end if;
             end if;
-            fifo(in_ptr) <= data_i;
-            phase_fifo(in_ptr) <= in_phase;
         end if;
     end process;
-
 
     process (clk_out_i) begin
         if rising_edge(clk_out_i) then
@@ -102,13 +128,12 @@ begin
                 out_ptr <= OUT_PTR_RESET;
                 out_phase <= '0';
             else
-                out_ptr <= (out_ptr + 1) mod FIFO_DEPTH;
-                if out_ptr = FIFO_DEPTH - 1 then
+                out_ptr <= out_ptr + 1;
+                if out_ptr + 1 = 0 then
                     out_phase <= not out_phase;
                 end if;
             end if;
-            data_o <= fifo(out_ptr);
-            error_o <= to_std_ulogic(phase_fifo(out_ptr) /= out_phase);
+            error_o <= to_std_ulogic(out_phase_fifo /= out_phase);
         end if;
     end process;
 end;

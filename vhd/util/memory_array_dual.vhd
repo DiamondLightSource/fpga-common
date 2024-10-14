@@ -18,7 +18,11 @@ entity memory_array_dual is
         MEM_STYLE : string := "";   -- Default to unspecified
 
         -- Initial value for memory array
-        INITIAL : std_ulogic_vector(DATA_BITS-1 downto 0) := (others => '0')
+        INITIAL : std_ulogic_vector(DATA_BITS-1 downto 0) := (others => '0');
+
+        -- The output register is mandatory for block memory but can be omitted
+        -- when reading from distributed memory
+        OUTPUT_REG : boolean := true
     );
     port (
         -- Write interface
@@ -43,8 +47,18 @@ architecture arch of memory_array_dual is
         := (others => INITIAL);
     attribute ram_style : string;
     attribute ram_style of memory_array_dual_memory : signal is MEM_STYLE;
+    -- We can't place a DONT_TOUCH on this memory as this will block the
+    -- appropriate memory style inference
+
+    signal read_data : std_ulogic_vector(DATA_BITS-1 downto 0);
+    signal read_data_reg : std_ulogic_vector(DATA_BITS-1 downto 0)
+        := (others => '0');
 
 begin
+    assert OUTPUT_REG or MEM_STYLE = "DISTRIBUTED"
+        report "Inconsistent OUTPUT_REG selection"
+        severity failure;
+
     process (write_clk_i) begin
         if rising_edge(write_clk_i) then
             if write_strobe_i then
@@ -54,12 +68,18 @@ begin
         end if;
     end process;
 
+    read_data <= memory_array_dual_memory(to_integer(read_addr_i));
     process (read_clk_i) begin
         if rising_edge(read_clk_i) then
             if read_strobe_i then
-                read_data_o <=
-                    memory_array_dual_memory(to_integer(read_addr_i));
+                read_data_reg <= read_data;
             end if;
         end if;
     end process;
+
+    gen_reg : if OUTPUT_REG generate
+        read_data_o <= read_data_reg;
+    else generate
+        read_data_o <= read_data;
+    end generate;
 end;
