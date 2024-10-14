@@ -31,23 +31,11 @@ entity async_fifo is
 end;
 
 architecture arch of async_fifo is
-    subtype DATA_RANGE is natural range DATA_WIDTH-1 downto 0;
-
-    signal fifo : vector_array(0 to 2**FIFO_BITS-1)(DATA_RANGE);
-    attribute RAM_STYLE : string;
-    attribute RAM_STYLE of fifo : signal is MEM_STYLE;
-
     signal write_address : unsigned(FIFO_BITS-1 downto 0);
     signal read_address : unsigned(FIFO_BITS-1 downto 0);
 
     signal read_enable : std_ulogic;
     signal read_valid : std_ulogic;
-
-    -- Timing constraint from FIFO
-    attribute false_path_dram_to : string;
-    attribute false_path_dram_to of read_data_o : signal is "TRUE";
-    attribute DONT_TOUCH : string;
-    attribute DONT_TOUCH of read_data_o : signal is "TRUE";
 
 begin
     -- Computes in and out addresses together with read/write ready flags.  We
@@ -71,15 +59,21 @@ begin
         read_access_address_o => read_address
     );
 
+    fifo : entity work.memory_array_dual generic map (
+        ADDR_BITS => FIFO_BITS,
+        DATA_BITS => DATA_WIDTH,
+        MEM_STYLE => MEM_STYLE
+    ) port map (
+        write_clk_i => write_clk_i,
+        write_strobe_i => write_valid_i and write_ready_o,
+        write_addr_i => write_address,
+        write_data_i => write_data_i,
 
-    -- We can write directly into the FIFO, no extra buffering required
-    process (write_clk_i) begin
-        if rising_edge(write_clk_i) then
-            if write_valid_i and write_ready_o then
-                fifo(to_integer(write_address)) <= write_data_i;
-            end if;
-        end if;
-    end process;
+        read_clk_i => read_clk_i,
+        read_strobe_i => read_enable and not read_reset_i,
+        read_addr_i => read_address,
+        read_data_o => read_data_o
+    );
 
 
     -- Read buffering is straightforward: keep the output buffer filled when
@@ -90,7 +84,6 @@ begin
             if read_reset_i then
                 read_valid_o <= '0';
             elsif read_enable then
-                read_data_o <= fifo(to_integer(read_address));
                 read_valid_o <= '1';
             elsif read_ready_i then
                 read_valid_o <= '0';
