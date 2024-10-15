@@ -70,9 +70,12 @@ begin
 
     begin
         if rising_edge(clk_i) then
+            next_write_pointer := write_pointer;
+            next_read_pointer := read_pointer;
             if reset_fifo_i then
-                write_pointer <= (others => '0');
-                read_pointer <= (others => '0');
+                next_write_pointer := (others => '0');
+                next_read_pointer := (others => '0');
+                -- Block writes during reset
                 write_ready_o <= '0';
                 read_valid <= '0';
                 read_enable := '0';
@@ -80,8 +83,6 @@ begin
                 -- Advance write pointer if writing
                 if write_valid_i and write_ready_o then
                     next_write_pointer := write_pointer + 1;
-                else
-                    next_write_pointer := write_pointer;
                 end if;
 
                 -- Advance read pointer if reading.  We keep read_data_o valid
@@ -90,12 +91,7 @@ begin
                     read_valid and (read_ready_i or not read_valid_o);
                 if read_enable then
                     next_read_pointer := read_pointer + 1;
-                else
-                    next_read_pointer := read_pointer;
                 end if;
-
-                write_pointer <= next_write_pointer;
-                read_pointer <= next_read_pointer;
 
                 -- Compute full and empty conditions.  Empty is simply equality
                 -- of pointers, full is when the write pointer is exactly one
@@ -107,12 +103,14 @@ begin
                 read_valid <= to_std_ulogic(
                     next_write_pointer /= next_read_pointer);
             end if;
+            write_pointer <= next_write_pointer;
+            read_pointer <= next_read_pointer;
 
             -- Throw away the top bit of the read/write pointers for access, the
             -- top bit is only used as a cycle counter to distinguish full and
             -- empty states
             write_address := to_integer(write_pointer(FIFO_BITS-1 downto 0));
-            read_address := to_integer(read_pointer(FIFO_BITS-1 downto 0));
+            read_address  := to_integer(read_pointer(FIFO_BITS-1 downto 0));
 
             -- Write
             if write_valid_i and write_ready_o then
