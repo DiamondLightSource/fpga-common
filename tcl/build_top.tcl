@@ -1,4 +1,5 @@
 set fpga_common $env(FPGA_COMMON)
+set fpga_top $env(FPGA_TOP)
 set project_name $env(PROJECT_NAME)
 set fpga_part $env(FPGA_PART)
 set block_designs $env(BLOCK_DESIGNS)
@@ -107,6 +108,11 @@ if [llength $make_version] {
 # bridge seems to keep changing, but this setting appears to work for now,
 # recommended here: https://support.xilinx.com/s/article/72057
 set_property strategy Performance_ExplorePostRoutePhysOpt [get_runs impl_1]
+
+foreach tcl_file [glob -nocomplain -directory $fpga_top/tcl *.presynth.tcl] {
+    puts "Sourcing $tcl_file"
+    source $tcl_file
+}
 
 launch_runs impl_1 -to_step write_bitstream -jobs 6
 wait_on_run impl_1
