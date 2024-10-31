@@ -19,6 +19,8 @@ VHD_DIRS = $(VHD_DIR)
 
 VHD_FILES =
 
+DEFAULT = fpga
+
 BUILT = top_entity.vhd
 
 
@@ -42,7 +44,7 @@ RUN_VIVADO = $(VIVADO) $(VIVADO_EXTRA_ARGS)
 
 # ------------------------------------------------------------------------------
 
-default: fpga
+default: $(DEFAULT)
 .PHONY: default
 
 fpga: $(PROJECT_NAME).bit
