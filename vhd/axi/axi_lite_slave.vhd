@@ -61,7 +61,7 @@ use work.support.all;
 entity axi_lite_slave is
     port (
         clk_i : in std_ulogic;
-        rstn_i : in std_ulogic;
+        rstn_i : in std_ulogic := '1';
 
         -- AXI-Lite read interface
         araddr_i : in std_ulogic_vector;
@@ -90,13 +90,13 @@ entity axi_lite_slave is
         bvalid_o : out std_ulogic;
 
         -- Internal read interface
-        read_strobe_o : out std_ulogic;          -- Read request strobe
+        read_strobe_o : out std_ulogic := '0';   -- Read request strobe
         read_address_o : out unsigned;
         read_data_i : in std_ulogic_vector;
         read_ack_i : in std_ulogic;              -- Read data valid acknowledge
 
         -- Internal write interface
-        write_strobe_o : out std_ulogic;         -- Write request strobe
+        write_strobe_o : out std_ulogic := '0';  -- Write request strobe
         write_address_o : out unsigned;
         write_data_o : out std_ulogic_vector;
         write_ack_i : in std_ulogic              -- Write complete acknowledge
@@ -109,12 +109,12 @@ architecture arch of axi_lite_slave is
 
     -- Reading state
     type read_state_t is (READ_IDLE, READ_READING, READ_DONE);
-    signal read_state : read_state_t;
+    signal read_state : read_state_t := READ_IDLE;
 
     -- Writing state
     -- The data and address for writes can come separately.
     type write_state_t is (WRITE_IDLE, WRITE_WRITING, WRITE_DONE);
-    signal write_state : write_state_t;
+    signal write_state : write_state_t := WRITE_IDLE;
     signal ready_out : std_ulogic := '0';
 
     -- Extracts register address from AXI address
