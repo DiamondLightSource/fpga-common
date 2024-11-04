@@ -165,7 +165,8 @@ class _Reader:
 
 
 class Registers:
-    def __init__(self, raw_registers, *defs_path):
+    def __init__(self, raw_registers, *defs_path,
+                 range = slice(None, None, None)):
         # Special trick to fall back to old filename if present, helps with
         # loading registers during development
         defs_path = [
@@ -177,7 +178,8 @@ class Registers:
         self.raw_registers = raw_registers
 
         for key, defs in groups.items():
-            setattr(self, key, make_register(defs, key, raw_registers.regs))
+            setattr(self, key,
+                make_register(defs, key, raw_registers.regs[range]))
 
     def read_events(self, wait = True, verbose = False):
         ''' Blocks until an interrupt is seen, returns mask of interrupts.'''
