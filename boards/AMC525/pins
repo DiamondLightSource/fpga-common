@@ -51,7 +51,7 @@ ZGPIO[6]                        AJ26
 # Covered by DDR3 CH1 MIG constraints
 
 # ======== Bank 14 (HP/VCCO=1.8V) ========
-CLK_DIR0                        AH35
+CLK_DIR0                        AH35    LVCMOS18
 LAD[15]                         AM36
 LAD[14]                         AN36
 LAD[13]                         AJ36
@@ -119,7 +119,7 @@ ULED[1]                         AR40
 ULED[2]                         AP41
 ULED[3]                         AP42
 nPRSNT_M2C1                     AT39    LVCMOS18    PULLUP
-CLK_DIR1                        AT40
+CLK_DIR1                        AT40    LVCMOS18
 FPCLKE_P                        AU39
 FPCLKE_N                        AV39
 FPCLKF_P                        AU38

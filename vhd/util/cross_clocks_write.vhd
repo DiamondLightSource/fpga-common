@@ -50,7 +50,7 @@ end;
 
 architecture arch of cross_clocks_write is
     signal strobe_in : std_ulogic := '0';
-    signal data_in : data_i'SUBTYPE;
+    signal data_in : data_i'SUBTYPE := (others => '0');
 
     attribute KEEP : string;
     attribute KEEP of data_in : signal is "TRUE";
