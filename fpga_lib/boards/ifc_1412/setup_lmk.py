@@ -62,7 +62,6 @@ class ClockOut:
 class Config:
     clkin : Optional[int] = None
     oscin : bool = False
-    single_ended : bool = False
     pll1 : Optional[Pll1Config] = None
     pll2 : Optional[Pll2Config] = None
     outputs : List[ClockOut] = []
@@ -122,15 +121,13 @@ def configure_clkin(lmk, input):
 
 # Configure OSCin.  Must be enabled unless using clock distribution directly
 # from a CLKIN input
-def configure_oscin(lmk, enable, single_ended):
+def configure_oscin(lmk, enable):
     lmk.OSCIN_PD_LDO = int(not enable)          # Power up OSCin
     lmk.OSCIN_OSCINSTAGE_EN = int(enable)       # Power up OSCin
     lmk.OSCIN_BUF_REF_EN = int(enable)          # Enable OSCin buffers to PLLs
     lmk.OSCIN_BUF_LOS_EN = int(enable)          #  and to LOS buffer
     lmk.PLL2_GLOBAL_BYP = int(not enable)       # Select PLL2 input source
-    if enable:
-        # Crystal input on OSCin
-        lmk.OSCIN_SE_MODE = int(single_ended)
+    lmk.OSCIN_SE_MODE = 0                       # OSCin is differential
 
 
 def configure_pll1(lmk, pll1, clkin):
@@ -240,7 +237,7 @@ def configure_lmk(lmk, config):
 
     # bypassed and disabled.
     configure_clkin(lmk, config.clkin)
-    configure_oscin(lmk, config.oscin, config.single_ended)
+    configure_oscin(lmk, config.oscin)
     configure_pll1(lmk, config.pll1, config.clkin)
     configure_pll2(lmk, config.pll2)
 

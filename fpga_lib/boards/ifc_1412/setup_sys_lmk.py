@@ -7,14 +7,14 @@ from .setup_lmk import *
 
 # The SYS LMK drives the following outputs:
 #
-#   CLKOUT0  @ 125 MHz  => RTM GTP 13-12
-#   CLKOUT1  @ 125 MHz  => MGT 126 for AMC 1-0 and RTM GTP 13-12
+#   CLKOUT0  @ 125 MHz  => RTM GTP CLK3 OUT
+#   CLKOUT1  @ 125 MHz  => (unused)
 #   CLKOUT2  @ 125 MHz  => MGT 227 for FMC1
 #   CLKOUT3  @ 125 MHz  => MGT 229 for FMC1
 #   CLKOUT4  @ 125 MHz  => MGT 127 for FMC2
 #   CLKOUT5  @ 125 MHz  => MGT 230 for FMC2
 #   CLKOUT6  @ 125 MHz  => MGT 232 for RTM GTP 3-0
-#   CLKOUT7  @ 125 MHz  => RTM GTP 3-0
+#   CLKOUT7  @ 125 MHz  => RTM GTP CLK0 OUT
 #   CLKOUT8  @ 1 GHz    => WCK_A to GDDR
 #   CLKOUT9  @ 1 GHz    => WCK_A to bank 24 QBC
 #   CLKOUT10 @ 1 GHz    => WCK_B to GDDR
@@ -48,10 +48,10 @@ class SysClockWCK(ClockOut):
     slew = 0
 
 SysClockConfig = [
-    SysClock125Mhz, # 0, 1: RTM 13-12 CLKIN, MGT 126
+    SysClock125Mhz, # 0: RTM CLK3 OUT
     SysClock125Mhz, # 2, 3: MGT 227, 229 for FMC1
     SysClock125Mhz, # 4, 5: MGC 127, 230
-    SysClock125Mhz, # 6, 7: MGT 232, RTM 3-0 CLKIN
+    SysClock125Mhz, # 6, 7: MGT 232, RTM CLK0 OUT
     SysClockWCK,    # 8, 9: WCK_A to SGRAM bank A and QBC bank 24
     SysClockWCK,    # 10, 11: WCK_B to SGRAM bank B and QBC bank 25
     SysClockCK,     # 12: CK to SGRAM
@@ -60,7 +60,6 @@ SysClockConfig = [
 
 class SysConfig(Config):
     oscin = True
-    single_ended = True
     pll1 = None
     pll2 = SysPll2Config
     outputs = SysClockConfig
