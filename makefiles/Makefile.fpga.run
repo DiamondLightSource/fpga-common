@@ -12,16 +12,17 @@ BLOCK_DESIGNS =
 
 CONSTR_FILES = built_dir/top_pins.xdc
 CONSTR_FILES += $(wildcard $(CONSTR_DIR)/*.xdc)
-
 CONSTR_TCL = $(wildcard $(FPGA_COMMON)/constr/*.tcl)
 
-VHD_DIRS = $(VHD_DIR)
-
-VHD_FILES =
+# By default add all files from the VHD directory
+VHD_FILES += $(VHD_DIR)
 
 DEFAULT = fpga
 
+TOP_ENTITY = top
 BUILT = top_entity.vhd
+
+JOBS_COUNT = 6
 
 
 # ------------------------------------------------------------------------------
@@ -43,12 +44,20 @@ RUN_VIVADO = $(VIVADO) $(VIVADO_EXTRA_ARGS)
 
 
 # ------------------------------------------------------------------------------
+# Targets
 
+# By default the default target is fpga which resolves to $(PROJECT_NAME).bit
 default: $(DEFAULT)
 .PHONY: default
 
+project: $(PROJECT_NAME)
+.PHONY: project
+
 fpga: $(PROJECT_NAME).bit
 .PHONY: fpga
+
+runvivado:
+.PHONY: runvivado
 
 # Don't leave incomplete builds behind
 .DELETE_ON_ERROR:
@@ -69,58 +78,58 @@ include $(FPGA_COMMON)/makefiles/Makefile.built
 
 
 # ------------------------------------------------------------------------------
-# Core build process:
-#   interconnect.tcl -> interconnect.bd -> interconnect.vhd
-#   + *.vhd -> $(PROJECT_NAME).bit
+# Vivado project building rules
 
-# The interconnect block design needs the metadata array
-interconnect/BD_DONE: built_dir/metadata.coe
+# This is the Vivado project that will be created
+_PROJECT = $(PROJECT_NAME)/$(PROJECT_NAME).xpr
 
 
-# Load block designs from TCL sources
-%/BD_DONE: $(BD_DIR)/%.tcl
-	$(RUN_VIVADO) -mode batch -source $(TCL_DIR)/create_bd.tcl \
-            -tclargs $* -tclargs $< -tclargs $(FPGA_PART)
-	touch $@
+# Arguments passed through to creation of project.  This list must match the
+# environment variables read at the top of create_target.tcl
+_CREATE_TARGET_ARGS += PROJECT_NAME
+_CREATE_TARGET_ARGS += FPGA_PART
+_CREATE_TARGET_ARGS += FPGA_TOP
+#
+_CREATE_TARGET_ARGS += COMMON_VHD
+_CREATE_TARGET_ARGS += VHD_DIR
+_CREATE_TARGET_ARGS += VHD_FILES
+_CREATE_TARGET_ARGS += VHD_FILE_LIST
+_CREATE_TARGET_ARGS += IP_DIR
+#
+_CREATE_TARGET_ARGS += BD_DIR
+_CREATE_TARGET_ARGS += BLOCK_DESIGNS
+_CREATE_TARGET_ARGS += CONSTR_FILES
+_CREATE_TARGET_ARGS += CONSTR_TCL
+#
+_CREATE_TARGET_ARGS += TOP_ENTITY
+_CREATE_TARGET_ARGS += TCL_SCRIPTS
+
+# Arguments for building project
+_BUILD_TARGET_ARGS += _PROJECT
+_BUILD_TARGET_ARGS += JOBS_COUNT
+
+# Arguments for running Vivado on project
+_RUNVIVADO_ARGS += _PROJECT
+_RUNVIVADO_ARGS += BD_DIR
 
 
-# Arguments passed through to initial build of project
-BUILD_TOP_ARGS += FPGA_COMMON
-BUILD_TOP_ARGS += PROJECT_NAME
-BUILD_TOP_ARGS += FPGA_PART
-BUILD_TOP_ARGS += BLOCK_DESIGNS
-BUILD_TOP_ARGS += VHD_DIRS
-BUILD_TOP_ARGS += VHD_FILES
-BUILD_TOP_ARGS += CONSTR_FILES
-BUILD_TOP_ARGS += CONSTR_TCL
+# Build fresh Vivado project.  Note that we only add built files to the
+# dependencies
+$(PROJECT_NAME): $(BUILT:%=built_dir/%)
+	rm -rf $@
+	ln -sf ./$@/$@.runs/impl_1/top.bit $@.bit
+	$(call EXPORT,$(_CREATE_TARGET_ARGS)) $(RUN_VIVADO) \
+            -mode batch -source $(TCL_DIR)/create_target.tcl
 
-SOURCES := $(shell find $(VHD_DIRS) -name \*.vhd) $(VHD_FILES)
-BITFILE_DEPENDS += $(BUILT:%=built_dir/%)
-BITFILE_DEPENDS += $(BLOCK_DESIGNS:%=%/BD_DONE)
-BITFILE_DEPENDS += $(SOURCES)
+# Using Vivado project run build to completion
+$(PROJECT_NAME).bit: $(PROJECT_NAME)
+	$(call EXPORT,$(_BUILD_TARGET_ARGS)) $(RUN_VIVADO) \
+            -mode batch -source $(TCL_DIR)/build_target.tcl
 
-
-# Build final target
-$(PROJECT_NAME).bit: $(BITFILE_DEPENDS)
-	rm -rf $(PROJECT_NAME)
-	ln -sf ./$(PROJECT_NAME)/$(PROJECT_NAME).runs/impl_1/top.bit $@
-	mkdir -p reports checkpoints
-	$(call EXPORT,$(BUILD_TOP_ARGS)) $(RUN_VIVADO) \
-            -mode batch -source $(TCL_DIR)/build_top.tcl
-
-
-# ------------------------------------------------------------------------------
-
-create-bd: $(BLOCK_DESIGNS:%=%/BD_DONE)
-.PHONY: create-bd
-
-# Run vivado on project
+# Run Vivado on project
 runvivado:
-	TMP=$(CURDIR) $(RUN_VIVADO) \
-            -mode batch -source $(TCL_DIR)/run_vivado.tcl \
-            -tclargs '$(BD_DIR)' \
-            -tclargs '$(PROJECT_NAME)/$(PROJECT_NAME).xpr'
-.PHONY: runvivado
+	TMP=$(CURDIR) $(call EXPORT,$(_RUNVIVADO_ARGS)) $(RUN_VIVADO) \
+            -mode batch -source $(TCL_DIR)/run_vivado.tcl
 # Note the rather odd TMP= workaround: this needs to be set when running the
 # Vivado hardware manager, as otherwise the application cs_server fails to run.
 # It appears to need somewhere where it can dump executable temporary files!

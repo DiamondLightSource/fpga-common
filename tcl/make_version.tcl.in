@@ -29,7 +29,7 @@ set version_file "$build_dir/built_dir/version.vhd"
 set temp_time [file mtime $version_file]
 
 # Build the version file
-exec "$fpga_common/tools/make_version" "$fpga_top" $version_file
+exec $fpga_common/tools/make_version $fpga_top $version_file
 
 # Restore timestamps
 file mtime $version_file $temp_time
