@@ -24,7 +24,13 @@ COMMON_SIM = $(FPGA_COMMON)/sim/common
 TOOLS_DIR = $(FPGA_COMMON)/tools
 TCL_DIR = $(FPGA_COMMON)/tcl
 
-BOARD_DIR ?= $(FPGA_COMMON)/boards/$(BOARD)
+# If BOARD contains a / assume it is a path to an external board directory,
+# otherwise assume it's one of the common boards
+ifeq (,$(findstring /,$(BOARD)))
+    BOARD_DIR = $(FPGA_COMMON)/boards/$(BOARD)
+else
+    BOARD_DIR = $(BOARD)
+endif
 
 VHD_DIR = $(FPGA_TOP)/vhd
 CONSTR_DIR = $(FPGA_TOP)/constr$(_TARGET)
