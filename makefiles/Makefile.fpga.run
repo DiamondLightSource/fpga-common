@@ -14,8 +14,10 @@ CONSTR_FILES = built_dir/top_pins.xdc
 CONSTR_FILES += $(wildcard $(CONSTR_DIR)/*.xdc)
 CONSTR_TCL = $(wildcard $(FPGA_COMMON)/constr/*.tcl)
 
-# By default add all files from the VHD directory
+# By default add all files from the VHD directory and from the built directory
+VHD_FILES += built_dir
 VHD_FILES += $(VHD_DIR)
+VHD_FILE_LIST =
 
 DEFAULT = fpga
 
@@ -115,14 +117,15 @@ _RUNVIVADO_ARGS += BD_DIR
 
 # Build fresh Vivado project.  Note that we only add built files to the
 # dependencies
-$(PROJECT_NAME): $(BUILT:%=built_dir/%)
-	rm -rf $@
-	ln -sf ./$@/$@.runs/impl_1/top.bit $@.bit
+$(_PROJECT): $(BUILT:%=built_dir/%)
+	rm -rf $(PROJECT_NAME)
+	ln -sf ./$(PROJECT_NAME)/$(PROJECT_NAME).runs/impl_1/top.bit \
+            $(PROJECT_NAME).bit
 	$(call EXPORT,$(_CREATE_TARGET_ARGS)) $(RUN_VIVADO) \
             -mode batch -source $(TCL_DIR)/create_target.tcl
 
 # Using Vivado project run build to completion
-$(PROJECT_NAME).bit: $(PROJECT_NAME)
+$(PROJECT_NAME).bit: $(_PROJECT)
 	$(call EXPORT,$(_BUILD_TARGET_ARGS)) $(RUN_VIVADO) \
             -mode batch -source $(TCL_DIR)/build_target.tcl
 

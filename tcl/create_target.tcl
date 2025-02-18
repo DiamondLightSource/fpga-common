@@ -33,13 +33,17 @@ set_property target_language VHDL [current_project]
 # Add VDHL files.  We take two alternative approaches here: if VHD_FILE_LIST has
 # been set then files are added from this list, otherwise files are globally
 # added from all directories listed in VHD_DIRS
-add_files built_dir
-add_files $vhd_files
+foreach vhd_file $vhd_files {
+    add_files $vhd_file
+}
 foreach file_list $vhd_file_list {
     set infile [open $file_list]
-    # The search skips blank lines and lines starting with #
-    set files [lsearch -regexp -inline -all [split [read $infile]] {^[^#]}]
+    set lines [split [read $infile] \n]
     close $infile
+
+    # The search skips blank lines and lines starting with #
+    set files [lsearch -regexp -inline -all $lines {^[^#]}]
+
     # The following symbols are available for substitution in this file:
     #   vhd_dir     VHD directory in main project
     #   common_vhd  VHD directory of fpga-common
