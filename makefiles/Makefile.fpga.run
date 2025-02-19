@@ -8,16 +8,30 @@ include $(FPGA_COMMON)/makefiles/Makefile.common
 # ------------------------------------------------------------------------------
 # Create default settings for builds
 
+# List of block designs to be loaded into project
 BLOCK_DESIGNS =
 
-CONSTR_FILES = built_dir/top_pins.xdc
+# By default load the built pin definition constraints and all constraints from
+# the computed constraints directory
+CONSTR_FILES =
+CONSTR_FILES += built_dir/top_pins.xdc
 CONSTR_FILES += $(wildcard $(CONSTR_DIR)/*.xdc)
-CONSTR_TCL = $(wildcard $(FPGA_COMMON)/constr/*.tcl)
+# TCL based constraints need separate treatment
+CONSTR_TCL =
+CONSTR_TCL += $(wildcard $(FPGA_COMMON)/constr/*.tcl)
 
 # By default add all files from the VHD directory and from the built directory
+VHD_FILES =
 VHD_FILES += built_dir
 VHD_FILES += $(VHD_DIR)
+# List of VHDL files to load.  If this list is complete reset VHD_FILES in
+# FPGA_DEFS
 VHD_FILE_LIST =
+# List of definitions to make available for substitution in the VHD_FILE_LIST
+# files.  By default add VHD_DIR and COMMON_VHD
+FILE_LIST_DEFS =
+FILE_LIST_DEFS += VHD_DIR
+FILE_LIST_DEFS += COMMON_VHD
 
 DEFAULT = fpga
 
@@ -92,12 +106,12 @@ _CREATE_TARGET_ARGS += PROJECT_NAME
 _CREATE_TARGET_ARGS += FPGA_PART
 _CREATE_TARGET_ARGS += FPGA_TOP
 #
-_CREATE_TARGET_ARGS += COMMON_VHD
-_CREATE_TARGET_ARGS += VHD_DIR
 _CREATE_TARGET_ARGS += VHD_FILES
 _CREATE_TARGET_ARGS += VHD_FILE_LIST
-_CREATE_TARGET_ARGS += IP_DIR
+_CREATE_TARGET_ARGS += FILE_LIST_DEFS
+_CREATE_TARGET_ARGS += $(FILE_LIST_DEFS)
 #
+_CREATE_TARGET_ARGS += IP_DIRS
 _CREATE_TARGET_ARGS += BD_DIR
 _CREATE_TARGET_ARGS += BLOCK_DESIGNS
 _CREATE_TARGET_ARGS += CONSTR_FILES

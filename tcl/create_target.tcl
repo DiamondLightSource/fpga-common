@@ -8,13 +8,12 @@ set project_name $env(PROJECT_NAME)
 set fpga_part $env(FPGA_PART)
 set fpga_top $env(FPGA_TOP)
 #
-# The following symbols identify the 
-set common_vhd $env(COMMON_VHD)
-set vhd_dir $env(VHD_DIR)
+# Lists of VHDL files to load
 set vhd_files $env(VHD_FILES)
 set vhd_file_list $env(VHD_FILE_LIST)
-set ip_dir $env(IP_DIR)
+set file_list_defs $env(FILE_LIST_DEFS)
 #
+set ip_dirs $env(IP_DIRS)
 set bd_dir $env(BD_DIR)
 set block_designs $env(BLOCK_DESIGNS)
 set constr_files $env(CONSTR_FILES)
@@ -30,6 +29,13 @@ set_param project.enableVHDL2008 1
 set_property target_language VHDL [current_project]
 
 
+# Bind all environment variables specified in $file_list_defs to corresponding
+# local TCL variables so that they are available for substitution when expanding
+# the file list
+foreach var $file_list_defs {
+    set [string tolower $var] $env($var)
+}
+
 # Add VDHL files.  We take two alternative approaches here: if VHD_FILE_LIST has
 # been set then files are added from this list, otherwise files are globally
 # added from all directories listed in VHD_DIRS
@@ -44,18 +50,17 @@ foreach file_list $vhd_file_list {
     # The search skips blank lines and lines starting with #
     set files [lsearch -regexp -inline -all $lines {^[^#]}]
 
-    # The following symbols are available for substitution in this file:
-    #   vhd_dir     VHD directory in main project
-    #   common_vhd  VHD directory of fpga-common
-    #   ip_dir      Directory of local IP
-    add_files [subst $files]
+    # All the variables defined in $file_list_defs are available for
+    # substitution in this file.  By default this includes $vhd_dir and
+    # $common_vhd.
+    add_files [subst -nocommands $files]
 }
 # Set all added files to VHDL 2008
 set_property FILE_TYPE "VHDL 2008" [get_files *.vhd]
 
 
 # Add any IP paths as required, must do this before loading block designs
-set_property ip_repo_paths $ip_dir [current_project]
+set_property ip_repo_paths $ip_dirs [current_project]
 
 # Load and prepare any block designs: load the design and add wrappers
 foreach bd $block_designs {
