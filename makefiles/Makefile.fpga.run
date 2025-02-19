@@ -48,21 +48,24 @@ RUN_VIVADO = $(VIVADO) $(VIVADO_EXTRA_ARGS)
 # ------------------------------------------------------------------------------
 # Targets
 
+# This is the Vivado project that will be created
+_PROJECT = $(PROJECT_NAME)/$(PROJECT_NAME).xpr
+_BITFILE = $(PROJECT_NAME)/$(PROJECT_NAME).runs/impl_1/top.bit
+
+
 # By default the default target is fpga which resolves to $(PROJECT_NAME).bit
 default: $(DEFAULT)
 .PHONY: default
 
-project: $(PROJECT_NAME)
+project: $(_PROJECT)
 .PHONY: project
 
-fpga: $(PROJECT_NAME).bit
+fpga: $(_BITFILE)
 .PHONY: fpga
 
 runvivado:
 .PHONY: runvivado
 
-# Don't leave incomplete builds behind
-.DELETE_ON_ERROR:
 
 
 # If _TARGET is defined then add all target specific files to TARGET_FILES.
@@ -81,9 +84,6 @@ include $(FPGA_COMMON)/makefiles/Makefile.built
 
 # ------------------------------------------------------------------------------
 # Vivado project building rules
-
-# This is the Vivado project that will be created
-_PROJECT = $(PROJECT_NAME)/$(PROJECT_NAME).xpr
 
 
 # Arguments passed through to creation of project.  This list must match the
@@ -119,13 +119,12 @@ _RUNVIVADO_ARGS += BD_DIR
 # dependencies
 $(_PROJECT): $(BUILT:%=built_dir/%)
 	rm -rf $(PROJECT_NAME)
-	ln -sf ./$(PROJECT_NAME)/$(PROJECT_NAME).runs/impl_1/top.bit \
-            $(PROJECT_NAME).bit
+	ln -sf $(_BITFILE) $(PROJECT_NAME).bit
 	$(call EXPORT,$(_CREATE_TARGET_ARGS)) $(RUN_VIVADO) \
             -mode batch -source $(TCL_DIR)/create_target.tcl
 
 # Using Vivado project run build to completion
-$(PROJECT_NAME).bit: $(_PROJECT)
+$(_BITFILE): $(_PROJECT)
 	$(call EXPORT,$(_BUILD_TARGET_ARGS)) $(RUN_VIVADO) \
             -mode batch -source $(TCL_DIR)/build_target.tcl
 
