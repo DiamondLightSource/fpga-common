@@ -46,6 +46,7 @@ JOBS_COUNT = 6
 
 # Pull in any project VHDL definitions
 -include $(CALLER_TOP)/FPGA_DEFS
+-include $(CALLER_TOP)/FPGA_DEFS$(_TARGET)
 
 # Pick up board specific definitions
 include $(BOARD_DIR)/CONFIG
@@ -153,5 +154,6 @@ runvivado:
 
 # Allow any extra rules that need to come late to be included here
 -include $(FPGA_TOP)/FPGA_RULES
+-include $(FPGA_TOP)/FPGA_RULES$(_TARGET)
 
 # vim: set filetype=make:

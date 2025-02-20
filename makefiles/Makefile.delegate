@@ -75,21 +75,21 @@ BUILD_DIR := $(abspath \
 # Delegate all goals to the build directory
 
 # The following symbols need to be passed through
-MAKE_EXPORTS += FPGA_COMMON
-MAKE_EXPORTS += CALLER_TOP
-MAKE_EXPORTS += FPGA_TOP
-MAKE_EXPORTS += CONFIG
-MAKE_EXPORTS += CONFIG_TOP
-MAKE_EXPORTS += _TARGET
+_MAKE_EXPORTS += FPGA_COMMON
+_MAKE_EXPORTS += CALLER_TOP
+_MAKE_EXPORTS += FPGA_TOP
+_MAKE_EXPORTS += CONFIG
+_MAKE_EXPORTS += CONFIG_TOP
+_MAKE_EXPORTS += _TARGET
 ifdef PROJECT_NAME
-    MAKE_EXPORTS += PROJECT_NAME
+    _MAKE_EXPORTS += PROJECT_NAME
 endif
 
 # Delegate all goals except for clean and building the directory
 GOALS = $(filter-out clean build_dir $(BUILD_DIR),$(MAKECMDGOALS))
 
 default $(GOALS): | $(BUILD_DIR)
-	$(MAKE) -C $(BUILD_DIR) $(call EXPORT,$(MAKE_EXPORTS)) \
+	$(MAKE) -C $(BUILD_DIR) $(call EXPORT,$(_MAKE_EXPORTS)) \
             -f $(FPGA_COMMON)/makefiles/Makefile.$(CLASS).run $@
 .PHONY: default $(GOALS)
 

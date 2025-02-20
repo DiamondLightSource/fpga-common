@@ -17,12 +17,12 @@ $(call MUST_DEFINE,VSIM)
 $(call MUST_DEFINE,MODELSIM_LIBS)
 
 # The following symbols are passed through to the simulation script
-VSIM_EXPORTS += VHD_DIR
-VSIM_EXPORTS += BENCH_DIR
-VSIM_EXPORTS += COMMON_VHD
-VSIM_EXPORTS += COMMON_SIM
+_VSIM_EXPORTS += VHD_DIR
+_VSIM_EXPORTS += BENCH_DIR
+_VSIM_EXPORTS += COMMON_VHD
+_VSIM_EXPORTS += COMMON_SIM
 
-RUN_VSIM = $(call EXPORT,$(VSIM_EXPORTS)) MTI_VCO_MODE=64 $(VSIM) \
+RUN_VSIM = $(call EXPORT,$(_VSIM_EXPORTS)) MTI_VCO_MODE=64 $(VSIM) \
     -modelsimini ./modelsim.ini
 
 # Default action for vsim target, can be overridden
