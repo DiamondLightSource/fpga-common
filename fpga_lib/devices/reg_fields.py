@@ -17,6 +17,39 @@ def _make_field(reg):
 # This class is used to map logical packed fields to hardware registers.
 # This class should be subclassed and _DeviceName defined
 class FieldWriter(object):
+    # Register definitions will be read from the given file
+    def __init__(self, device = None, mode = 'rw'):
+        # Set up read and write actions.  Use dummy write to display if no
+        # device or mode is not writeable
+        self._write = self.dummy_writer
+        self._read = None
+        if device is not None:
+            if 'r' in mode:
+                self._read = device.read
+            if 'w' in mode:
+                self._write = device.write
+        self._hardware = device
+
+        self.__live = False     # Switch between cached and direct access
+        self.__registers = {}   # Maps register numbers to values
+        self.__dirty = set()    # Set of changed registers
+        self.__fields = {}      # Maps names to definitions
+
+        # Walk the register definitions
+        for name, rdef in self.__load_register_defs().items():
+            if isinstance(rdef, (Register, Group)):
+                fields, default, read_only = self.__compute_fields(rdef)
+                self.__fields[name] = fields
+                if not read_only:
+                    self.__write_value(name, default)
+            elif isinstance(rdef, Constant):
+                # Constants are used to initialise individual registers.  The
+                # register name is not saved
+                self._write_register(rdef.register, rdef.value)
+            else:
+                assert False, 'Invalid register definition'
+
+
     def __load_register_defs(self):
         device_name = self._DeviceName
         if '/' not in device_name:
@@ -55,33 +88,6 @@ class FieldWriter(object):
             # for register generation.
             fields = tuple(reversed([_make_field(f) for f in field]))
         return fields, default, read_only
-
-    # Register definitions will be read from the given file
-    def __init__(self, writer = None, reader = None):
-        if writer is None:
-            # Fallback to simple text output
-            writer = self.dummy_writer
-
-        self._write = writer    # Write to register
-        self._read = reader     # Optional, read from register
-        self.__live = False     # Switch between cached and direct access
-        self.__registers = {}   # Maps register numbers to values
-        self.__dirty = set()    # Set of changed registers
-        self.__fields = {}      # Maps names to definitions
-
-        # Walk the register definitions
-        for name, rdef in self.__load_register_defs().items():
-            if isinstance(rdef, (Register, Group)):
-                fields, default, read_only = self.__compute_fields(rdef)
-                self.__fields[name] = fields
-                if not read_only:
-                    self.__write_value(name, default)
-            elif isinstance(rdef, Constant):
-                # Constants are used to initialise individual registers.  The
-                # register name is not saved
-                self._write_register(rdef.register, rdef.value)
-            else:
-                assert False, 'Invalid register definition'
 
     # Call this to enable writing to hardware
     def enable_write(self, live = True):
@@ -171,9 +177,13 @@ class FieldWriter(object):
     # This should be called after creation to write the initial state to
     # hardware in the correct order.  All defined registers in the given range
     # are written in sequence.
-    def _write_fields(self, range):
+    def _write_fields(self, range = None):
         assert self.__live
-        first, last = range
+        if range is None:
+            # Pick up default range from subclass definition
+            first, last = self._WriteFieldRange
+        else:
+            first, last = range
         for reg in sorted(self.__dirty):
             if first <= reg <= last:
                 self._write_register(reg, self.__registers[reg])
@@ -185,3 +195,14 @@ class FieldWriter(object):
 
     def _get_field_meta(self, name):
         return copy.deepcopy(self.__fields[name])
+
+
+    # Context manager support
+    def __enter__(self):
+        self.enable_write(False)
+
+    def __exit__(self, *args):
+        self.enable_write(True)
+
+        # Flush all dirty registers
+        self._write_fields()

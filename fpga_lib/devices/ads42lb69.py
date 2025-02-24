@@ -2,18 +2,16 @@
 
 from .reg_fields import FieldWriter
 
-def dummy_write(offset, value):
-    print('ADC[%2d] <= %02X' % (offset, value))
-
 class ADS42LB69(FieldWriter):
-    def __init__(self, lmk = None):
-        if lmk:
-            writer = lmk.write
-        else:
-            writer = dummy_write
-        self.__write = writer
-        FieldWriter.__init__(self, 'ADS42LB69', writer)
+    _DeviceName = 'ADS42LB69'
+    _WriteFieldRange = (0, 32)
 
-    # Writes PLL configuration
+    def dummy_writer(self, offset, value):
+        print('ADC[%2d] <= %02X' % (offset, value))
+
     def write_config(self):
-        pass
+        # Software reset of ADC
+        self._write(0x08, 0x01)
+
+        self.enable_write()
+        self._write_fields()
