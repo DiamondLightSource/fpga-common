@@ -72,10 +72,24 @@ class RawRegisters:
         if hasattr(self, 'reg_file'):
             os.close(self.reg_file)
 
+    def make_registers(self, name, range, *defines):
+        if range is None:
+            range = numpy.s_[:]
+        # Special trick to fall back to old filename if present, helps with
+        # loading registers during development
+        defines = [
+            name + '.old' if os.path.isfile(name + '.old') else name
+            for name in defines]
+        groups, constants = load_register_defs(*defines)
+        register_map = RegisterMap(self.regs[range], name)
+        setattr(self, name, groups[name](register_map))
+        return constants
+
+
     def device_name(self, part):
         return device_name(self.name, part, self.prefix)
 
-    def read_events(self, wait, verbose):
+    def read_events(self, wait = True, verbose = False):
         # If requested wait for device to become ready, otherwise fall through
         # to reading.
         if not wait:
@@ -101,6 +115,10 @@ class RawRegisters:
         else:
             return struct.unpack('I', events)[0]
 
+    def reader(self, name, dtype = None):
+        '''Returns file handle for reading from DMA area.'''
+        return _Reader(self.device_name(name), dtype)
+
     def __getitem__(self, key):
         return self.regs[key]
 
@@ -124,9 +142,6 @@ class RegisterMap:
             print('%s[%03X] <= %08X' % (self.name, offset, value))
         self.registers[offset] = value
 
-
-def make_register(register_group, name, map):
-    return register_group(RegisterMap(map, name))
 
 
 # Wraps reading interface around a DMA device
@@ -164,30 +179,4 @@ class _Reader:
         self.__file.close()
 
 
-class Registers:
-    def __init__(self, raw_registers, *defs_path,
-                 range = slice(None, None, None)):
-        # Special trick to fall back to old filename if present, helps with
-        # loading registers during development
-        defs_path = [
-            name + '.old' if os.path.isfile(name + '.old') else name
-            for name in defs_path]
-        groups, constants = load_register_defs(*defs_path)
-
-        self.constants = constants
-        self.raw_registers = raw_registers
-
-        for key, defs in groups.items():
-            setattr(self, key,
-                make_register(defs, key, raw_registers.regs[range]))
-
-    def read_events(self, wait = True, verbose = False):
-        ''' Blocks until an interrupt is seen, returns mask of interrupts.'''
-        return self.raw_registers.read_events(wait, verbose)
-
-    def reader(self, name, dtype = None):
-        '''Returns file handle for reading from DMA area.'''
-        return _Reader(self.raw_registers.device_name(name), dtype)
-
-
-__all__ = ['Registers']
+__all__ = ['RawRegisters']

@@ -194,7 +194,6 @@ def make_array(array, fields):
             register = parse.register_defines.Register(
                 self._name, base + index, self.__rw, fields, None, [])
             return make_register(register, fields)(self)
-            return self._read_value(base + index, self.__rw)
 
         def __repr__(self):
             base, length = self.__range
