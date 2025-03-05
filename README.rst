@@ -1,7 +1,7 @@
 FPGA Support Libraries
 ----------------------
 
-See also https:://github.com/DiamondLightSource/AmcPciDev for kernel driver
+See also https://github.com/DiamondLightSource/AmcPciDev for kernel driver
 support for register and DMA interfacing.
 
 This repository gathers a number of VHDL and Python libraries to help with the
