@@ -22,7 +22,8 @@ entity axi_write_mux is
         ADDRESS_WIDTH : natural;
         LOG_DATA_BYTES : natural;           -- log2 of data byte width
         MUX_CHANNEL_COUNT : natural;        -- Number of mux channels
-        MAX_BURST_COUNT : natural := 2      -- Number of requested bursts
+        MAX_BURST_COUNT : natural := 2;     -- Number of requested bursts
+        LOG_COMPLETION_COUNT : natural := 4 -- Number of outstanding completions
     );
     port (
         clk_i : in std_ulogic;
@@ -138,7 +139,7 @@ begin
     -- FIFO for write completion responses, keeps track of which channel is
     -- expecting the next write complete response
     completion_fifo : entity work.fifo generic map (
-        FIFO_BITS => 4,
+        FIFO_BITS => LOG_COMPLETION_COUNT,
         DATA_WIDTH => mux_select_in'LENGTH
     ) port map (
         clk_i => clk_i,
