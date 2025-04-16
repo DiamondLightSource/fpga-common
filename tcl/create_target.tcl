@@ -23,6 +23,15 @@ set top_entity $env(TOP_ENTITY)
 set tcl_scripts $env(TCL_SCRIPTS)
 
 
+# Helper function for sourcing script and checking result
+proc check_source {script} {
+    set status [source $script]
+    if { $status ne "" } {
+        error "Error $status sourcing $script"
+    }
+}
+
+
 # Create the new project
 create_project $project_name $project_name -part $fpga_part
 set_param project.enableVHDL2008 1
@@ -65,9 +74,9 @@ set_property ip_repo_paths $ip_dirs [current_project]
 # Load and prepare any block designs: load the design and add wrappers
 foreach bd $block_designs {
     set bd_script $bd_dir/$bd.tcl
-    source $bd_script
+    check_source $bd_script
     # Check for any fixup script that might also need to be run
-    if [file isfile $bd_script.fixup] { source $bd_script.fixup }
+    if [file isfile $bd_script.fixup] { check_source $bd_script.fixup }
 
     validate_bd_design
     make_wrapper -files [get_files $bd/$bd.bd] -top
@@ -95,5 +104,5 @@ set_msg_config -id "Synth 8-614" -new_severity ERROR
 
 # Finally apply any project specific TCL modifications to the environment
 foreach script $tcl_scripts {
-    source $script
+    check_source $script
 }
