@@ -38,6 +38,9 @@ DEFAULT = fpga
 TOP_ENTITY = top
 BUILT = top_entity.vhd
 
+# Any extra dependencies for building the project
+PROJECT_DEPENDS =
+
 JOBS_COUNT = 6
 
 
@@ -134,7 +137,7 @@ _RUNVIVADO_ARGS += BD_DIR
 
 # Build fresh Vivado project.  Note that we only add built files to the
 # dependencies
-$(_PROJECT): $(BUILT:%=built_dir/%)
+$(_PROJECT): $(BUILT:%=built_dir/%) $(PROJECT_DEPENDS)
 	rm -rf $(PROJECT_NAME)
 	ln -sf $(_BITFILE) $(PROJECT_NAME).bit
 	$(call EXPORT,$(_CREATE_TARGET_ARGS)) $(RUN_VIVADO) \
