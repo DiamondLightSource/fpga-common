@@ -13,7 +13,7 @@ MODELSIM_LIBS = /dls_sw/FPGA/Xilinx/Vivado/2022.2/questasim/2020.4
 LM_LICENSE_FILE += 2100@diamcslicserv01.dc.diamond.ac.uk
 LM_LICENSE_FILE += 2100@diamcslicserv02.diamond.ac.uk
 # Licensing for Mentor Graphics vsim
-LM_LICENSE_FILE += 1717@diamcslicserv01.dc.diamond.ac.uk
+LM_LICENSE_FILE += 29000@diamcslicserv01.dc.diamond.ac.uk
 
 # This is our project name
 PROJECT_NAME = fpga-common
