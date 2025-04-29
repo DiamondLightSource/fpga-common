@@ -2,6 +2,7 @@
 # to use them when they're not defined.
 $(call MUST_DEFINE,PROJECT_NAME)     # Name of project
 $(call MUST_DEFINE,BOARD)            # Specifies board
+$(call MUST_DEFINE,VIVADO)           # Path to Vivado
 
 # The following symbols must be set by the .delegate caller, but check them
 # anyway
@@ -34,5 +35,9 @@ BOARD_DIR = \
 VHD_DIR = $(FPGA_TOP)/vhd
 CONSTR_DIR = $(FPGA_TOP)/constr$(_TARGET)
 BD_DIR = $(FPGA_TOP)/bd$(_TARGET)
+
+# Command to run vivado
+RUN_VIVADO = $(VIVADO) $(VIVADO_EXTRA_ARGS)
+
 
 # vim: set filetype=make:

@@ -58,14 +58,6 @@ include $(BOARD_DIR)/CONFIG
 
 
 # ------------------------------------------------------------------------------
-
-$(call MUST_DEFINE,VIVADO)
-
-# Command to run vivado
-RUN_VIVADO = $(VIVADO) $(VIVADO_EXTRA_ARGS)
-
-
-# ------------------------------------------------------------------------------
 # Targets
 
 # This is the Vivado project that will be created
