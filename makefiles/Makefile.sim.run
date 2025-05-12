@@ -1,6 +1,7 @@
 # Runner for simulation
 
 include $(CONFIG)
+-include $(CONFIG).common
 include $(FPGA_COMMON)/makefiles/Makefile.core
 include $(FPGA_COMMON)/makefiles/Makefile.common
 
@@ -8,6 +9,7 @@ BENCH_DIR = $(CALLER_TOP)/bench
 
 # Any extra build targets etc are configured here
 -include $(CALLER_TOP)/SIM_DEFS
+-include $(CALLER_TOP)/../SIM_DEFS.shared
 
 
 # ------------------------------------------------------------------------------

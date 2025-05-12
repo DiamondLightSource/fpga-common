@@ -1,6 +1,7 @@
 # Creates and runs FPGA build
 
 include $(CONFIG)
+-include $(CONFIG).common
 include $(FPGA_COMMON)/makefiles/Makefile.core
 include $(FPGA_COMMON)/makefiles/Makefile.common
 
