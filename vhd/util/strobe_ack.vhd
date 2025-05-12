@@ -1,15 +1,7 @@
 -- Strobe acknowledgement with busy control
 
--- Allows overlapping register requests
-
---  clk_i       /   /   /   /   /   /   /   /   /   /   /   /   /   /   /   /
---               ___     ___
---  strobe_i  __/   \___/   \
---                   ___
---  busy_i    ______/
---  pending   ______
---  strobe_o  __/   \___
---  ack_o     ______/   \__
+-- Allows overlapping register requests: the busy_i signal is used to block
+-- acknowledgement until ready.
 
 library ieee;
 use ieee.std_logic_1164.all;
