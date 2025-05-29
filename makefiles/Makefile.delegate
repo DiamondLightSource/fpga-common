@@ -35,7 +35,7 @@ endif
 
 # Extract the two key elements from the original invoking makefile, relying on
 # the check above.
-CALLER_TOP := $(abspath $(dir $(word 1,$(MAKEFILE_LIST))))
+CALLER_TOP := $(realpath $(dir $(word 1,$(MAKEFILE_LIST))))
 CONFIG := $(abspath $(word 2,$(MAKEFILE_LIST)))
 CONFIG_TOP := $(dir $(CONFIG))
 

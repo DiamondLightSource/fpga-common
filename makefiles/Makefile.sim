@@ -2,7 +2,7 @@
 
 CLASS = sim
 BUILD_PATTERN = /$(COMPONENT_NAME)
-FPGA_TOP := $(abspath $(CURDIR)/../..)
+FPGA_TOP := $(realpath $(CURDIR)/../..)
 include $(FPGA_COMMON)/makefiles/Makefile.delegate
 
 # vim: set filetype=make:
