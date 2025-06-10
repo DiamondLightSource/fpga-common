@@ -1,0 +1,3 @@
+FPGA_PART = $(error This board is not synthesisable)
+
+# vim: set filetype=make:
