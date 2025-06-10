@@ -1,0 +1,15 @@
+stream_demux is
+stream_mux is
+stream_capture_bursts is
+    stream_capture_control
+    stream_bursts is
+        stream_bursts_fifo is
+            simple_fifo
+            fifo
+            axi_write_validate
+        stream_bursts_address
+        stream_bursts_state
+stream_capture_fast_stream is
+stream_capture_fifo is
+    fifo
+stream_select is

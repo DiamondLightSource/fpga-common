@@ -1,0 +1,45 @@
+List of symbols defined in makefiles
+
+Symbol                  Defined in                  Used in
+
+BD_DIR                  Makefile.common             Makefile.fpga.run
+BENCH_DIR               Makefile.sim.run            simulations
+BITFILE_DEPENDS         Makefile.fpga.run           (internal)
+BLOCK_DESIGNS           $(CALLER_TOP)/FPGA_DEFS     create_target.tcl
+BOARD_DIR               CONFIG,Makefile.common      Makefile.fpga.run
+BUILD_DIR
+BUILD_PATTERN
+BUILD_TOP_ARGS
+BUILT
+CALLER_TOP
+CLASS
+COMMON_SIM
+COMMON_VHD
+COMPONENT_NAME
+CONFIG
+CONFIG_TOP
+CONSTR_DIR
+CONSTR_FILES
+CONSTR_TCL
+DEFAULT
+EXPORT
+FPGA_TOP
+GOALS
+LINKED
+MAKE_EXPORTS
+MAKE_VERSION_TCL_SED
+MUST_DEFINE
+PYTHON
+RUN_VIVADO
+RUN_VSIM
+SAFE_QUOTE
+SOURCES
+SPACE
+TCL_DIR
+TOOLS_DIR
+VHD_DIR
+VHD_DIRS
+VHD_FILES
+VPATH
+VSIM_EXPORTS
+_TARGET
