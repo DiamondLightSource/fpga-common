@@ -48,6 +48,13 @@ rst_epilog = '''
 '''
 
 
+# Wavedrom configuration for offline mode.  These two files were downloaded from
+# https://wavedrom.com/skins/default.js and https://wavedrom.com/wavedrom.min.js
+# respectively
+offline_skin_js_path = '_static/wavedrom.default.js'
+offline_wavedrom_js_path = '_static/wavedrom.min.js'
+
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for

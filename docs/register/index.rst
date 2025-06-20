@@ -8,3 +8,4 @@ This document is an overview of the FPGA register framework.
     introduction
     presentation
     reference
+    register_defines

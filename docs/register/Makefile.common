@@ -62,5 +62,5 @@ publish: $(HTML_OUT)
 
 
 clean:
-	rm -rf build
+	rm -rf build *~
 .PHONY: clean
