@@ -24,7 +24,9 @@ entity register_events is
         clear_sticky_i : in std_ulogic := '0';
 
         -- Input pulsed bits
-        pulsed_bits_i : in reg_data_t
+        pulsed_bits_i : in reg_data_t;
+        -- Optional independent access to pulsed bits
+        pulsed_bits_o : out reg_data_t
     );
 end;
 
@@ -52,6 +54,8 @@ begin
                 clear_sticky <= clear_sticky or clear_sticky_i;
             end if;
             read_ack_o <= read_strobe_i;
+
+            pulsed_bits_o <= pulsed_bits;
         end if;
     end process;
 end;
