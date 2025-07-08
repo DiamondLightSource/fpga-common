@@ -167,42 +167,17 @@ begin
         end procedure;
 
         procedure write_reg(address : natural; data : reg_data_t) is
-            variable start : time;
         begin
-            start := now;
-            write_address <= to_unsigned(address, ADDRESS_WIDTH);
-            write_data <= data;
-            write_strobe <= '1';
-            while write_ack = '0' loop
-                clk_wait;
-                write_strobe <= '0';
-            end loop;
-            clk_wait;
-            write_strobe <= '0';
-            write(
-                "@ " & to_string(now, unit => ns) &
-                " (" & to_string(now - start, unit => ns) & ")" &
-                ": write_reg [" & natural'image(address) & 
-                "] <= " & to_hstring(data));
+            write_reg(
+                clk, write_data, write_address, write_strobe, write_ack,
+                address, data);
         end;
 
         procedure read_reg(address : ADDRESS_RANGE) is
-            variable start : time;
         begin
-            start := now;
-            read_address <= to_unsigned(address, ADDRESS_WIDTH);
-            read_strobe <= '1';
-            while read_ack = '0' loop
-                clk_wait;
-                read_strobe <= '0';
-            end loop;
-            clk_wait;
-            read_strobe <= '0';
-            write(
-                "@ " & to_string(now, unit => ns) &
-                " (" & to_string(now - start, unit => ns) & ")" &
-                ": read_reg [" & natural'image(address) & 
-                "] => " & to_hstring(read_data));
+            read_reg(
+                clk, read_data, read_address, read_strobe, read_ack,
+                address);
         end;
 
     begin
@@ -249,6 +224,8 @@ begin
         read_reg(TEST_READ_SEQ_REG_R);
         read_reg(TEST_READ_SEQ_REG_R);
         read_reg(TEST_READ_SEQ_REG_R);
+
+        write("Test complete", true);
 
         wait;
     end process;

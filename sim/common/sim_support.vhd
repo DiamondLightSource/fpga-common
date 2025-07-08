@@ -81,7 +81,10 @@ package sim_support is
         result : out reg_data_t; quiet : boolean := false);
 
 
+    -- Write message with optional leading timestamp
     procedure write(message : string := ""; stamp : boolean := false);
+    -- Write message with leading timestamp and duration since start
+    procedure write(message : string := ""; start : time);
 
 end package;
 
@@ -103,8 +106,11 @@ package body sim_support is
         signal data_o : out reg_data_t;
         signal strobe_o : out std_ulogic;
         signal ack_i : in std_ulogic;
-        value : reg_data_t; quiet : boolean := false) is
+        value : reg_data_t; quiet : boolean := false)
+    is
+        variable start : time;
     begin
+        start := now;
         data_o <= value;
         strobe_o <= '1';
         loop
@@ -114,7 +120,7 @@ package body sim_support is
         end loop;
         data_o <= (others => 'U');
         if not quiet then
-            write("write_reg <= " & to_hstring(value), true);
+            write("write_reg <= " & to_hstring(value), start);
         end if;
     end procedure;
 
@@ -123,8 +129,11 @@ package body sim_support is
         signal data_i : in reg_data_t;
         signal strobe_o : out std_ulogic;
         signal ack_i : in std_ulogic;
-        result : out reg_data_t; quiet : boolean := false) is
+        result : out reg_data_t; quiet : boolean := false)
+    is
+        variable start : time;
     begin
+        start := now;
         strobe_o <= '1';
         loop
             clk_wait(clk_i);
@@ -134,7 +143,7 @@ package body sim_support is
         result := data_i;
 
         if not quiet then
-            write("read_reg => " & to_hstring(result), true);
+            write("read_reg => " & to_hstring(result), start);
         end if;
     end procedure;
 
@@ -157,7 +166,7 @@ package body sim_support is
     -- Annoyingly and disappointingly it isn't possible to reuse the
     -- implementations above, eg writing
     --
-    --  write_reg(clk_i, data_o(reg), strobe_o(reg), ack_i(reg), value, true);
+    --  write_reg(clk_i, data_o(reg), strobe_o(reg), ack_i(reg), value, start);
     --
     -- because VHDL simply doesn't allow dynamic indexing of an array here.
 
@@ -166,8 +175,11 @@ package body sim_support is
         signal data_o : out reg_data_array_t;
         signal strobe_o : out std_ulogic_vector;
         signal ack_i : in std_ulogic_vector;
-        reg : natural; value : reg_data_t; quiet : boolean := false) is
+        reg : natural; value : reg_data_t; quiet : boolean := false)
+    is
+        variable start : time;
     begin
+        start := now;
         data_o(reg) <= value;
         strobe_o <= (strobe_o'RANGE => '0');
         strobe_o(reg) <= '1';
@@ -180,7 +192,7 @@ package body sim_support is
         if not quiet then
             write(
                 "write_reg [" & natural'image(reg) &
-                "] <= " & to_hstring(value), true);
+                "] <= " & to_hstring(value), start);
         end if;
     end procedure;
 
@@ -191,8 +203,11 @@ package body sim_support is
         signal strobe_o : out std_ulogic_vector;
         signal ack_i : in std_ulogic_vector;
         reg : natural;
-        result : out reg_data_t; quiet : boolean := false) is
+        result : out reg_data_t; quiet : boolean := false)
+    is
+        variable start : time;
     begin
+        start := now;
         strobe_o <= (strobe_o'RANGE => '0');
         strobe_o(reg) <= '1';
         loop
@@ -205,7 +220,7 @@ package body sim_support is
         if not quiet then
             write(
                 "read_reg [" & natural'image(reg) &
-                "] => " & to_hstring(result), true);
+                "] => " & to_hstring(result), start);
         end if;
     end procedure;
 
@@ -231,8 +246,11 @@ package body sim_support is
         signal address_o : out unsigned;
         signal strobe_o : out std_ulogic;
         signal ack_i : in std_ulogic;
-        reg : natural; value : reg_data_t; quiet : boolean := false) is
+        reg : natural; value : reg_data_t; quiet : boolean := false)
+    is
+        variable start : time;
     begin
+        start := now;
         data_o <= value;
         address_o <= to_unsigned(reg, address_o'LENGTH);
         strobe_o <= '1';
@@ -246,7 +264,7 @@ package body sim_support is
         if not quiet then
             write(
                 "write_reg [" & natural'image(reg) &
-                "] <= " & to_hstring(value), true);
+                "] <= " & to_hstring(value), start);
         end if;
     end procedure;
 
@@ -258,8 +276,11 @@ package body sim_support is
         signal strobe_o : out std_ulogic;
         signal ack_i : in std_ulogic;
         reg : natural;
-        result : out reg_data_t; quiet : boolean := false) is
+        result : out reg_data_t; quiet : boolean := false)
+    is
+        variable start : time;
     begin
+        start := now;
         address_o <= to_unsigned(reg, address_o'LENGTH);
         strobe_o <= '1';
         loop
@@ -273,7 +294,7 @@ package body sim_support is
         if not quiet then
             write(
                 "read_reg [" & natural'image(reg) &
-                "] => " & to_hstring(result), true);
+                "] => " & to_hstring(result), start);
         end if;
     end procedure;
 
@@ -302,4 +323,11 @@ package body sim_support is
         writeline(output, linebuffer);
     end;
 
+    procedure write(message : string := ""; start : time) is
+    begin
+        write(
+            "@ " & to_string(now, unit => ns) &
+            " (" & to_string(now - start, unit => ns) & "): " &
+            message);
+    end;
 end package body;
