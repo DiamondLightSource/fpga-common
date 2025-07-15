@@ -172,6 +172,16 @@ package support is
     -- failure on overflow
     function up_down(
         value : unsigned; up : std_ulogic; down : std_ulogic) return unsigned;
+
+    -- Shift left and shift right functions for std_ulogic_vector.  It makes no
+    -- sense to me that these functions aren't already available.  The shift_in
+    -- value is repeated to vacate unoccupied spaces.
+    function shift_left(
+        value : std_ulogic_vector; shift : natural;
+        shift_in : std_ulogic := '0') return std_ulogic_vector;
+    function shift_right(
+        value : std_ulogic_vector; shift : natural;
+        shift_in : std_ulogic := '0') return std_ulogic_vector;
 end;
 
 
@@ -547,5 +557,28 @@ package body support is
         else
             return value;
         end if;
+    end;
+
+
+    function shift_left(
+        value : std_ulogic_vector; shift : natural;
+        shift_in : std_ulogic := '0') return std_ulogic_vector
+    is
+        variable result : value'SUBTYPE := (others => shift_in);
+    begin
+        result(value'LEFT downto value'RIGHT + shift)
+            := value(value'LEFT - shift downto value'RIGHT);
+        return result;
+    end;
+
+    function shift_right(
+        value : std_ulogic_vector; shift : natural;
+        shift_in : std_ulogic := '0') return std_ulogic_vector
+    is
+        variable result : value'SUBTYPE := (others => shift_in);
+    begin
+        result(value'LEFT - shift downto value'RIGHT)
+            := value(value'LEFT downto value'RIGHT + shift);
+        return result;
     end;
 end;
