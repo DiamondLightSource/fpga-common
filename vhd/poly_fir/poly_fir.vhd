@@ -30,7 +30,10 @@ entity poly_fir is
         TAPS_MEM_STYLE : string := "";
         DELAY_MEM_STYLE : string := "";
         -- If this flag is set the output will be saturated on overflow
-        SATURATE_OUTPUT : boolean := false
+        SATURATE_OUTPUT : boolean := false;
+        -- If required pipeline the writing of taps to each memory bank to help
+        -- with timing pressure
+        PIPELINE_WRITE_TAPS : boolean := false
     );
     port (
         clk_i : in std_ulogic;
@@ -99,7 +102,8 @@ begin
     taps_bank : entity work.poly_fir_taps generic map (
         TAP_COUNT => TAP_COUNT,
         DECIMATION => DECIMATION,
-        MEM_STYLE => TAPS_MEM_STYLE
+        MEM_STYLE => TAPS_MEM_STYLE,
+        PIPELINE_WRITE_TAPS => PIPELINE_WRITE_TAPS
     ) port map (
         clk_i => clk_i,
 

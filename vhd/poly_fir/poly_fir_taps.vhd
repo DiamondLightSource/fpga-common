@@ -38,7 +38,8 @@ entity poly_fir_taps is
     generic (
         TAP_COUNT : natural;
         DECIMATION : natural;
-        MEM_STYLE : string := ""
+        MEM_STYLE : string := "";
+        PIPELINE_WRITE_TAPS : boolean := false
     );
     port (
         clk_i : in std_ulogic;
@@ -81,6 +82,10 @@ begin
         signal read_tap_strobe : std_ulogic;
         signal read_address : decimation_t;
 
+        signal write_strobe : std_ulogic;
+        signal write_addr : decimation_t;
+        signal write_data : std_ulogic_vector(TAP_LENGTH-1 downto 0);
+
     begin
         read : if i = 0 generate
             read_tap_strobe <= next_i;
@@ -88,6 +93,21 @@ begin
         else generate
             read_tap_strobe <= enable_i;
             read_address <= read_bank_addr(i-1);
+        end generate;
+
+        -- Pipeline tap writing if requested to help with timing pressure
+        gen_write_taps : if PIPELINE_WRITE_TAPS generate
+            process (clk_i) begin
+                if rising_edge(clk_i) then
+                    write_strobe <= write_tap_strobe(i);
+                    write_addr <= write_bank_addr;
+                    write_data <= std_ulogic_vector(tap_in);
+                end if;
+            end process;
+        else generate
+            write_strobe <= write_tap_strobe(i);
+            write_addr <= write_bank_addr;
+            write_data <= std_ulogic_vector(tap_in);
         end generate;
 
         mem : entity work.memory_array generic map (
@@ -100,9 +120,9 @@ begin
             read_strobe_i => read_tap_strobe,
             read_addr_i => read_address,
             signed(read_data_o) => taps_out(i),
-            write_strobe_i => write_tap_strobe(i),
-            write_addr_i => write_bank_addr,
-            write_data_i => std_ulogic_vector(tap_in)
+            write_strobe_i => write_strobe,
+            write_addr_i => write_addr,
+            write_data_i => write_data
         );
     end generate;
 
