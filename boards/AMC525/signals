@@ -30,7 +30,15 @@ CLK156_25MHZ4_{P,N}         in
 CLK156_25MHZ5_{P,N}         in
 CLK156_25MHZ6_{P,N}         in
 
-# MLVDS clocks mapped to AMC ports 17-20 via switch
+# MLVDS clocks mapped to AMC ports 17-20 via crossbar switch 2 (documented in
+# Vadatech AMC525 and AMC561 Hardware Reference Manual VT-MAN-CUS-101163-2.1.0
+# in Table 13 (page 27) and Figure 7 (page 14).  This needs to be configured
+# using the amc525_clocktool provided on the P2040 processor on the card.  The
+# mapping is:
+#   CLKA-1  AMC.17 RX       CLKA-2  AMC.17 TX
+#   CLKA-2  AMC.18 RX       CLKA-4  AMC.18 TX
+#   CLKA-5  AMC.19 RX       CLKA-6  AMC.19 TX
+#   CLKA-7  AMC.20 RX       CLKA-8  AMC.20 TX
 MCLKA_{P,N}[1..8]           inout   # Connects to crossbar-2
 
 # Programmable clocking resources via clock routing network and programmable
