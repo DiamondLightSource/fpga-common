@@ -1,0 +1,1096 @@
+# Bank 48   VCC1V2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+RLD3_C3_72B_DM[3]                       B25    SSTL12
+RLD3_C3_72B_DQ[71]                      C25    SSTL12
+RLD3_C3_72B_DQ[70]                      D26    SSTL12
+RLD3_C3_72B_DQ[69]                      D25    SSTL12
+RLD3_C3_72B_DQ[68]                      A26    SSTL12
+RLD3_C3_72B_DQ[67]                      B26    SSTL12
+RLD3_C3_72B_DQ[66]                      B27    SSTL12
+RLD3_C3_72B_DQ[65]                      C27    SSTL12
+RLD3_C3_72B_DQ[64]                      A28    SSTL12
+RLD3_C3_72B_DQ[63]                      B28    SSTL12
+RLD3_C3_72B_QK_N[7]                     C28    DIFF_SSTL12
+RLD3_C3_72B_QK_P[7]                     D27    DIFF_SSTL12
+RLD3_C3_72B_QVLD[3]                     F25    SSTL12
+RLD3_C3_72B_DQ[62]                      G25    SSTL12
+RLD3_C3_72B_DQ[61]                      E27    SSTL12
+RLD3_C3_72B_DQ[60]                      E26    SSTL12
+RLD3_C3_72B_DQ[59]                      G28    SSTL12
+RLD3_C3_72B_DQ[58]                      H28    SSTL12
+RLD3_C3_72B_DQ[57]                      E28    SSTL12
+RLD3_C3_72B_DQ[56]                      F28    SSTL12
+RLD3_C3_72B_DQ[55]                      G27    SSTL12
+RLD3_C3_72B_DQ[54]                      H27    SSTL12
+RLD3_C3_72B_QK_N[6]                     F26    DIFF_SSTL12
+RLD3_C3_72B_QK_P[6]                     G26    DIFF_SSTL12
+RLD3_C3_72B_QVLD[2]                     J27    SSTL12
+RLD3_C3_72B_DQ[53]                      K27    SSTL12
+RLD3_C3_72B_DQ[52]                      J26    SSTL12
+RLD3_C3_72B_DQ[51]                      K26    SSTL12
+RLD3_C3_72B_DQ[50]                      L25    SSTL12
+RLD3_C3_72B_DQ[49]                      L24    SSTL12
+RLD3_C3_72B_DQ[48]                      K28    SSTL12
+RLD3_C3_72B_DQ[47]                      L28    SSTL12
+RLD3_C3_72B_DQ[46]                      L26    SSTL12
+RLD3_C3_72B_DQ[45]                      M25    SSTL12
+RLD3_C3_72B_QK_N[5]                     M28    DIFF_SSTL12
+RLD3_C3_72B_QK_P[5]                     M27    DIFF_SSTL12
+RLD3_C3_72B_DM[2]                       N24    SSTL12
+RLD3_C3_72B_DQ[44]                      P24    SSTL12
+RLD3_C3_72B_DQ[43]                      N27    SSTL12
+RLD3_C3_72B_DQ[42]                      P26    SSTL12
+RLD3_C3_72B_DQ[41]                      N25    SSTL12
+RLD3_C3_72B_DQ[40]                      P25    SSTL12
+RLD3_C3_72B_DQ[39]                      P27    SSTL12
+RLD3_C3_72B_DQ[38]                      R27    SSTL12
+RLD3_C3_72B_DQ[37]                      R24    SSTL12
+RLD3_C3_72B_DQ[36]                      T24    SSTL12
+RLD3_C3_72B_QK_N[4]                     R26    DIFF_SSTL12
+RLD3_C3_72B_QK_P[4]                     T26    DIFF_SSTL12
+
+
+# Bank 47   VCC1V2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+RLD3_C3_72B_A[1]                        C29    SSTL12
+RLD3_C3_72B_A[2]                        D29    SSTL12
+RLD3_C3_72B_A[3]                        B30    SSTL12
+RLD3_C3_72B_A[4]                        C30    SSTL12
+RLD3_C3_72B_A[5]                        A31    SSTL12
+RLD3_C3_72B_A[6]                        A30    SSTL12
+RLD3_C3_72B_A[7]                        A33    SSTL12
+RLD3_C3_72B_A[8]                        B33    SSTL12
+RLD3_C3_72B_A[9]                        B32    SSTL12
+RLD3_C3_72B_A[10]                       B31    SSTL12
+RLD3_C3_72B_A[11]                       C33    SSTL12
+RLD3_C3_72B_A[12]                       C32    SSTL12
+RLD3_C3_72B_A[0]                        A29    SSTL12
+RLD3_C3_72B_A[13]                       D30    SSTL12
+RLD3_C3_72B_A[14]                       E29    SSTL12
+RLD3_C3_72B_A[15]                       F29    SSTL12
+RLD3_C3_72B_A[16]                       D32    SSTL12
+RLD3_C3_72B_A[17]                       E32    SSTL12
+RLD3_C3_72B_A[18]                       D31    SSTL12
+RLD3_C3_72B_A[19]                       E31    SSTL12
+RLD3_C3_72B_BA[0]                       E33    SSTL12
+RLD3_C3_72B_BA[1]                       F33    SSTL12
+RLD3_C3_72B_BA[2]                       F30    SSTL12
+RLD3_C3_72B_BA[3]                       G30    SSTL12
+SYSCLK1_300_N                           F31    DIFF_SSTL12
+SYSCLK1_300_P                           G31    DIFF_SSTL12
+USER_SI570_CLOCK_N                      G32    DIFF_SSTL12
+USER_SI570_CLOCK_P                      H32    DIFF_SSTL12
+RLD3_C3_72B_CK_N                        H30    DIFF_SSTL12
+RLD3_C3_72B_CK_P                        H29    DIFF_SSTL12
+RLD3_C3_72B_DK_N[3]                     G33    DIFF_SSTL12
+RLD3_C3_72B_DK_P[3]                     H33    DIFF_SSTL12
+RLD3_C3_72B_DK_N[2]                     J30    DIFF_SSTL12
+RLD3_C3_72B_DK_P[2]                     J29    DIFF_SSTL12
+RLD3_C3_72B_DK_N[1]                     J32    DIFF_SSTL12
+RLD3_C3_72B_DK_P[1]                     K32    DIFF_SSTL12
+RLD3_C3_72B_DK_N[0]                     J31    DIFF_SSTL12
+RLD3_C3_72B_DK_P[0]                     K31    DIFF_SSTL12
+RLD3_C3_72B_WE_B                        K29    SSTL12
+RLD3_C3_72B_REF_B                       L30    SSTL12
+RLD3_C3_72B_RESET_B                     L29    LVCMOS12
+RLD3_C3_72B_CS_B                        N29    SSTL12
+PMOD1_LS[0]                             N28    LVCMOS12
+PMOD1_LS[1]                             M30    LVCMOS12
+PMOD1_LS[2]                             N30    LVCMOS12
+PMOD1_LS[3]                             P30    LVCMOS12
+PMOD1_LS[4]                             P29    LVCMOS12
+PMOD1_LS[5]                             L31    LVCMOS12
+PMOD1_LS[6]                             M31    LVCMOS12
+PMOD1_LS[7]                             R29    LVCMOS12
+RLD3_C3_72B_A[20]                       R28    SSTL12
+
+
+# Bank 46   VCC1V2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+RLD3_C3_72B_DM[1]                       A35    SSTL12
+RLD3_C3_72B_DQ[35]                      A34    SSTL12
+RLD3_C3_72B_DQ[34]                      A36    SSTL12
+RLD3_C3_72B_DQ[33]                      B35    SSTL12
+RLD3_C3_72B_DQ[32]                      B37    SSTL12
+RLD3_C3_72B_DQ[31]                      B36    SSTL12
+RLD3_C3_72B_DQ[30]                      C34    SSTL12
+RLD3_C3_72B_DQ[29]                      D34    SSTL12
+RLD3_C3_72B_DQ[28]                      C35    SSTL12
+RLD3_C3_72B_DQ[27]                      D35    SSTL12
+RLD3_C3_72B_QK_N[3]                     C37    DIFF_SSTL12
+RLD3_C3_72B_QK_P[3]                     D37    DIFF_SSTL12
+RLD3_C3_72B_QVLD[1]                     A38    SSTL12
+RLD3_C3_72B_DQ[26]                      B38    SSTL12
+RLD3_C3_72B_DQ[25]                      C40    SSTL12
+RLD3_C3_72B_DQ[24]                      D40    SSTL12
+RLD3_C3_72B_DQ[23]                      A40    SSTL12
+RLD3_C3_72B_DQ[22]                      A39    SSTL12
+RLD3_C3_72B_DQ[21]                      B40    SSTL12
+RLD3_C3_72B_DQ[20]                      C39    SSTL12
+RLD3_C3_72B_DQ[19]                      E38    SSTL12
+RLD3_C3_72B_DQ[18]                      E37    SSTL12
+RLD3_C3_72B_QK_N[2]                     D39    DIFF_SSTL12
+RLD3_C3_72B_QK_P[2]                     E39    DIFF_SSTL12
+RLD3_C3_72B_QVLD[0]                     G37    SSTL12
+RLD3_C3_72B_DQ[17]                      G36    SSTL12
+RLD3_C3_72B_DQ[16]                      F36    SSTL12
+RLD3_C3_72B_DQ[15]                      F35    SSTL12
+RLD3_C3_72B_DQ[14]                      G35    SSTL12
+RLD3_C3_72B_DQ[13]                      H34    SSTL12
+RLD3_C3_72B_DQ[12]                      H37    SSTL12
+RLD3_C3_72B_DQ[11]                      J36    SSTL12
+RLD3_C3_72B_DQ[10]                      H35    SSTL12
+RLD3_C3_72B_DQ[9]                       J35    SSTL12
+RLD3_C3_72B_QK_N[1]                     E34    DIFF_SSTL12
+RLD3_C3_72B_QK_P[1]                     F34    DIFF_SSTL12
+RLD3_C3_72B_DM[0]                       F39    SSTL12
+RLD3_C3_72B_DQ[8]                       F38    SSTL12
+RLD3_C3_72B_DQ[7]                       J37    SSTL12
+RLD3_C3_72B_DQ[6]                       K37    SSTL12
+RLD3_C3_72B_DQ[5]                       G38    SSTL12
+RLD3_C3_72B_DQ[4]                       H38    SSTL12
+RLD3_C3_72B_DQ[3]                       F40    SSTL12
+RLD3_C3_72B_DQ[2]                       G40    SSTL12
+RLD3_C3_72B_DQ[1]                       H40    SSTL12
+RLD3_C3_72B_DQ[0]                       H39    SSTL12
+RLD3_C3_72B_QK_N[0]                     J40    DIFF_SSTL12
+RLD3_C3_72B_QK_P[0]                     J39    DIFF_SSTL12
+
+
+# Bank 45 VADJ 1V8 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FMCP_HSPC_LA_N[21]                      L35
+FMCP_HSPC_LA_P[21]                      M35
+FMCP_HSPC_LA_N[20]                      M32
+FMCP_HSPC_LA_P[20]                      N32
+FMCP_HSPC_LA_N[19]                      M33
+FMCP_HSPC_LA_P[19]                      N33
+FMCP_HSPC_LA_N[32]                      K33
+FMCP_HSPC_LA_P[32]                      L33
+FMCP_HSPC_LA_N[22]                      N35
+FMCP_HSPC_LA_P[22]                      N34
+FMCP_HSPC_LA_N[33]                      K34
+FMCP_HSPC_LA_P[33]                      L34
+FMCP_HSPC_LA_N[30]                      M38
+FMCP_HSPC_LA_P[30]                      N38
+FMCP_HSPC_LA_N[28]                      L36
+FMCP_HSPC_LA_P[28]                      M36
+FMCP_HSPC_LA_N[31]                      N37
+FMCP_HSPC_LA_P[31]                      P37
+FMCP_HSPC_CLK1_M2C_N                    P36    LVDS
+FMCP_HSPC_CLK1_M2C_P                    P35    LVDS
+FMCP_HSPC_LA_N[17]                      P34
+FMCP_HSPC_LA_P[17]                      R34
+USER_SMA_CLOCK_N                        P32    LVDS
+USER_SMA_CLOCK_P                        R32    LVDS
+FMCP_HSPC_LA_N[18]                      P31
+FMCP_HSPC_LA_P[18]                      R31
+FMCP_HSPC_LA_N[24]                      T35
+FMCP_HSPC_LA_P[24]                      T34
+FMCP_HSPC_LA_N[27]                      V34
+FMCP_HSPC_LA_P[27]                      V33
+FMCP_HSPC_LA_N[29]                      T36
+FMCP_HSPC_LA_P[29]                      U35
+FMCP_HSPC_LA_N[25]                      W34
+FMCP_HSPC_LA_P[25]                      Y34
+FMCP_HSPC_LA_N[26]                      U33
+FMCP_HSPC_LA_P[26]                      V32
+FMCP_HSPC_LA_N[23]                      W32
+FMCP_HSPC_LA_P[23]                      Y32
+
+
+# Bank 67 VADJ 1V8 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FMC_HPC1_LA_N[33]                       AK13
+FMC_HPC1_LA_P[33]                       AK14
+FMC_HPC1_LA_N[31]                       AM12
+FMC_HPC1_LA_P[31]                       AM13
+FMC_HPC1_LA_N[32]                       AJ12
+FMC_HPC1_LA_P[32]                       AJ13
+FMC_HPC1_LA_N[30]                       AL12
+FMC_HPC1_LA_P[30]                       AK12
+FMC_HPC1_LA_N[26]                       AL15
+FMC_HPC1_LA_P[26]                       AK15
+FMC_HPC1_LA_N[27]                       AM14
+FMC_HPC1_LA_P[27]                       AL14
+FMC_HPC1_LA_N[29]                       AP15
+FMC_HPC1_LA_P[29]                       AN15
+FMC_HPC1_LA_N[23]                       AP16
+FMC_HPC1_LA_P[23]                       AN16
+FMC_HPC1_LA_N[18]                       AR12
+FMC_HPC1_LA_P[18]                       AP12
+FMC_HPC1_LA_N[24]                       AR13
+FMC_HPC1_LA_P[24]                       AP13
+FMC_HPC1_LA_N[17]                       AT14
+FMC_HPC1_LA_P[17]                       AR14
+FMC_HPC1_CLK1_M2C_N                     AV13   LVDS
+FMC_HPC1_CLK1_M2C_P                     AV14   LVDS
+PMOD0_LS[0]                             AY14   LVCMOS18
+PMOD0_LS[1]                             AY15   LVCMOS18
+PMOD0_LS[2]                             AW15   LVCMOS18
+PMOD0_LS[3]                             AV15   LVCMOS18
+PMOD0_LS[4]                             AV16   LVCMOS18
+PMOD0_LS[5]                             AU16   LVCMOS18
+PMOD0_LS[6]                             AT15   LVCMOS18
+PMOD0_LS[7]                             AT16   LVCMOS18
+FMC_HPC1_LA_N[21]                       AV11
+FMC_HPC1_LA_P[21]                       AU11
+FMC_HPC1_LA_N[22]                       AY13
+FMC_HPC1_LA_P[22]                       AW13
+FMC_HPC1_LA_N[28]                       AW10
+FMC_HPC1_LA_P[28]                       AV10
+FMC_HPC1_LA_N[20]                       AY10
+FMC_HPC1_LA_P[20]                       AW11
+FMC_HPC1_LA_N[19]                       AY12
+FMC_HPC1_LA_P[19]                       AW12
+FMC_HPC1_LA_N[25]                       AU12
+FMC_HPC1_LA_P[25]                       AT12
+
+
+# Bank 66 VADJ 1V8 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FMC_HPC1_LA_N[10]                       BB12
+FMC_HPC1_LA_P[10]                       BB13
+FMC_HPC1_LA_N[9]                        BB14
+FMC_HPC1_LA_P[9]                        BA14
+FMC_HPC1_LA_N[11]                       BA15
+FMC_HPC1_LA_P[11]                       BA16
+FMC_HPC1_LA_N[7]                        BD15
+FMC_HPC1_LA_P[7]                        BC15
+FMC_HPC1_LA_N[15]                       BC16
+FMC_HPC1_LA_P[15]                       BB16
+FMC_HPC1_LA_N[12]                       BC13
+FMC_HPC1_LA_P[12]                       BC14
+FMC_HPC1_LA_N[14]                       AW7
+FMC_HPC1_LA_P[14]                       AW8
+FMC_HPC1_LA_N[13]                       AY7
+FMC_HPC1_LA_P[13]                       AY8
+FMC_HPC1_LA_N[16]                       AV8
+FMC_HPC1_LA_P[16]                       AV9
+FMC_HPC1_PRSNT_M2C_B_LS                 BB7    LVCMOS18
+FMC_HPC1_PG_M2C_LS                      BA7    LVCMOS18
+FMC_HPC1_LA_N[0]                        BA9
+FMC_HPC1_LA_P[0]                        AY9
+FMC_HPC1_CLK0_M2C_N                     BC8    LVDS
+FMC_HPC1_CLK0_M2C_P                     BC9    LVDS
+FMC_HPC1_LA_N[1]                        BF9
+FMC_HPC1_LA_P[1]                        BF10
+FMC_HPC1_LA_N[8]                        BF15
+FMC_HPC1_LA_P[8]                        BE15
+FMC_HPC1_LA_N[5]                        BF14
+FMC_HPC1_LA_P[5]                        BE14
+FMC_HPC1_LA_N[6]                        BE13
+FMC_HPC1_LA_P[6]                        BD13
+FMC_HPC1_LA_N[2]                        BD11
+FMC_HPC1_LA_P[2]                        BC11
+FMC_HPC1_LA_N[4]                        BF11
+FMC_HPC1_LA_P[4]                        BF12
+FMC_HPC1_LA_N[3]                        BE12
+FMC_HPC1_LA_P[3]                        BD12
+
+
+# Bank 65 VADJ 1V8 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FPGA_EMCCLK                             AL20   LVCMOS18
+SYSMON_SDA                              AP17   LVCMOS18
+SYSMON_SCL                              AP18   LVCMOS18
+QSPI1_DQ[1]                             AM18   LVCMOS18
+QSPI1_DQ[0]                             AM19   LVCMOS18
+QSPI1_DQ[3]                             AP20   LVCMOS18
+QSPI1_DQ[2]                             AN20   LVCMOS18
+PCIE_PERST_LS                           AM17   LVCMOS18
+QSPI1_CS_B                              BF16   LVCMOS18
+BPI_FLASH_OE_B                          BF17   LVCMOS18
+
+
+# Bank 64   VCC1V8 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+IIC_MAIN_SCL                            AM24   LVCMOS18
+IIC_MAIN_SDA                            AL24   LVCMOS18
+QSFP1_MODSELL_LS                        AM21   LVCMOS18
+QSFP1_MODPRSL_LS                        AL21   LVCMOS18
+QSFP1_RECCLK_N                          AM22   LVDS
+QSFP1_RECCLK_P                          AM23   LVDS
+QSFP1_INTL_LS                           AP21   LVCMOS18
+QSFP1_LPMODE_LS                         AN21   LVCMOS18
+QSFP2_MODSELL_LS                        AN23   LVCMOS18
+QSFP2_MODPRSL_LS                        AN24   LVCMOS18
+QSFP2_RECCLK_N                          AP22   LVDS
+QSFP2_RECCLK_P                          AP23   LVDS
+IIC_MUX_RESET_B                         AL25   LVCMOS18
+QSFP2_INTL_LS                           AT21   LVCMOS18
+QSFP2_LPMODE_LS                         AT24   LVCMOS18
+PHY1_PDWN_B_I_INT_B_O                   AR24   LVCMOS18
+PHY1_GPIO_0                             AR22   LVCMOS18
+PHY1_MDIO                               AR23   LVCMOS18
+PHY1_SGMII_OUT_N                        AV24   LVDS
+PHY1_SGMII_OUT_P                        AU24   LVDS
+PHY1_SGMII_IN_N                         AV21   LVDS
+PHY1_SGMII_IN_P                         AU21   LVDS
+PHY1_MDC                                AV23   LVCMOS18
+PHY1_CLKOUT                             AU23   LVCMOS18
+PHY1_SGMII_CLK_N                        AU22   LVDS
+PHY1_SGMII_CLK_P                        AT22   LVDS
+USER_SI570_CLOCK1_N                     AW22   LVDS
+USER_SI570_CLOCK1_P                     AW23   LVDS
+CLK_125MHZ_N                            AY23   LVDS
+CLK_125MHZ_P                            AY24   LVDS
+QSFP1_RESETL_LS                         BA22   LVCMOS18
+QSFP2_RESETL_LS                         AY22   LVCMOS18
+USB_UART_RTS                            AY25   LVCMOS18
+USB_UART_TX                             AW25   LVCMOS18
+USB_UART_RX                             BB21   LVCMOS18
+USB_UART_CTS                            BB22   LVCMOS18
+SYSCTLR_GPIO_7                          BA24   LVCMOS18
+SYSCTLR_GPIO_6                          BA25   LVCMOS18
+PHY1_RESET_B                            BA21   LVCMOS18
+SYSCTLR_GPIO_5                          BD21   LVCMOS18
+SI5328_RST_LS_B                         BC21   LVCMOS18
+PMBUS_ALERT_FPGA                        BB23   LVCMOS18
+GPIO_SW_N                               BB24   LVCMOS18
+GPIO_SW_W                               BF22   LVCMOS18
+GPIO_SW_S                               BE22   LVCMOS18
+GPIO_SW_E                               BE23   LVCMOS18
+GPIO_SW_C                               BD23   LVCMOS18
+FIREFLY_MODPRS_LS_B                     BD22   LVCMOS18
+FIREFLY_MODSEL_LS_B                     BC23   LVCMOS18
+FIREFLY_INT_LS_B                        BF24   LVCMOS18
+FIREFLY_RESET_LS_B                      BE24   LVCMOS18
+
+
+# Bank 43 VADJ 1V8 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FMCP_HSPC_LA_N[15]                      AG33
+FMCP_HSPC_LA_P[15]                      AG32
+FMCP_HSPC_LA_N[14]                      AH31
+FMCP_HSPC_LA_P[14]                      AG31
+FMCP_HSPC_LA_N[16]                      AH35
+FMCP_HSPC_LA_P[16]                      AG34
+FMCP_HSPC_LA_N[12]                      AH34
+FMCP_HSPC_LA_P[12]                      AH33
+FMCP_HSPC_LA_N[13]                      AJ36
+FMCP_HSPC_LA_P[13]                      AJ35
+FMCP_HSPC_LA_N[9]                       AK33
+FMCP_HSPC_LA_P[9]                       AJ33
+FMCP_HSPC_LA_N[8]                       AK30
+FMCP_HSPC_LA_P[8]                       AK29
+FMCP_HSPC_LA_N[11]                      AJ31
+FMCP_HSPC_LA_P[11]                      AJ30
+FMCP_HSPC_LA_N[1]                       AL31
+FMCP_HSPC_LA_P[1]                       AL30
+FMCP_HSPC_Z_PRSNT_M2C_B_LS              AM29   LVCMOS18
+FMC_VADJ_ON_LS                          AL29   LVCMOS18
+FMCP_HSPC_LA_N[2]                       AK32
+FMCP_HSPC_LA_P[2]                       AJ32
+FMCP_HSPC_CLK0_M2C_N                    AM32   LVDS
+FMCP_HSPC_CLK0_M2C_P                    AL32   LVDS
+FMCP_HSPC_PG_M2C_LS                     AM34   LVDS
+FMCP_HSPC_H_PRSNT_M2C_B_LS              AM33   LVCMOS18
+FMCP_HSPC_REFCLK_M2C_N                  AL34   LVDS
+FMCP_HSPC_REFCLK_M2C_P                  AK34   LVDS
+FMCP_HSPC_REFCLK_C2M_N                  AP33   LVDS
+FMCP_HSPC_REFCLK_C2M_P                  AN33   LVDS
+FMCP_HSPC_SYNC_M2C_N                    AN36   LVDS
+FMCP_HSPC_SYNC_M2C_P                    AM36   LVDS
+FMCP_HSPC_SYNC_C2M_N                    AN35   LVDS
+FMCP_HSPC_SYNC_C2M_P                    AN34   LVDS
+FMCP_HSPC_LA_N[0]                       AL36
+FMCP_HSPC_LA_P[0]                       AL35
+VADJ_1V8_PGOOD_LS                       AK35   LVCMOS18
+FMCP_HSPC_LA_N[4]                       AT37
+FMCP_HSPC_LA_P[4]                       AR37
+FMCP_HSPC_LA_N[7]                       AP37
+FMCP_HSPC_LA_P[7]                       AP36
+FMCP_HSPC_LA_N[3]                       AT40
+FMCP_HSPC_LA_P[3]                       AT39
+FMCP_HSPC_LA_N[10]                      AR35
+FMCP_HSPC_LA_P[10]                      AP35
+FMCP_HSPC_LA_N[6]                       AT36
+FMCP_HSPC_LA_P[6]                       AT35
+FMCP_HSPC_LA_N[5]                       AR38
+FMCP_HSPC_LA_P[5]                       AP38
+
+
+# Bank 42   VCC1V2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+DDR4_C2_DQ[63]                          AV39   POD12
+DDR4_C2_DQ[62]                          AV38   POD12
+DDR4_C2_DQ[61]                          AU39   POD12
+DDR4_C2_DQ[60]                          AU38   POD12
+DDR4_C2_DQS_C[7]                        AW38   DIFF_POD12
+DDR4_C2_DQS_T[7]                        AW37   DIFF_POD12
+DDR4_C2_DQ[59]                          AV40   POD12
+DDR4_C2_DQ[58]                          AU40   POD12
+DDR4_C2_DQ[57]                          AW36   POD12
+DDR4_C2_DQ[56]                          AW35   POD12
+GPIO_LED[6]                             AV36   LVCMOS12
+DDR4_C2_DM[7]                           AV35   POD12
+GPIO_LED[5]                             AU37   LVCMOS12
+DDR4_C2_TEN                             AY35   POD12
+DDR4_C2_DQ[55]                          AY39   POD12
+DDR4_C2_DQ[54]                          AY38   POD12
+DDR4_C2_DQ[53]                          AY40   POD12
+DDR4_C2_DQ[52]                          AW40   POD12
+DDR4_C2_DQS_C[6]                        BA36   DIFF_POD12
+DDR4_C2_DQS_T[6]                        BA35   DIFF_POD12
+DDR4_C2_DQ[51]                          BA40   POD12
+DDR4_C2_DQ[50]                          BA39   POD12
+DDR4_C2_DQ[49]                          BB37   POD12
+DDR4_C2_DQ[48]                          BB36   POD12
+GPIO_LED[7]                             BA37   LVCMOS12
+DDR4_C2_DM[6]                           AY37   POD12
+DDR4_C2_DQ[47]                          BD38   POD12
+DDR4_C2_DQ[46]                          BC38   POD12
+DDR4_C2_DQ[45]                          BB39   POD12
+DDR4_C2_DQ[44]                          BB38   POD12
+DDR4_C2_DQS_C[5]                        BF39   DIFF_POD12
+DDR4_C2_DQS_T[5]                        BE39   DIFF_POD12
+DDR4_C2_DQ[43]                          BD40   POD12
+DDR4_C2_DQ[42]                          BC39   POD12
+DDR4_C2_DQ[41]                          BE38   POD12
+DDR4_C2_DQ[40]                          BD37   POD12
+MAXIM_CABLE_LS_B                        BF40   LVCMOS12
+DDR4_C2_DM[5]                           BE40   POD12
+FAN_OT_LS_B                             BC40   LVCMOS12
+DDR4_C2_DQ[39]                          BF37   POD12
+DDR4_C2_DQ[38]                          BF36   POD12
+DDR4_C2_DQ[37]                          BE37   POD12
+DDR4_C2_DQ[36]                          BD36   POD12
+DDR4_C2_DQS_C[4]                        BF35   DIFF_POD12
+DDR4_C2_DQS_T[4]                        BE35   DIFF_POD12
+DDR4_C2_DQ[35]                          BC36   POD12
+DDR4_C2_DQ[34]                          BC35   POD12
+DDR4_C2_DQ[33]                          BF34   POD12
+DDR4_C2_DQ[32]                          BE34   POD12
+DDR4_C2_RESET_B                         BD35   LVCMOS12
+DDR4_C2_DM[4]                           BC34   POD12
+
+
+# Bank 41   VCC1V2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+DDR4_C2_A[0]                            AM27   SSTL12
+DDR4_C2_A[1]                            AL27   SSTL12
+DDR4_C2_A[2]                            AP26   SSTL12
+DDR4_C2_A[3]                            AP25   SSTL12
+DDR4_C2_A[4]                            AN28   SSTL12
+DDR4_C2_A[5]                            AM28   SSTL12
+DDR4_C2_A[6]                            AP28   SSTL12
+DDR4_C2_A[7]                            AP27   SSTL12
+DDR4_C2_A[8]                            AN26   SSTL12
+DDR4_C2_A[9]                            AM26   SSTL12
+DDR4_C2_A[10]                           AR28   SSTL12
+DDR4_C2_A[11]                           AR27   SSTL12
+DDR4_C2_ACT_B                           AN25   SSTL12
+DDR4_C2_A[12]                           AV25   SSTL12
+DDR4_C2_A[13]                           AT25   SSTL12
+DDR4_C2_BA0                             AR25   SSTL12
+DDR4_C2_BA1                             AU28   SSTL12
+DDR4_C2_BG0                             AU27   SSTL12
+DDR4_C2_CK_C                            AT27   DIFF_POD12
+DDR4_C2_CK_T                            AT26   DIFF_POD12
+DDR4_C2_CKE                             AW28   SSTL12
+DDR4_C2_A14_WE_B                        AV28   SSTL12
+DDR4_C2_A16_RAS_B                       AV26   SSTL12
+DDR4_C2_A15_CAS_B                       AU26   SSTL12
+CLK_250MHZ_CLK2_N                       AW27   DIFF_SSTL12
+CLK_250MHZ_CLK2_P                       AW26   DIFF_SSTL12
+DDR4_C2_DQ[79]                          BB27   POD12
+DDR4_C2_DQ[78]                          BA27   POD12
+DDR4_C2_DQ[77]                          AY28   POD12
+DDR4_C2_DQ[76]                          AY27   POD12
+DDR4_C2_DQS_C[9]                        BB26   DIFF_POD12
+DDR4_C2_DQS_T[9]                        BA26   DIFF_POD12
+DDR4_C2_DQ[75]                          BC28   POD12
+DDR4_C2_DQ[74]                          BB28   POD12
+DDR4_C2_DQ[73]                          BC26   POD12
+DDR4_C2_DQ[72]                          BC25   POD12
+DDR4_C2_ODT                             BB29   SSTL12
+DDR4_C2_DM[9]                           BA29   SSTL12
+DDR4_C2_CS_B                            AY29   SSTL12
+DDR4_C2_DQ[71]                          BD26   POD12
+DDR4_C2_DQ[70]                          BD25   POD12
+DDR4_C2_DQ[69]                          BE27   POD12
+DDR4_C2_DQ[68]                          BD27   POD12
+DDR4_C2_DQS_C[8]                        BF25   DIFF_POD12
+DDR4_C2_DQS_T[8]                        BE25   DIFF_POD12
+DDR4_C2_DQ[67]                          BE28   POD12
+DDR4_C2_DQ[66]                          BD28   POD12
+DDR4_C2_DQ[65]                          BF27   POD12
+DDR4_C2_DQ[64]                          BF26   POD12
+DDR4_C2_PAR                             BF29   POD12
+DDR4_C2_DM[8]                           BE29   POD12
+
+
+# Bank 40   VCC1V2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+DDR4_C2_DQ[31]                          AN31   POD12
+DDR4_C2_DQ[30]                          AN30   POD12
+DDR4_C2_DQ[29]                          AR30   POD12
+DDR4_C2_DQ[28]                          AP30   POD12
+DDR4_C2_DQS_C[3]                        AP32   DIFF_POD12
+DDR4_C2_DQS_T[3]                        AP31   DIFF_POD12
+DDR4_C2_DQ[27]                          AT30   POD12
+DDR4_C2_DQ[26]                          AT29   POD12
+DDR4_C2_DQ[25]                          AT34   POD12
+DDR4_C2_DQ[24]                          AR33   POD12
+GPIO_LED[0]                             AT32   LVCMOS12
+DDR4_C2_DM[3]                           AR32   POD12
+DDR4_C2_ALERT_B                         AR29   SSTL12
+GPIO_LED[1]                             AV34   LVCMOS12
+DDR4_C2_DQ[23]                          AV31   POD12
+DDR4_C2_DQ[22]                          AU31   POD12
+DDR4_C2_DQ[21]                          AU32   POD12
+DDR4_C2_DQ[20]                          AT31   POD12
+DDR4_C2_DQS_C[2]                        AV29   DIFF_POD12
+DDR4_C2_DQS_T[2]                        AU29   DIFF_POD12
+DDR4_C2_DQ[19]                          AU34   POD12
+DDR4_C2_DQ[18]                          AU33   POD12
+DDR4_C2_DQ[17]                          AW30   POD12
+DDR4_C2_DQ[16]                          AV30   POD12
+FAN_FAIL_LS_B                           AW33   LVCMOS12
+DDR4_C2_DM[2]                           AV33   POD12
+DDR4_C2_DQ[15]                          AY33   POD12
+DDR4_C2_DQ[14]                          AY32   POD12
+DDR4_C2_DQ[13]                          AW32   POD12
+DDR4_C2_DQ[12]                          AW31   POD12
+DDR4_C2_DQS_C[1]                        BA34   POD12
+DDR4_C2_DQS_T[1]                        AY34   POD12
+DDR4_C2_DQ[11]                          BA31   POD12
+DDR4_C2_DQ[10]                          BA30   POD12
+DDR4_C2_DQ[9]                           BB33   POD12
+DDR4_C2_DQ[8]                           BA32   POD12
+GPIO_LED[3]                             BB32   LVCMOS12
+DDR4_C2_DM[1]                           BB31   POD12
+GPIO_LED[2]                             AY30   LVCMOS12
+DDR4_C2_DQ[7]                           BD31   POD12
+DDR4_C2_DQ[6]                           BC31   POD12
+DDR4_C2_DQ[5]                           BD33   POD12
+DDR4_C2_DQ[4]                           BC33   POD12
+DDR4_C2_DQS_C[0]                        BF31   DIFF_POD12
+DDR4_C2_DQS_T[0]                        BF30   DIFF_POD12
+DDR4_C2_DQ[3]                           BE33   POD12
+DDR4_C2_DQ[2]                           BD32   POD12
+DDR4_C2_DQ[1]                           BE30   POD12
+DDR4_C2_DQ[0]                           BD30   POD12
+GPIO_LED[4]                             BF32   LVCMOS12
+DDR4_C2_DM[0]                           BE32   POD12
+
+
+# Bank 73   VCC1V2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+DDR4_C1_DQ[39]                          B20    POD12
+DDR4_C1_DQ[38]                          C20    POD12
+DDR4_C1_DQ[37]                          D19    POD12
+DDR4_C1_DQ[36]                          D20    POD12
+DDR4_C1_DQS_C[4]                        A18    DIFF_POD12
+DDR4_C1_DQS_T[4]                        A19    DIFF_POD12
+DDR4_C1_DQ[35]                          C18    POD12
+DDR4_C1_DQ[34]                          C19    POD12
+DDR4_C1_DQ[33]                          C17    POD12
+DDR4_C1_DQ[32]                          D17    POD12
+GPIO_DIP_SW[1]                          B17    LVCMOS12
+DDR4_C1_DM[4]                           B18    POD12
+DDR4_C1_TEN                             A20    POD12
+GPIO_DIP_SW[2]                          G16    LVCMOS12
+DDR4_C1_DQ[31]                          D16    POD12
+DDR4_C1_DQ[30]                          E17    POD12
+DDR4_C1_DQ[29]                          F20    POD12
+DDR4_C1_DQ[28]                          G20    POD12
+DDR4_C1_DQS_C[3]                        E16    DIFF_POD12
+DDR4_C1_DQS_T[3]                        F16    DIFF_POD12
+DDR4_C1_DQ[27]                          E18    POD12
+DDR4_C1_DQ[26]                          E19    POD12
+DDR4_C1_DQ[25]                          F18    POD12
+DDR4_C1_DQ[24]                          F19    POD12
+DDR4_C1_DM[3]                           G18    POD12
+DDR4_C1_DQ[23]                          H18    POD12
+DDR4_C1_DQ[22]                          H19    POD12
+DDR4_C1_DQ[21]                          H17    POD12
+DDR4_C1_DQ[20]                          J17    POD12
+DDR4_C1_DQS_C[2]                        J19    DIFF_POD12
+DDR4_C1_DQS_T[2]                        K19    DIFF_POD12
+DDR4_C1_DQ[19]                          K18    POD12
+DDR4_C1_DQ[18]                          L18    POD12
+DDR4_C1_DQ[17]                          K16    POD12
+DDR4_C1_DQ[16]                          L16    POD12
+GPIO_DIP_SW[3]                          J16    LVCMOS12
+DDR4_C1_DM[2]                           K17    POD12
+CPU_RESET                               L19    LVCMOS12
+DDR4_C1_DQ[15]                          M16    POD12
+DDR4_C1_DQ[14]                          N17    POD12
+DDR4_C1_DQ[13]                          N18    POD12
+DDR4_C1_DQ[12]                          N19    POD12
+DDR4_C1_DQS_C[1]                        P16    DIFF_POD12
+DDR4_C1_DQS_T[1]                        P17    DIFF_POD12
+DDR4_C1_DQ[11]                          M17    POD12
+DDR4_C1_DQ[10]                          M18    POD12
+DDR4_C1_DQ[9]                           P19    POD12
+DDR4_C1_DQ[8]                           R19    POD12
+DDR4_C1_ALERT_B                         R17    POD12
+DDR4_C1_DM[1]                           R18    POD12
+
+
+# Bank 72   VCC1V2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+DDR4_C1_DQ[71]                          A21    POD12
+DDR4_C1_DQ[70]                          B21    POD12
+DDR4_C1_DQ[69]                          B22    POD12
+DDR4_C1_DQ[68]                          B23    POD12
+DDR4_C1_DQS_C[8]                        C22    DIFF_POD12
+DDR4_C1_DQS_T[8]                        D22    DIFF_POD12
+DDR4_C1_DQ[67]                          C23    POD12
+DDR4_C1_DQ[66]                          C24    POD12
+DDR4_C1_DQ[65]                          A23    POD12
+DDR4_C1_DQ[64]                          A24    POD12
+DDR4_C1_DM[8]                           E24    POD12
+GPIO_DIP_SW[4]                          D21    LVCMOS12
+SI5328_INT_ALM_LS                       H20    LVCMOS12
+DDR4_C1_DQ[63]                          F23    POD12
+DDR4_C1_DQ[62]                          F24    POD12
+DDR4_C1_DQ[61]                          E21    POD12
+DDR4_C1_DQ[60]                          F21    POD12
+DDR4_C1_DQS_C[7]                        G23    DIFF_POD12
+DDR4_C1_DQS_T[7]                        H24    DIFF_POD12
+DDR4_C1_DQ[59]                          E22    POD12
+DDR4_C1_DQ[58]                          E23    POD12
+DDR4_C1_DQ[57]                          H22    POD12
+DDR4_C1_DQ[56]                          H23    POD12
+DDR4_C1_DM[7]                           G22    POD12
+DDR4_C1_DQ[55]                          J22    POD12
+DDR4_C1_DQ[54]                          K22    POD12
+DDR4_C1_DQ[53]                          J21    POD12
+DDR4_C1_DQ[52]                          K21    POD12
+DDR4_C1_DQS_C[6]                        L20    DIFF_POD12
+DDR4_C1_DQS_T[6]                        M20    DIFF_POD12
+DDR4_C1_DQ[51]                          L21    POD12
+DDR4_C1_DQ[50]                          M21    POD12
+DDR4_C1_DQ[49]                          J24    POD12
+DDR4_C1_DQ[48]                          K24    POD12
+DDR4_C1_DM[6]                           L23    POD12
+DDR4_C1_DQ[47]                          R23    POD12
+DDR4_C1_DQ[46]                          T23    POD12
+DDR4_C1_DQ[45]                          P22    POD12
+DDR4_C1_DQ[44]                          R22    POD12
+DDR4_C1_DQS_C[5]                        M22    DIFF_POD12
+DDR4_C1_DQS_T[5]                        N22    DIFF_POD12
+DDR4_C1_DQ[43]                          P21    POD12
+DDR4_C1_DQ[42]                          R21    POD12
+DDR4_C1_DQ[41]                          M23    POD12
+DDR4_C1_DQ[40]                          N23    POD12
+DDR4_C1_RESET_B                         N20    LVCMOS12
+DDR4_C1_DM[5]                           P20    POD12
+
+
+# Bank 71   VCC1V2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+DDR4_C1_A[1]                            B15    SSTL12
+DDR4_C1_A[2]                            B16    SSTL12
+DDR4_C1_A[3]                            C14    SSTL12
+DDR4_C1_A[4]                            C15    SSTL12
+DDR4_C1_A[5]                            A13    SSTL12
+DDR4_C1_A[6]                            A14    SSTL12
+DDR4_C1_A[7]                            A15    SSTL12
+DDR4_C1_A[8]                            A16    SSTL12
+DDR4_C1_A[9]                            B12    SSTL12
+DDR4_C1_A[10]                           C12    SSTL12
+DDR4_C1_A[11]                           B13    SSTL12
+DDR4_C1_A[12]                           C13    SSTL12
+DDR4_C1_A[0]                            D14    SSTL12
+DDR4_C1_A[13]                           D15    SSTL12
+DDR4_C1_A14_WE_B                        H14    SSTL12
+DDR4_C1_A15_CAS_B                       H15    SSTL12
+DDR4_C1_A16_RAS_B                       F15    SSTL12
+DDR4_C1_BA0                             G15    SSTL12
+DDR4_C1_CK_C                            E14    POD12
+DDR4_C1_CK_T                            F14    POD12
+DDR4_C1_BA1                             G13    SSTL12
+DDR4_C1_BG0                             H13    SSTL12
+DDR4_C1_ACT_B                           E13    SSTL12
+DDR4_C1_CS_B                            F13    SSTL12
+CLK_250MHZ_CLK1_N                       D12    DIFF_SSTL12
+CLK_250MHZ_CLK1_P                       E12    DIFF_SSTL12
+DDR4_C1_DQ[79]                          A11    POD12
+DDR4_C1_DQ[78]                          B11    POD12
+DDR4_C1_DQ[77]                          B10    POD12
+DDR4_C1_DQ[76]                          C10    POD12
+DDR4_C1_DQS_C[9]                        A8     DIFF_POD12
+DDR4_C1_DQS_T[9]                        A9     DIFF_POD12
+DDR4_C1_DQ[75]                          B7     POD12
+DDR4_C1_DQ[74]                          B8     POD12
+DDR4_C1_DQ[73]                          C7     POD12
+DDR4_C1_DQ[72]                          D7     POD12
+DDR4_C1_ODT                             C8     SSTL12
+DDR4_C1_DM[9]                           C9     POD12
+DDR4_C1_CKE                             A10    SSTL12
+DDR4_C1_DQ[7]                           D9     POD12
+DDR4_C1_DQ[6]                           E9     POD12
+DDR4_C1_DQ[5]                           G12    POD12
+DDR4_C1_DQ[4]                           H12    POD12
+DDR4_C1_DQS_C[0]                        D10    DIFF_POD12
+DDR4_C1_DQS_T[0]                        D11    DIFF_POD12
+DDR4_C1_DQ[3]                           F9     POD12
+DDR4_C1_DQ[2]                           F10    POD12
+DDR4_C1_DQ[1]                           E11    POD12
+DDR4_C1_DQ[0]                           F11    POD12
+DDR4_C1_PAR                             G10    POD12
+DDR4_C1_DM[0]                           G11    POD12
+
+
+# Bank 70 VADJ 1V8 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FMCP_HSPC_HA_N[22]                      J12
+FMCP_HSPC_HA_P[22]                      K12
+FMCP_HSPC_HA_N[21]                      K13
+FMCP_HSPC_HA_P[21]                      K14
+FMCP_HSPC_HA_N[14]                      L11
+FMCP_HSPC_HA_P[14]                      M11
+FMCP_HSPC_HA_N[23]                      J11
+FMCP_HSPC_HA_P[23]                      K11
+FMCP_HSPC_HA_N[19]                      L13
+FMCP_HSPC_HA_P[19]                      L14
+FMCP_HSPC_HA_N[15]                      M12
+FMCP_HSPC_HA_P[15]                      M13
+FMCP_HSPC_HA_N[11]                      P12
+FMCP_HSPC_HA_P[11]                      R12
+FMCP_HSPC_HA_N[20]                      L15
+FMCP_HSPC_HA_P[20]                      M15
+FMCP_HSPC_HA_N[17]                      P11
+FMCP_HSPC_HA_P[17]                      R11
+FMCP_HSPC_HA_N[18]                      N15
+FMCP_HSPC_HA_P[18]                      P15
+FMCP_HSPC_HA_N[05]                      P14
+FMCP_HSPC_HA_P[05]                      R14
+FMCP_HSPC_HA_N[00]                      N13
+FMCP_HSPC_HA_P[00]                      N14
+FMCP_HSPC_HA_N[06]                      T13
+FMCP_HSPC_HA_P[06]                      U13
+FMCP_HSPC_HA_N[16]                      R13
+FMCP_HSPC_HA_P[16]                      T14
+FMCP_HSPC_HA_N[08]                      T11
+FMCP_HSPC_HA_P[08]                      U11
+FMCP_HSPC_HA_N[12]                      T15
+FMCP_HSPC_HA_P[12]                      T16
+FMCP_HSPC_HA_N[10]                      U16
+FMCP_HSPC_HA_P[10]                      V16
+FMCP_HSPC_HA_N[01]                      U15
+FMCP_HSPC_HA_P[01]                      V15
+FMCP_HSPC_HA_N[09]                      V14
+FMCP_HSPC_HA_P[09]                      W14
+FMCP_HSPC_HA_N[02]                      Y12
+FMCP_HSPC_HA_P[02]                      AA12
+FMCP_HSPC_HA_N[13]                      U12
+FMCP_HSPC_HA_P[13]                      V13
+FMCP_HSPC_HA_N[03]                      V12
+FMCP_HSPC_HA_P[03]                      W12
+FMCP_HSPC_HA_N[07]                      Y14
+FMCP_HSPC_HA_P[07]                      AA14
+FMCP_HSPC_HA_N[04]                      Y13
+FMCP_HSPC_HA_P[04]                      AA13
+
+
+# Bank 120 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FMCP_HSPC_DP_C2M_N[23]                  AV43
+FMCP_HSPC_DP_C2M_P[23]                  AV42
+FMCP_HSPC_DP_M2C_P[23]                  AU45
+FMCP_HSPC_DP_M2C_N[23]                  AU46
+FMCP_HSPC_GBT1_5_N                      AM39
+FMCP_HSPC_GBT1_5_P                      AM38
+FMCP_HSPC_DP_C2M_N[22]                  AY43
+FMCP_HSPC_DP_C2M_P[22]                  AY42
+FMCP_HSPC_DP_M2C_P[22]                  AW45
+FMCP_HSPC_DP_M2C_N[22]                  AW46
+FMCP_HSPC_DP_C2M_N[21]                  BB43
+FMCP_HSPC_DP_C2M_P[21]                  BB42
+FMCP_HSPC_DP_M2C_P[21]                  BA45
+FMCP_HSPC_DP_M2C_N[21]                  BA46
+FMCP_HSPC_GBTCLK5_M2C_C_N               AN41
+FMCP_HSPC_GBTCLK5_M2C_C_P               AN40
+FMCP_HSPC_DP_C2M_N[20]                  BD43
+FMCP_HSPC_DP_C2M_P[20]                  BD42
+FMCP_HSPC_DP_M2C_P[20]                  BC45
+FMCP_HSPC_DP_M2C_N[20]                  BC46
+
+
+# Bank 121 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FMCP_HSPC_DP_C2M_N[3]                   AL41
+FMCP_HSPC_DP_C2M_P[3]                   AL40
+FMCP_HSPC_DP_M2C_P[3]                   AJ45
+FMCP_HSPC_DP_M2C_N[3]                   AJ46
+FMCP_HSPC_GBT1_0_N                      AH39
+FMCP_HSPC_GBT1_0_P                      AH38
+FMCP_HSPC_DP_C2M_N[2]                   AM43
+FMCP_HSPC_DP_C2M_P[2]                   AM42
+FMCP_HSPC_DP_M2C_P[2]                   AL45
+FMCP_HSPC_DP_M2C_N[2]                   AL46
+MGTRREF_121                             BF43
+FMCP_HSPC_DP_C2M_N[1]                   AP43
+FMCP_HSPC_DP_C2M_P[1]                   AP42
+FMCP_HSPC_DP_M2C_P[1]                   AN45
+FMCP_HSPC_DP_M2C_N[1]                   AN46
+FMCP_HSPC_GBT0_0_N                      AK39
+FMCP_HSPC_GBT0_0_P                      AK38
+FMCP_HSPC_DP_C2M_N[0]                   AT43
+FMCP_HSPC_DP_C2M_P[0]                   AT42
+FMCP_HSPC_DP_M2C_P[0]                   AR45
+FMCP_HSPC_DP_M2C_N[0]                   AR46
+
+
+# Bank 122 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FMCP_HSPC_DP_C2M_N[11]                  AE41
+FMCP_HSPC_DP_C2M_P[11]                  AE40
+FMCP_HSPC_DP_M2C_P[11]                  AD43
+FMCP_HSPC_DP_M2C_N[11]                  AD44
+FMCP_HSPC_GBT1_2_N                      AD39
+FMCP_HSPC_GBT1_2_P                      AD38
+FMCP_HSPC_DP_C2M_N[10]                  AG41
+FMCP_HSPC_DP_C2M_P[10]                  AG40
+FMCP_HSPC_DP_M2C_P[10]                  AE45
+FMCP_HSPC_DP_M2C_N[10]                  AE46
+FMCP_HSPC_DP_C2M_N[9]                   AJ41
+FMCP_HSPC_DP_C2M_P[9]                   AJ40
+FMCP_HSPC_DP_M2C_P[9]                   AF43
+FMCP_HSPC_DP_M2C_N[9]                   AF44
+FMCP_HSPC_GBTCLK2_M2C_C_N               AF39
+FMCP_HSPC_GBTCLK2_M2C_C_P               AF38
+FMCP_HSPC_DP_C2M_N[8]                   AK43
+FMCP_HSPC_DP_C2M_P[8]                   AK42
+FMCP_HSPC_DP_M2C_P[8]                   AG45
+FMCP_HSPC_DP_M2C_N[8]                   AG46
+
+
+# Bank 125 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FMCP_HSPC_DP_C2M_N[15]                  U41
+FMCP_HSPC_DP_C2M_P[15]                  U40
+FMCP_HSPC_DP_M2C_P[15]                  Y43
+FMCP_HSPC_DP_M2C_N[15]                  Y44
+FMCP_HSPC_GBT1_3_N                      Y39
+FMCP_HSPC_GBT1_3_P                      Y38
+FMCP_HSPC_DP_C2M_N[14]                  W41
+FMCP_HSPC_DP_C2M_P[14]                  W40
+FMCP_HSPC_DP_M2C_P[14]                  AA45
+FMCP_HSPC_DP_M2C_N[14]                  AA46
+FMCP_HSPC_DP_C2M_N[13]                  AA41
+FMCP_HSPC_DP_C2M_P[13]                  AA40
+FMCP_HSPC_DP_M2C_P[13]                  AB43
+FMCP_HSPC_DP_M2C_N[13]                  AB44
+FMCP_HSPC_GBTCLK3_M2C_C_N               AB39
+FMCP_HSPC_GBTCLK3_M2C_C_P               AB38
+FMCP_HSPC_DP_C2M_N[12]                  AC41
+FMCP_HSPC_DP_C2M_P[12]                  AC40
+FMCP_HSPC_DP_M2C_P[12]                  AC45
+FMCP_HSPC_DP_M2C_N[12]                  AC46
+
+
+# Bank 126 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FMCP_HSPC_DP_C2M_N[7]                   K43
+FMCP_HSPC_DP_C2M_P[7]                   K42
+FMCP_HSPC_DP_M2C_P[7]                   N45
+FMCP_HSPC_DP_M2C_N[7]                   N46
+FMCP_HSPC_GBT1_1_N                      T39
+FMCP_HSPC_GBT1_1_P                      T38
+FMCP_HSPC_DP_C2M_N[6]                   M43
+FMCP_HSPC_DP_C2M_P[6]                   M42
+FMCP_HSPC_DP_M2C_P[6]                   R45
+FMCP_HSPC_DP_M2C_N[6]                   R46
+MGTRREF_126                             L41
+FMCP_HSPC_DP_C2M_N[5]                   P43
+FMCP_HSPC_DP_C2M_P[5]                   P42
+FMCP_HSPC_DP_M2C_P[5]                   U45
+FMCP_HSPC_DP_M2C_N[5]                   U46
+FMCP_HSPC_GBT0_1_N                      V39
+FMCP_HSPC_GBT0_1_P                      V38
+FMCP_HSPC_DP_C2M_N[4]                   T43
+FMCP_HSPC_DP_C2M_P[4]                   T42
+FMCP_HSPC_DP_M2C_P[4]                   W45
+FMCP_HSPC_DP_M2C_N[4]                   W46
+
+
+# Bank 127 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FMCP_HSPC_DP_C2M_N[19]                  B43
+FMCP_HSPC_DP_C2M_P[19]                  B42
+FMCP_HSPC_DP_M2C_P[19]                  E45
+FMCP_HSPC_DP_M2C_N[19]                  E46
+FMCP_HSPC_GBT1_4_N                      N41
+FMCP_HSPC_GBT1_4_P                      N40
+FMCP_HSPC_DP_C2M_N[18]                  D43
+FMCP_HSPC_DP_C2M_P[18]                  D42
+FMCP_HSPC_DP_M2C_P[18]                  G45
+FMCP_HSPC_DP_M2C_N[18]                  G46
+FMCP_HSPC_DP_C2M_N[17]                  F43
+FMCP_HSPC_DP_C2M_P[17]                  F42
+FMCP_HSPC_DP_M2C_P[17]                  J45
+FMCP_HSPC_DP_M2C_N[17]                  J46
+FMCP_HSPC_GBTCLK4_M2C_C_N               R41
+FMCP_HSPC_GBTCLK4_M2C_C_P               R40
+FMCP_HSPC_DP_C2M_N[16]                  H43
+FMCP_HSPC_DP_C2M_P[16]                  H42
+FMCP_HSPC_DP_M2C_P[16]                  L45
+FMCP_HSPC_DP_M2C_N[16]                  L46
+
+
+# Bank 224 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+PCIE_TX_P[12]                           AW5
+PCIE_RX_P[12]                           AT2
+PCIE_RX_N[12]                           AT1
+PCIE_TX_N[12]                           AW4
+PCIE_TX_P[13]                           BA5
+PCIE_RX_P[13]                           AV2
+PCIE_RX_N[13]                           AV1
+PCIE_TX_N[13]                           BA4
+PCIE_TX_P[14]                           BC5
+PCIE_RX_P[14]                           AY2
+PCIE_RX_N[14]                           AY1
+PCIE_TX_N[14]                           BC4
+PCIE_TX_P[15]                           BE5
+PCIE_RX_P[15]                           BB2
+PCIE_RX_N[15]                           BB1
+PCIE_TX_N[15]                           BE4
+
+
+# Bank 225 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+PCIE_TX_P[8]                            AP7
+PCIE_RX_P[8]                            AJ4
+PCIE_RX_N[8]                            AJ3
+PCIE_TX_N[8]                            AP6
+MGT_SI570_CLOCK1_C_P                    AJ9
+MGT_SI570_CLOCK1_C_N                    AJ8
+PCIE_TX_P[9]                            AR5
+PCIE_RX_P[9]                            AK2
+PCIE_RX_N[9]                            AK1
+PCIE_TX_N[9]                            AR4
+PCIE_TX_P[10]                           AT7
+PCIE_RX_P[10]                           AM2
+PCIE_RX_N[10]                           AM1
+PCIE_TX_N[10]                           AT6
+PCIE_CLK1_P                             AL9
+PCIE_CLK1_N                             AL8
+PCIE_TX_P[11]                           AU5
+PCIE_RX_P[11]                           AP2
+PCIE_RX_N[11]                           AP1
+PCIE_TX_N[11]                           AU4
+
+
+# Bank 226 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+PCIE_TX_P[4]                            AH7
+PCIE_RX_P[4]                            AE4
+PCIE_RX_N[4]                            AE3
+PCIE_TX_N[4]                            AH6
+PCIE_TX_P[5]                            AK7
+PCIE_RX_P[5]                            AF2
+PCIE_RX_N[5]                            AF1
+PCIE_TX_N[5]                            AK6
+MGTRREF_226                             BD2
+PCIE_TX_P[6]                            AM7
+PCIE_RX_P[6]                            AG4
+PCIE_RX_N[6]                            AG3
+PCIE_TX_N[6]                            AM6
+MGT226_CLK0_P                           AG9
+MGT226_CLK0_N                           AG8
+PCIE_TX_P[7]                            AN5
+PCIE_RX_P[7]                            AH2
+PCIE_RX_N[7]                            AH1
+PCIE_TX_N[7]                            AN4
+
+
+# Bank 227 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+PCIE_TX_P[0]                            Y7
+PCIE_RX_P[0]                            AA4
+PCIE_RX_N[0]                            AA3
+PCIE_TX_N[0]                            Y6
+PCIE_TX_P[1]                            AB7
+PCIE_RX_P[1]                            AB2
+PCIE_RX_N[1]                            AB1
+PCIE_TX_N[1]                            AB6
+PCIE_TX_P[2]                            AD7
+PCIE_RX_P[2]                            AC4
+PCIE_RX_N[2]                            AC3
+PCIE_TX_N[2]                            AD6
+PCIE_CLK2_P                             AC9
+PCIE_CLK2_N                             AC8
+PCIE_TX_P[3]                            AF7
+PCIE_RX_P[3]                            AD2
+PCIE_RX_N[3]                            AD1
+PCIE_TX_N[3]                            AF6
+
+
+# Bank 231 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+QSFP1_TX4_P                             M7
+QSFP1_RX4_P                             U4
+QSFP1_RX4_N                             U3
+QSFP1_TX4_N                             M6
+SI5328_CLOCK1_C_P                       U9
+SI5328_CLOCK1_C_N                       U8
+QSFP1_TX3_P                             P7
+QSFP1_RX3_P                             V2
+QSFP1_RX3_N                             V1
+QSFP1_TX3_N                             P6
+MGTRREF_231                             A4
+QSFP1_TX2_P                             T7
+QSFP1_RX2_P                             W4
+QSFP1_RX2_N                             W3
+QSFP1_TX2_N                             T6
+QSFP_SI570_CLOCK_C_P                    W9
+QSFP_SI570_CLOCK_C_N                    W8
+QSFP1_TX1_P                             V7
+QSFP1_RX1_P                             Y2
+QSFP1_RX1_N                             Y1
+QSFP1_TX1_N                             V6
+
+
+# Bank 232 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+QSFP2_TX4_P                             H7
+QSFP2_RX4_P                             M2
+QSFP2_RX4_N                             M1
+QSFP2_TX4_N                             H6
+SI5328_CLOCK2_C_P                       N9
+SI5328_CLOCK2_C_N                       N8
+QSFP2_TX3_P                             J5
+QSFP2_RX3_P                             P2
+QSFP2_RX3_N                             P1
+QSFP2_TX3_N                             J4
+QSFP2_TX2_P                             K7
+QSFP2_RX2_P                             R4
+QSFP2_RX2_N                             R3
+QSFP2_TX2_N                             K6
+MGT_SI570_CLOCK2_C_P                    R9
+MGT_SI570_CLOCK2_C_N                    R8
+QSFP2_TX1_P                             L5
+QSFP2_RX1_P                             T2
+QSFP2_RX1_N                             T1
+QSFP2_TX1_N                             L4
+
+
+# Bank 233 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FIREFLY_TX_P[4]                         C5
+FIREFLY_RX_P[4]                         D2
+FIREFLY_RX_N[4]                         D1
+FIREFLY_TX_N[4]                         C4
+MGT233_CLK1_P                           J9
+MGT233_CLK1_N                           J8
+FIREFLY_TX_P[3]                         E5
+FIREFLY_RX_P[3]                         F2
+FIREFLY_RX_N[3]                         F1
+FIREFLY_TX_N[3]                         E4
+FIREFLY_TX_P[2]                         F7
+FIREFLY_RX_P[2]                         H2
+FIREFLY_RX_N[2]                         H1
+FIREFLY_TX_N[2]                         F6
+MGT_SI570_CLOCK3_C_P                    L9
+MGT_SI570_CLOCK3_C_N                    L8
+FIREFLY_TX_P[1]                         G5
+FIREFLY_RX_P[1]                         K2
+FIREFLY_RX_N[1]                         K1
+FIREFLY_TX_N[1]                         G4

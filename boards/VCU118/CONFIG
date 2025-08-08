@@ -1,0 +1,7 @@
+# One of the following must be selected by following the instructions on p19 of
+# UG1124
+FPGA_PART = xcvu9p-flga2104-2l-e
+FPGA_PART = xcvu9p-flga2104-2lv-e
+$(error Must select the correct voltage for the part)
+
+# vim: set filetype=make:
