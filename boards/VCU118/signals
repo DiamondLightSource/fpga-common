@@ -1,183 +1,168 @@
-# Signal definitions for VCU118 development board
-# The array and pin directions are still under development and should be revised
-# as appropriate as development proceeds.
-#
-# Also signal annotations should be added as appropriate
-#
 # The pin and signal names here differ slightly from the schematic and original
-# constraint file names.  The changes are of two types: signals have been
+# constraint file names. The changes are of two types: signals have been
 # gathered into buses where appropriate, and two 250MHz clocks have had a CLK_
 # prefix added.
 
-CLK_250MHZ_CLK1_{P,N}               inout
-CLK_250MHZ_CLK2_{P,N}               inout
-BPI_FLASH_OE_B                      inout
-CLK_125MHZ_{P,N}                    inout
-CPU_RESET                           inout
+# CPU reset and clock
+CLK_250MHZ_CLK{1,2}_{P,N}           in
+CLK_125MHZ_{P,N}                    in
+CPU_RESET                           out
 
 # DDR4 memory interface
-DDR4_C{1,2}_A[13..0]                inout
-DDR4_C{1,2}_A14_WE_B                inout
-DDR4_C{1,2}_A15_CAS_B               inout
-DDR4_C{1,2}_A16_RAS_B               inout
-DDR4_C{1,2}_ACT_B                   inout
-DDR4_C{1,2}_ALERT_B                 inout
-DDR4_C{1,2}_BA0                     inout
-DDR4_C{1,2}_BA1                     inout
-DDR4_C{1,2}_BG0                     inout
-DDR4_C{1,2}_CKE                     inout
-DDR4_C{1,2}_CK_C                    inout
-DDR4_C{1,2}_CK_T                    inout
-DDR4_C{1,2}_CS_B                    inout
-DDR4_C{1,2}_DM[9..0]                inout
+DDR4_C{1,2}_A[13..0]                out
+DDR4_C{1,2}_A14_WE_B                out
+DDR4_C{1,2}_A15_CAS_B               out
+DDR4_C{1,2}_A16_RAS_B               out
+DDR4_C{1,2}_ACT_B                   out
+DDR4_C{1,2}_ALERT_B                 in
+DDR4_C{1,2}_BA[0..1]                out
+DDR4_C{1,2}_BG0                     out
+DDR4_C{1,2}_CKE                     out
+DDR4_C{1,2}_CK_C                    out
+DDR4_C{1,2}_CK_T                    out
+DDR4_C{1,2}_CS_B                    out
+DDR4_C{1,2}_DM[9..0]                out
 DDR4_C{1,2}_DQ[79..0]               inout
 DDR4_C{1,2}_DQS_{C,T}[9..0]         inout
-DDR4_C{1,2}_ODT                     inout
-DDR4_C{1,2}_PAR                     inout
-DDR4_C{1,2}_RESET_B                 inout
-DDR4_C{1,2}_TEN                     inout
+DDR4_C{1,2}_ODT                     out
+DDR4_C{1,2}_PAR                     out
+DDR4_C{1,2}_RESET_B                 out
+DDR4_C{1,2}_TEN                     out
 
-FAN_FAIL_LS_B                       inout
-FAN_OT_LS_B                         inout
+#FAN alerts
+FAN_FAIL_LS_B                       in
+FAN_OT_LS_B                         in
 
 # Firefly high speed connector
-FIREFLY_INT_LS_B                    inout
-FIREFLY_MODPRS_LS_B                 inout
-FIREFLY_MODSEL_LS_B                 inout
-FIREFLY_RESET_LS_B                  inout
-FIREFLY_{RX,TX}_{P,N}[1..4]         inout
+FIREFLY_INT_LS_B                    in
+FIREFLY_MODPRS_LS_B                 in
+FIREFLY_MODSEL_LS_B                 out
+FIREFLY_RESET_LS_B                  out
+FIREFLY_TX_{P,N}[1..4]              out
+FIREFLY_RX_{P,N}[1..4]              in
 
 # FMC+ connector with 24 MGT links
 FMCP_HSPC_CLK{0,1}_M2C_{P,N}        inout
-FMCP_HSPC_DP_{C2M,M2C}_{P,N}[0..23] inout
-FMCP_HSPC_GBT0_0_{P,N}              inout
-FMCP_HSPC_GBT0_1_{P,N}              inout
-FMCP_HSPC_GBT1_0_{P,N}              inout
-FMCP_HSPC_GBT1_1_{P,N}              inout
-FMCP_HSPC_GBT1_2_{P,N}              inout
-FMCP_HSPC_GBT1_3_{P,N}              inout
-FMCP_HSPC_GBT1_4_{P,N}              inout
-FMCP_HSPC_GBT1_5_{P,N}              inout
-FMCP_HSPC_GBTCLK2_M2C_C_{P,N}       inout
-FMCP_HSPC_GBTCLK3_M2C_C_{P,N}       inout
-FMCP_HSPC_GBTCLK4_M2C_C_{P,N}       inout
-FMCP_HSPC_GBTCLK5_M2C_C_{P,N}       inout
-FMCP_HSPC_H_PRSNT_M2C_B_LS          inout
-FMCP_HSPC_PG_M2C_LS                 inout
-FMCP_HSPC_REFCLK_{C2M,M2C}_{P,N}    inout
-FMCP_HSPC_SYNC_{C2M,M2C}_{P,N}      inout
-FMCP_HSPC_Z_PRSNT_M2C_B_LS          inout
+FMCP_HSPC_DP_C2M_{P,N}[0..23]       out
+FMCP_HSPC_DP_M2C_{P,N}[0..23]       in
+FMCP_HSPC_GBT0_{0,1}_{P,N}          in
+FMCP_HSPC_GBT1_{0,5}_{P,N}          in
+FMCP_HSPC_GBTCLK{2,5}_M2C_C_{P,N}       in
+FMCP_HSPC_H_PRSNT_M2C_B_LS          in
+FMCP_HSPC_PG_M2C_LS                 in
+FMCP_HSPC_REFCLK_C2M_{P,N}          in
+FMCP_HSPC_REFCLK_M2C_{P,N}          out
+FMCP_HSPC_SYNC_C2M_{P,N}            in
+FMCP_HSPC_SYNC_M2C_{P,N}            out
+FMCP_HSPC_Z_PRSNT_M2C_B_LS          in
 FMCP_HSPC_HA_{P,N}[0..23]           inout
 FMCP_HSPC_LA_{P,N}[0..33]           inout
 
 # FMC connector
 FMC_HPC1_CLK{0,1}_M2C_{P,N}         inout
-FMC_HPC1_PG_M2C_LS                  inout
-FMC_HPC1_PRSNT_M2C_B_LS             inout
-FMC_VADJ_ON_LS                      inout
+FMC_HPC1_PG_M2C_LS                  in
+FMC_HPC1_PRSNT_M2C_B_LS             in
+FMC_VADJ_ON_LS                      in
 FMC_HPC1_LA_{P,N}[0..33]            inout
 
-FPGA_EMCCLK                         inout
+# EMCCLK
+FPGA_EMCCLK                         in
 
-GPIO_DIP_SW[1..4]                   inout
-GPIO_LED[0..7]                      inout
-GPIO_SW_C                           inout
-GPIO_SW_E                           inout
-GPIO_SW_N                           inout
-GPIO_SW_S                           inout
-GPIO_SW_W                           inout
+# Board GPIO interface
+GPIO_DIP_SW[1..4]                   in
+GPIO_LED[0..7]                      out
+GPIO_SW_C                           in
+GPIO_SW_E                           in
+GPIO_SW_N                           in
+GPIO_SW_S                           in
+GPIO_SW_W                           in
 
-IIC_MAIN_SCL                        inout
+# Main I2C
+IIC_MAIN_SCL                        out
 IIC_MAIN_SDA                        inout
-IIC_MUX_RESET_B                     inout
+IIC_MUX_RESET_B                     out
 
-MAXIM_CABLE_LS_B                    inout
+MAXIM_CABLE_LS_B                    in
 
+# On board SMA Connectors
 MGT226_CLK0_{P,N}                   inout
 MGT233_CLK1_{P,N}                   inout
-MGTRREF_121                         inout
-MGTRREF_126                         inout
-MGTRREF_226                         inout
-MGTRREF_231                         inout
-MGT_SI570_CLOCK1_C_{P,N}            inout
-MGT_SI570_CLOCK2_C_{P,N}            inout
-MGT_SI570_CLOCK3_C_{P,N}            inout
+MGTRREF_121                         in
+MGTRREF_126                         in
+MGTRREF_226                         in
+MGTRREF_231                         in
+MGT_SI570_CLOCK{1,3}_C_{P,N}        in
 
 # 16-lane PCIe edge connector on board
-PCIE_CLK1_{P,N}                     inout
-PCIE_CLK2_{P,N}                     inout
-PCIE_PERST_LS                       inout
-PCIE_{RX,TX}_{P,N}[0..15]           inout
-PCIE_WAKE_B_LS                      inout
+PCIE_CLK{1,2}_{P,N}                 in
+PCIE_PERST_LS                       out
+PCIE_RX_{P,N}[0..15]                in
+PCIE_TX_{P,N}[0..15]                out
+PCIE_WAKE_B_LS                      in
 
 # Ethernet connector via SGMII to RJ45 connector
-PHY1_CLKOUT                         inout
+PHY1_CLKOUT                         in
 PHY1_GPIO_0                         inout
-PHY1_MDC                            inout
+PHY1_MDC                            out
 PHY1_MDIO                           inout
 PHY1_PDWN_B_I_INT_B_O               inout
-PHY1_RESET_B                        inout
-PHY1_SGMII_CLK_{P,N}                inout
-PHY1_SGMII_IN_{P,N}                 inout
-PHY1_SGMII_OUT_{P,N}                inout
+PHY1_RESET_B                        out
+PHY1_SGMII_CLK_{P,N}                in
+PHY1_SGMII_IN_{P,N}                 out
+PHY1_SGMII_OUT_{P,N}                in
 
-PMBUS_ALERT_FPGA                    inout
+PMBUS_ALERT_FPGA                    in
 
 PMOD{0,1}_LS[0..7]                  inout
 
-QSFP{1,2}_INTL_LS                   inout
-QSFP{1,2}_LPMODE_LS                 inout
-QSFP{1,2}_MODPRSL_LS                inout
-QSFP{1,2}_MODSELL_LS                inout
-QSFP{1,2}_RECCLK_{P,N}              inout
-QSFP{1,2}_RESETL_LS                 inout
-QSFP{1,2}_RX1_{P,N}                 inout
-QSFP{1,2}_RX2_{P,N}                 inout
-QSFP{1,2}_RX3_{P,N}                 inout
-QSFP{1,2}_RX4_{P,N}                 inout
-QSFP{1,2}_TX1_{P,N}                 inout
-QSFP{1,2}_TX2_{P,N}                 inout
-QSFP{1,2}_TX3_{P,N}                 inout
-QSFP{1,2}_TX4_{P,N}                 inout
-QSFP_SI570_CLOCK_C_{P,N}            inout
+# QSFP interface
+QSFP{1,2}_INTL_LS                   out
+QSFP{1,2}_LPMODE_LS                 out
+QSFP{1,2}_MODPRSL_LS                out
+QSFP{1,2}_MODSELL_LS                out
+QSFP{1,2}_RECCLK_{P,N}              out
+QSFP{1,2}_RESETL_LS                 out
+QSFP{1,2}_RX{1,4}_{P,N}                 in
+QSFP{1,2}_TX{1,4}_{P,N}             out
+QSFP_SI570_CLOCK_C_{P,N}            in
 
-QSPI1_CS_B                          inout
+# QSPI interface
+QSPI1_CS_B                          out
 QSPI1_DQ[0..3]                      inout
 
 # Reduced Latency DRAM interface
-RLD3_C3_72B_A[20..0]                inout
-RLD3_C3_72B_BA[0..3]                inout
-RLD3_C3_72B_CK_{P,N}                inout
-RLD3_C3_72B_CS_B                    inout
-RLD3_C3_72B_DK_{P,N}[0..3]          inout
-RLD3_C3_72B_DM[0..3]                inout
+RLD3_C3_72B_A[20..0]                out
+RLD3_C3_72B_BA[0..3]                out
+RLD3_C3_72B_CK_{P,N}                out
+RLD3_C3_72B_CS_B                    out
+RLD3_C3_72B_DK_{P,N}[0..3]          out
+RLD3_C3_72B_DM[0..3]                out
 RLD3_C3_72B_DQ[71..0]               inout
-RLD3_C3_72B_QK_{P,N}[0..7]          inout
-RLD3_C3_72B_QVLD[0..3]              inout
+RLD3_C3_72B_QK_{P,N}[0..7]          out
+RLD3_C3_72B_QVLD[0..3]              out
 RLD3_C3_72B_REF_B                   inout
-RLD3_C3_72B_RESET_B                 inout
-RLD3_C3_72B_WE_B                    inout
+RLD3_C3_72B_RESET_B                 out
+RLD3_C3_72B_WE_B                    out
 
-SI5328_CLOCK1_C_{P,N}               inout
-SI5328_CLOCK2_C_{P,N}               inout
-SI5328_INT_ALM_LS                   inout
-SI5328_RST_LS_B                     inout
+SI5328_CLOCK{1,2}_C_{P,N}               in
+SI5328_INT_ALM_LS                   in
+SI5328_RST_LS_B                     out
 
-SYSCLK1_300_{P,N}                   inout
-SYSCTLR_GPIO_5                      inout
-SYSCTLR_GPIO_6                      inout
-SYSCTLR_GPIO_7                      inout
+SYSCLK1_300_{P,N}                   in
+SYSCTLR_GPIO_{5,7}                  inout
 
-SYSMON_SCL                          inout
+# SYS I2C interface
+SYSMON_SCL                          out
 SYSMON_SDA                          inout
 
-USB_UART_CTS                        inout
-USB_UART_RTS                        inout
-USB_UART_RX                         inout
-USB_UART_TX                         inout
+# USB interface
+USB_UART_CTS                        out
+USB_UART_RTS                        in
+USB_UART_RX                         out
+USB_UART_TX                         in
 
-USER_SI570_CLOCK1_{P,N}             inout
-USER_SI570_CLOCK_{P,N}              inout
-USER_SMA_CLOCK_{P,N}                inout
+USER_SI570_CLOCK1_{P,N}             in
+USER_SI570_CLOCK_{P,N}              in
+USER_SMA_CLOCK_{P,N}                in
 
-VADJ_1V8_PGOOD_LS                   inout
+VADJ_1V8_PGOOD_LS                   in
