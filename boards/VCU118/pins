@@ -300,7 +300,6 @@ QSPI1_DQ[3]                             AP20   LVCMOS18
 QSPI1_DQ[2]                             AN20   LVCMOS18
 PCIE_PERST_LS                           AM17   LVCMOS18
 QSPI1_CS_B                              BF16   LVCMOS18
-BPI_FLASH_OE_B                          BF17   LVCMOS18
 
 
 # Bank 64   VCC1V8 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
