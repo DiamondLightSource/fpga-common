@@ -343,6 +343,7 @@ USB_UART_CTS                            BB22   LVCMOS18
 SYSCTLR_GPIO_7                          BA24   LVCMOS18
 SYSCTLR_GPIO_6                          BA25   LVCMOS18
 PHY1_RESET_B                            BA21   LVCMOS18
+PCIE_WAKE_B_LS                          BC24   LVCMOS18
 SYSCTLR_GPIO_5                          BD21   LVCMOS18
 SI5328_RST_LS_B                         BC21   LVCMOS18
 PMBUS_ALERT_FPGA                        BB23   LVCMOS18
@@ -757,34 +758,34 @@ FMCP_HSPC_HA_N[17]                      P11
 FMCP_HSPC_HA_P[17]                      R11
 FMCP_HSPC_HA_N[18]                      N15
 FMCP_HSPC_HA_P[18]                      P15
-FMCP_HSPC_HA_N[05]                      P14
-FMCP_HSPC_HA_P[05]                      R14
-FMCP_HSPC_HA_N[00]                      N13
-FMCP_HSPC_HA_P[00]                      N14
-FMCP_HSPC_HA_N[06]                      T13
-FMCP_HSPC_HA_P[06]                      U13
+FMCP_HSPC_HA_N[5]                       P14
+FMCP_HSPC_HA_P[5]                       R14
+FMCP_HSPC_HA_N[0]                       N13
+FMCP_HSPC_HA_P[0]                       N14
+FMCP_HSPC_HA_N[6]                       T13
+FMCP_HSPC_HA_P[6]                       U13
 FMCP_HSPC_HA_N[16]                      R13
 FMCP_HSPC_HA_P[16]                      T14
-FMCP_HSPC_HA_N[08]                      T11
-FMCP_HSPC_HA_P[08]                      U11
+FMCP_HSPC_HA_N[8]                       T11
+FMCP_HSPC_HA_P[8]                       U11
 FMCP_HSPC_HA_N[12]                      T15
 FMCP_HSPC_HA_P[12]                      T16
 FMCP_HSPC_HA_N[10]                      U16
 FMCP_HSPC_HA_P[10]                      V16
-FMCP_HSPC_HA_N[01]                      U15
-FMCP_HSPC_HA_P[01]                      V15
-FMCP_HSPC_HA_N[09]                      V14
-FMCP_HSPC_HA_P[09]                      W14
-FMCP_HSPC_HA_N[02]                      Y12
-FMCP_HSPC_HA_P[02]                      AA12
+FMCP_HSPC_HA_N[1]                       U15
+FMCP_HSPC_HA_P[1]                       V15
+FMCP_HSPC_HA_N[9]                       V14
+FMCP_HSPC_HA_P[9]                       W14
+FMCP_HSPC_HA_N[2]                       Y12
+FMCP_HSPC_HA_P[2]                       AA12
 FMCP_HSPC_HA_N[13]                      U12
 FMCP_HSPC_HA_P[13]                      V13
-FMCP_HSPC_HA_N[03]                      V12
-FMCP_HSPC_HA_P[03]                      W12
-FMCP_HSPC_HA_N[07]                      Y14
-FMCP_HSPC_HA_P[07]                      AA14
-FMCP_HSPC_HA_N[04]                      Y13
-FMCP_HSPC_HA_P[04]                      AA13
+FMCP_HSPC_HA_N[3]                       V12
+FMCP_HSPC_HA_P[3]                       W12
+FMCP_HSPC_HA_N[7]                       Y14
+FMCP_HSPC_HA_P[7]                       AA14
+FMCP_HSPC_HA_N[4]                       Y13
+FMCP_HSPC_HA_P[4]                       AA13
 
 
 # Bank 120 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

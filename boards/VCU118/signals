@@ -15,7 +15,7 @@ DDR4_C{1,2}_A15_CAS_B               out
 DDR4_C{1,2}_A16_RAS_B               out
 DDR4_C{1,2}_ACT_B                   out
 DDR4_C{1,2}_ALERT_B                 in
-DDR4_C{1,2}_BA[0..1]                out
+DDR4_C{1,2}_BA{0,1}                 out
 DDR4_C{1,2}_BG0                     out
 DDR4_C{1,2}_CKE                     out
 DDR4_C{1,2}_CK_C                    out
@@ -46,8 +46,8 @@ FMCP_HSPC_CLK{0,1}_M2C_{P,N}        inout
 FMCP_HSPC_DP_C2M_{P,N}[0..23]       out
 FMCP_HSPC_DP_M2C_{P,N}[0..23]       in
 FMCP_HSPC_GBT0_{0,1}_{P,N}          in
-FMCP_HSPC_GBT1_{0,5}_{P,N}          in
-FMCP_HSPC_GBTCLK{2,5}_M2C_C_{P,N}       in
+FMCP_HSPC_GBT1_{0,1,2,3,4,5}_{P,N}  in
+FMCP_HSPC_GBTCLK{2,3,4,5}_M2C_C_{P,N}   in
 FMCP_HSPC_H_PRSNT_M2C_B_LS          in
 FMCP_HSPC_PG_M2C_LS                 in
 FMCP_HSPC_REFCLK_C2M_{P,N}          in
@@ -91,7 +91,7 @@ MGTRREF_121                         in
 MGTRREF_126                         in
 MGTRREF_226                         in
 MGTRREF_231                         in
-MGT_SI570_CLOCK{1,3}_C_{P,N}        in
+MGT_SI570_CLOCK{1,2,3}_C_{P,N}      in
 
 # 16-lane PCIe edge connector on board
 PCIE_CLK{1,2}_{P,N}                 in
@@ -122,8 +122,8 @@ QSFP{1,2}_MODPRSL_LS                out
 QSFP{1,2}_MODSELL_LS                out
 QSFP{1,2}_RECCLK_{P,N}              out
 QSFP{1,2}_RESETL_LS                 out
-QSFP{1,2}_RX{1,4}_{P,N}                 in
-QSFP{1,2}_TX{1,4}_{P,N}             out
+QSFP{1,2}_RX{1,2,3,4}_{P,N}         in
+QSFP{1,2}_TX{1,2,3,4}_{P,N}         out
 QSFP_SI570_CLOCK_C_{P,N}            in
 
 # QSPI interface
@@ -144,12 +144,12 @@ RLD3_C3_72B_REF_B                   inout
 RLD3_C3_72B_RESET_B                 out
 RLD3_C3_72B_WE_B                    out
 
-SI5328_CLOCK{1,2}_C_{P,N}               in
+SI5328_CLOCK{1,2}_C_{P,N}           in
 SI5328_INT_ALM_LS                   in
 SI5328_RST_LS_B                     out
 
 SYSCLK1_300_{P,N}                   in
-SYSCTLR_GPIO_{5,7}                  inout
+SYSCTLR_GPIO_{5,6,7}                inout
 
 # SYS I2C interface
 SYSMON_SCL                          out
