@@ -7,20 +7,6 @@ import os
 import types
 
 
-# Directory where the list of signals and pin assigments can be found
-board_dir = sys.argv[1]
-# File containing list of signals used
-used_file = sys.argv[2]
-# Name of entity to generate
-entity_name = sys.argv[3]
-# Location to place generated files
-target_dir = sys.argv[4]
-
-# We generate two files: a top level entity and a pin constrains file.
-entity_file = '%s_entity.vhd' % entity_name
-xdc_file = '%s_pins.xdc' % entity_name
-
-
 # Template string for entity.
 entity_template_head = '''\
 -- Skeleton top level VHDL
@@ -69,12 +55,12 @@ def uncomment_file(file_name, comment):
 
 # Splits line into at least the required number of fields, returning defaults to
 # fill in any missing fields.
-def split_line(line, required, defaults):
+def split_line(line, required, *defaults):
     line = line.split()
     count = len(line)
     assert count >= required, 'Missing fields on line'
     assert count <= required + len(defaults), 'Too many fields on line'
-    return line + defaults[count - required:]
+    return line + list(defaults[count - required:])
 
 
 # Expands strings of the form a{b,c} into ab ac.  Can't cope with nested
@@ -160,24 +146,32 @@ def check_signal_range(signal_range, range):
 
 
 
-
-# Each line is simply a name followed by pin direction.
+# The signals and used files have the same format of line:
 #
-#   signals = signal-line*
 #   direction = "in" | "out" | "inout"
-#   signal-line = name-range direction
+#   signal-line = name-range direction ["no-pin"]
 #
+# If no-pin is specified then the constraints for this pin will not be created.
+def parse_signals_line(line):
+    names_range, direction, no_pin = split_line(line, 2, '')
+    assert no_pin == '' or no_pin == 'no-pin', 'Invalid extra option'
+    no_pin = no_pin == 'no-pin'
+    check_direction(direction)
+    names, range = parse_name_range(names_range)
+    return names, range, direction, no_pin
+
+
+
+# Load list of available signals on the target
 def load_signals(signal_file):
     signals = {}
 
     for line, line_no in uncomment_file(signal_file, '#'):
         try:
-            names_range, direction = line.split()
-            check_direction(direction)
-            names, range = parse_name_range(names_range)
+            names, range, direction, no_pin = parse_signals_line(line)
             for name in expand_string(names):
                 assert name not in signals, 'Repeated signal name %s' % name
-                signals[name] = (range, direction)
+                signals[name] = (range, direction, no_pin)
         except Exception as e:
             print('Error', e, 'on line', line_no)
             raise
@@ -185,16 +179,17 @@ def load_signals(signal_file):
     return signals
 
 
-# Each line is a fully qualified signal name followed by a location identifier
+# Each line is a fully qualified signal name followed by a location identifier,
+# an IO standard, and possibly others
 #
 #   locations = location-line*
-#   location-line = name-index location
+#   location-line = name-index location [iostandard [others]]
 #
 def load_locations(pins_file):
     pins = {}
     for line, line_no in uncomment_file(pins_file, '#'):
         try:
-            name, pin, iostandard, others = split_line(line, 2, ['', ''])
+            name, pin, iostandard, others = split_line(line, 2, '', '')
             name, index = parse_name_index(name)
             pins[(name, index)] = (pin, iostandard, others)
         except Exception as e:
@@ -203,37 +198,17 @@ def load_locations(pins_file):
     return pins
 
 
-# The list of used pins is similar in syntax to the list of signals, but an
-# alias can be specified.
-#
-#   used-pins = used-pins-line*
-#   used-pins-line = name-range direction [ name-range | name-index ]
-#
-# The name-index form is permitted if the original name is a single name.
+# Load list of signals to be used, cross check against available signals
 def load_used_pins(signals, used_file):
     used_pins = []
 
     for line, line_no in uncomment_file(used_file, '#'):
-        fields = line.split()
-        out_name_range, direction = fields[:2]
-        check_direction(direction)
-        out_names, out_range = parse_name_range(out_name_range)
-        if fields[2:]:
-            in_name_range, = fields[2:]
-            if out_range is None:
-                in_names, in_range = parse_name_index(in_name_range)
-            else:
-                in_names, in_range = parse_name_range(in_name_range)
-        else:
-            in_names, in_range = out_names, out_range
-
-        in_out_names = zip(expand_string(in_names), expand_string(out_names))
-        for in_name, out_name in in_out_names:
-            signal_range, signal_direction = signals[in_name]
+        names, range_in, direction, no_pin_in = parse_signals_line(line)
+        for name in expand_string(names):
+            signal_range, signal_direction, no_pin = signals[name]
             check_signal_direction(signal_direction, direction)
-            check_signal_range(signal_range, in_range)
-            used_pins.append(
-                (in_name, in_range, out_name, out_range, direction))
+            check_signal_range(signal_range, range_in)
+            used_pins.append((name, range_in, direction, no_pin or no_pin_in))
 
     return used_pins
 
@@ -250,14 +225,13 @@ def range_type(range, direction):
 
 
 def map_pin_range(mapping):
-    in_name, in_range, out_name, out_range, direction = mapping
-    type = range_type(out_range, direction)
-    return out_name, direction, type
+    name, range, direction, no_pin = mapping
+    return name, direction, range_type(range, direction)
 
 
 # The entity maps all the used pins.
 def write_entity(used_pins, entity_name, entity_file):
-    with open(os.path.join(target_dir, entity_file), 'w') as file:
+    with open(entity_file, 'w') as file:
         file.write(entity_template_head % locals())
         sep = ''
         for mapping in used_pins:
@@ -274,22 +248,26 @@ def map_range(start, end):
         return range(start, end - 1, -1)
 
 def map_used_pins(locations, mapping):
-    in_name, in_range, out_name, out_range, direction = mapping
+    name, range, direction, no_pin = mapping
 
-    if out_range is None:
-        location_info = locations.get((in_name, in_range))
-        if location_info:
-            yield out_name, '', location_info
+    if no_pin:
+        # The no_pin flag is used to indicate that the constrains for this pin
+        # come from elsewhere.  This particularly applies to the MIG generated
+        # IP for the AMC525: the IP has its own internal location contraints, so
+        # these are not included here.
+        pass
+    elif range is None:
+        location_info = locations[(name, range)]
+        yield name, '', location_info
     else:
-        for in_ix, out_ix in zip(map_range(*in_range), map_range(*out_range)):
-            location_info = locations.get((in_name, in_ix))
-            if location_info:
-                yield out_name, '[%d]' % out_ix, location_info
+        for ix in map_range(*range):
+            location_info = locations[(name, ix)]
+            yield name, '[%d]' % ix, location_info
 
 
 # Maps each used pin to the appropriate physical location.
 def write_xdc(locations, used_pins, xdc_file):
-    with open(os.path.join(target_dir, xdc_file), 'w') as file:
+    with open(xdc_file, 'w') as file:
         for mapping in used_pins:
             for name, index, info in map_used_pins(locations, mapping):
                 location, iostandard, others = info
@@ -300,11 +278,26 @@ def write_xdc(locations, used_pins, xdc_file):
                     file.write(xdc_pullup_line % locals())
 
 
-# signals = load_signals(signal_file)
-# locations = load_locations(pins_file)
-signals = load_signals(os.path.join(board_dir, 'signals'))
-locations = load_locations(os.path.join(board_dir, 'pins'))
-used = load_used_pins(signals, used_file)
+def main():
+    # Directory where the list of signals and pin assigments can be found
+    board_dir = sys.argv[1]
+    # File containing list of signals used
+    used_file = sys.argv[2]
+    # Name of entity to generate
+    entity_name = sys.argv[3]
+    # Location to place generated files
+    target_dir = sys.argv[4]
 
-write_entity(used, entity_name, entity_file)
-write_xdc(locations, used, xdc_file)
+    # We generate two files: a top level entity and a pin constrains file.
+    entity_file = os.path.join(target_dir, '%s_entity.vhd' % entity_name)
+    xdc_file = os.path.join(target_dir, '%s_pins.xdc' % entity_name)
+
+    signals = load_signals(os.path.join(board_dir, 'signals'))
+    locations = load_locations(os.path.join(board_dir, 'pins'))
+    used = load_used_pins(signals, used_file)
+
+    write_entity(used, entity_name, entity_file)
+    write_xdc(locations, used, xdc_file)
+
+
+main()
