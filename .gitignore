@@ -1,3 +1,6 @@
+# User created config derived from CONFIG.example
+/CONFIG
+
 # Python droppings need to be ignored
 *.pyc
 __pycache__
