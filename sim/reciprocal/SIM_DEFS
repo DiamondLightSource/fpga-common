@@ -1,2 +1,0 @@
-BUILT += reciprocal_lookup.vhd
-VPATH += $(COMMON_VHD)/arithmetic

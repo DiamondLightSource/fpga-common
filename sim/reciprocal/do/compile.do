@@ -8,15 +8,14 @@ vlib msim/xil_defaultlib
 
 vcom -64 -2008 -work xil_defaultlib \
     $vhd_dir/support.vhd \
-    built_dir/reciprocal_lookup.vhd \
     $vhd_dir/util/memory_array.vhd \
     $vhd_dir/util/long_delay.vhd \
     $vhd_dir/util/fixed_delay_dram.vhd \
     $vhd_dir/util/fixed_delay.vhd \
     $vhd_dir/arithmetic/rounded_product.vhd \
     $vhd_dir/arithmetic/normalise_unsigned.vhd \
+    $vhd_dir/arithmetic/reciprocal_lookup.vhd \
     $vhd_dir/arithmetic/reciprocal.vhd
-
 
 vcom -64 -2008 -work xil_defaultlib \
     $bench_dir/testbench.vhd

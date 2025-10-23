@@ -145,6 +145,7 @@ begin
         data_o => data_in,
         zero_o => zero_in
     );
+
     -- The shift result can be passed straight through, we don't need it here
     delay_shift : entity work.fixed_delay generic map (
         WIDTH => shift_o'LENGTH,
@@ -154,6 +155,7 @@ begin
         data_i => std_ulogic_vector(shift_in),
         unsigned(data_o) => shift_o
     );
+
     delay_zero : entity work.fixed_delay generic map (
         DELAY => PROCESS_DELAY - 1
     ) port map (
@@ -218,6 +220,7 @@ begin
         data_i => lookup_index,
         data_o => initial_value
     );
+
     -- We need a copy of the original data for the first muliplication step
     delay_data_in : entity work.fixed_delay generic map (
         WIDTH => data_i'LENGTH,
