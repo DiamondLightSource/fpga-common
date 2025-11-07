@@ -13,7 +13,7 @@ vcom -64 -2008 -work xil_defaultlib \
     $vhd_dir/util/fixed_delay_dram.vhd \
     $vhd_dir/util/fixed_delay.vhd \
     $vhd_dir/nco/nco_defs.vhd \
-    built_dir/nco_cos_sin_table.vhd \
+    $vhd_dir/nco/nco_cos_sin_table.vhd \
     $vhd_dir/nco/nco_phase.vhd \
     $vhd_dir/nco/nco_cos_sin_prepare.vhd \
     $vhd_dir/nco/nco_cos_sin_refine.vhd \
