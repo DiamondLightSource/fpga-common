@@ -26,17 +26,18 @@ entity cross_clocks_strobe is
 end;
 
 architecture arch of cross_clocks_strobe is
-    -- It is safe to say that strobe_o will be quite a while after data_o
+    signal data_out : data_o'SUBTYPE := (others => '0');
+    -- It is safe to say that strobe_o will be quite a while after data_out
     -- becomes valid, but specify a max_delay_from for confidence.  In fact
     -- 2*MAX_DELAY would be just fine...
     attribute max_delay_from : string;
-    attribute max_delay_from of data_o : signal is to_string(MAX_DELAY);
+    attribute max_delay_from of data_out : signal is to_string(MAX_DELAY);
 
 begin
     process (clk_in_i) begin
         if rising_edge(clk_in_i) then
             if strobe_i then
-                data_o <= data_i;
+                data_out <= data_i;
             end if;
         end if;
     end process;
@@ -47,4 +48,5 @@ begin
         pulse_i => strobe_i,
         pulse_o => strobe_o
     );
+    data_o <= data_out;
 end;
