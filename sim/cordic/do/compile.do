@@ -26,6 +26,8 @@ add wave -noupdate -format Analog-Step -height 84 -max 1.5 -min -1.5 \
 add wave -noupdate -format Analog-Step -height 84 -max 3.5 -min -3.5 \
     -radix decimal /testbench/angle_error
 
+quietly set NumericStdNoWarnings 1
+
 run 1 us;
 
 # vim: set filetype=tcl:
