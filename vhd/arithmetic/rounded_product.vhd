@@ -27,8 +27,9 @@ entity rounded_product is
         b_i : in signed;                -- Narrow term
 
         ab_o : out signed;              -- Rounded output
+        done_o : out std_ulogic;        -- enable_i delayed by PROCESS_DELAY
         overflow_o : out std_ulogic;    -- Set if output has overflowed
-        done_o : out std_ulogic         -- enable_i delayed by PROCESS_DELAY
+        sign_o : out std_ulogic         -- For saturation on overflow if needed
     );
 end;
 
@@ -109,6 +110,7 @@ begin
     end process;
 
     ab_o <= ab_out(PRODUCT_WIDTH-DISCARD_TOP-1 downto BOTTOM_BIT);
+    sign_o <= ab_out(PRODUCT_WIDTH-1);
     gen_ovf : if DISCARD_TOP > 0 generate
         overflow_o <= not all_ones and not all_zeros;
     else generate

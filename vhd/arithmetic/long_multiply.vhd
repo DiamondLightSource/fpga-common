@@ -18,7 +18,10 @@ entity long_multiply is
         a_i : in signed;                -- Up to 25 bits wide
         b_i : in signed;                -- Up to 35 bits wide
         ab_o : out signed;              -- Up to 60 bits wide
-        overflow_o : out std_ulogic
+        -- In case of overflow detection we also emit the sign for use in post
+        -- processing saturation
+        overflow_o : out std_ulogic;
+        sign_o : out std_ulogic
     );
 end;
 
@@ -159,5 +162,6 @@ begin
         ab_o <= p_high_out(TOP_BIT_OUT-17 downto 0) &
                 p_low_out(16 downto BOTTOM_BIT_OUT);
     end generate;
+    sign_o <= p_high_out(42);
     overflow_o <= not all_ones and not all_zeros;
 end;
