@@ -9,15 +9,6 @@
 -- including normalisation of X takes 10 ticks and uses 1 BRAM, 2 DSPs and
 -- around 90 LUTs and 80 FFs.
 
--- The reciprocal 1/A is computed using a table lookup followed by a single
--- round of Newton-Raphson using the update equation:
---
---      x' = x * (2 - A * x) = x - x * (A * x - 1)
---
--- Note that given a good initial estimate for x the term A*x is very close to 1
--- which means that the top bits of this product can be discarded for the final
--- multiplication.
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -45,6 +36,8 @@ architecture arch of reciprocal is
     signal data_in : data_i'SUBTYPE;
     signal zero_in : std_ulogic;
 
+    constant CORE_DELAY : natural := PROCESS_DELAY - 1;
+
 begin
     -- Normalise the data in
     normalise : entity work.normalise_unsigned generic map (
@@ -57,21 +50,29 @@ begin
         zero_o => zero_in
     );
 
+
     -- Align the normalisation shift and zero flag with core processing delay
-    delays : entity work.reciprocal_delays generic map (
-        PROCESS_DELAY => PROCESS_DELAY - 1
+    delay_shift : entity work.fixed_delay generic map (
+        WIDTH => shift_in'LENGTH,
+        DELAY => CORE_DELAY
     ) port map (
         clk_i => clk_i,
-
-        shift_i => shift_in,
-        zero_i => zero_in,
-        shift_o => shift_o,
-        zero_o => zero_o
+        data_i => std_ulogic_vector(shift_in),
+        unsigned(data_o) => shift_o
     );
+
+    delay_zero : entity work.fixed_delay generic map (
+        DELAY => CORE_DELAY
+    ) port map (
+        clk_i => clk_i,
+        data_i(0) => zero_in,
+        data_o(0) => zero_o
+    );
+
 
     -- Perform reciprocal computation on normalised data
     core : entity work.reciprocal_core generic map (
-        PROCESS_DELAY => PROCESS_DELAY - 1
+        PROCESS_DELAY => CORE_DELAY
     ) port map (
         clk_i => clk_i,
 

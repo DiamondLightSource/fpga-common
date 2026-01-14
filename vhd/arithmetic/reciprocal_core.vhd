@@ -1,12 +1,13 @@
 -- Pipelined reciprocal calculation
 --
--- Given a 24 bit unsigned A returns 24 bit unsigned X and 4 bit unsigned S
--- satisfying the equation:
+-- Given a 24 bit normalised unsigned A returns 24 bit unsigned X satisfying
+-- the equation:
 --
---      A * X * 2^S = 2^47 + E      where  |E| <= 1
+--      A * X = 2^47 + E      where  |E| <= 1
 --
 -- In other words, there is at most a one-bit error in the result.  Processing
--- takes 9 ticks.
+-- takes 9 ticks.  The argument A is assumed to be normalised: the top bit is
+-- assumed to be equal to 1 and is ignored.
 
 -- The reciprocal 1/A is computed using a table lookup followed by a single
 -- round of Newton-Raphson using the update equation:
@@ -17,8 +18,7 @@
 -- which means that the top bits of this product can be discarded for the final
 -- multiplication.
 
--- This is the core implementation which requires data_i to be fully normalised,
--- in other words the top bit must be set.
+-- This core implementation requires data_i to be fully normalised.
 
 library ieee;
 use ieee.std_logic_1164.all;
