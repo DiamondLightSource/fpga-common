@@ -109,6 +109,15 @@ begin
 
     -- Test bench
     process
+        function read_or_write(r_wn_in : std_ulogic) return string is
+        begin
+            if r_wn_in then
+                return "R";
+            else
+                return "W";
+            end if;
+        end;
+
         procedure write_spi(
             r_wn_in : std_ulogic;
             command_in : natural;
@@ -119,15 +128,19 @@ begin
             data <= to_std_ulogic_vector_u(data_in, DATA_BITS);
             start <= '1';
 
-            clk_wait(2);
+            clk_wait;
             start <= '0';
+            command <= (others => 'X');
+            data <= (others => 'X');
 
-            while busy loop
+            loop
                 clk_wait;
+                exit when not busy;
             end loop;
+
             write(
                 "@ " & to_string(now, unit => ns) &
-                " spi " & to_string(r_wn_in) & " " &
+                " spi " & read_or_write(r_wn_in) & " " &
                 to_string(command_in) & " " & to_string(data_in) &
                 " => " & to_hstring(response));
         end;
