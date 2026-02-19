@@ -278,7 +278,7 @@ def parse_field_def(offset, parse):
         offset = parse_int(args[0][1:], line_no)
         del args[0]
 
-    if count < 1:
+    if count < 0:
         fail_parse('Invalid field width %d' % count, line_no)
     if offset < 0 or offset + count > 32:
         fail_parse(
