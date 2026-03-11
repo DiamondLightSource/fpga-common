@@ -61,7 +61,7 @@ begin
     process (clk_i) begin
         if rising_edge(clk_i) then
             ack_o <= ack_in and busy;
-            if strobe_i = '1' then
+            if strobe_i then
                 if address <= ack_i'HIGH then
                     strobe <= compute_strobe(address, strobe_o'LENGTH);
                 end if;

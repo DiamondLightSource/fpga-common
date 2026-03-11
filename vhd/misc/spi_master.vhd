@@ -73,7 +73,7 @@ begin
 
             case state is
                 when IDLE =>
-                    if start_i = '1' then
+                    if start_i then
                         cmd_counter <=
                             to_unsigned(ADDRESS_BITS, bits(ADDRESS_BITS));
                         data_counter <=

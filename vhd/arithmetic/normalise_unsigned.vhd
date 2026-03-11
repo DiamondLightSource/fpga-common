@@ -27,7 +27,7 @@ architecture arch of normalise_unsigned is
     function count_zeros(data : unsigned) return natural is
     begin
         for i in 0 to data'LEFT loop
-            if data(data'LEFT - i) = '1' then
+            if data(data'LEFT - i) then
                 return i;
             end if;
         end loop;

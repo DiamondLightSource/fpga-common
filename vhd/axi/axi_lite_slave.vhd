@@ -132,14 +132,14 @@ begin
     -- Read interface.
 
     process (rstn_i, clk_i) begin
-        if rstn_i = '0' then
+        if not rstn_i then
             read_state <= READ_IDLE;
             read_strobe_o <= '0';
         elsif rising_edge(clk_i) then
             case read_state is
                 when READ_IDLE =>
                     -- On valid read request latch read address
-                    if arvalid_i = '1' then
+                    if arvalid_i then
                         read_strobe_o <= '1';
                         read_address_o <= register_address(araddr_i);
                         read_state <= READ_READING;
@@ -147,13 +147,13 @@ begin
                 when READ_READING =>
                     -- Wait for read acknowledge from module
                     read_strobe_o <= '0';
-                    if read_ack_i = '1' then
+                    if read_ack_i then
                         rdata_o <= read_data_i;
                         read_state <= READ_DONE;
                     end if;
                 when READ_DONE =>
                     -- Waiting for master to acknowledge our data.
-                    if rready_i = '1' then
+                    if rready_i then
                         read_state <= READ_IDLE;
                     end if;
             end case;
@@ -168,7 +168,7 @@ begin
     -- Write interface.
 
     process (rstn_i, clk_i) begin
-        if rstn_i = '0' then
+        if not rstn_i then
             write_state <= WRITE_IDLE;
             write_strobe_o <= '0';
             ready_out <= '0';
@@ -176,7 +176,7 @@ begin
             case write_state is
                 when WRITE_IDLE =>
                     -- Wait for valid read and write data
-                    if awvalid_i = '1' and wvalid_i = '1' then
+                    if awvalid_i and wvalid_i then
                         ready_out <= '1';
                         write_address_o <= register_address(awaddr_i);
                         write_data_o <= wdata_i;
@@ -193,14 +193,14 @@ begin
                 when WRITE_WRITING =>
                     write_strobe_o <= '0';
                     ready_out <= '0';
-                    if write_ack_i = '1' then
+                    if write_ack_i then
                         write_state <= WRITE_DONE;
                     end if;
 
                 when WRITE_DONE =>
                     ready_out <= '0';
                     -- Wait for master to accept our response
-                    if bready_i = '1' then
+                    if bready_i then
                         write_state <= WRITE_IDLE;
                     end if;
             end case;

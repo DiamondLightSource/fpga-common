@@ -14,8 +14,7 @@
 --
 --
 -- Note that if input pulses are too close together (this depends on the ratio
--- between the input and output clock) then a pulse can be lost.  Note that the
--- ready_o signal is a very pessimistic judge of when it is safe to send.
+-- between the input and output clock) then a pulse can be lost.
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -40,7 +39,7 @@ begin
     -- Convert incoming pulse to an edge
     process (clk_in_i) begin
         if rising_edge(clk_in_i) then
-            if pulse_i = '1' then
+            if pulse_i then
                 signal_in <= not signal_in;
             end if;
         end if;

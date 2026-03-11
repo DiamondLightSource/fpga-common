@@ -34,10 +34,10 @@ begin
 
     process (clk_i) begin
         if rising_edge(clk_i) then
-            if read_strobe_i = '1' then
+            if read_strobe_i then
                 read_ptr <= read_ptr + 1 when read_ptr < COUNT-1 else 0;
                 read_data_o <= registers_i(read_ptr);
-            elsif read_start_i = '1' then
+            elsif read_start_i then
                 read_ptr <= 0;
             end if;
             -- One tick delay from read request to data out

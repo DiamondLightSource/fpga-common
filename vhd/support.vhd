@@ -269,8 +269,8 @@ package body support is
         data : signed; overflow : std_ulogic; sign : std_ulogic) return signed
     is
     begin
-        if overflow = '1' then
-            if sign = '1' then
+        if overflow then
+            if sign then
                 return min_int(data'length);
             else
                 return max_int(data'length);
@@ -284,7 +284,7 @@ package body support is
     is
         constant max_val : data'SUBTYPE := (others => '1');
     begin
-        if overflow = '1' then
+        if overflow then
             return max_val;
         else
             return data;
@@ -367,7 +367,7 @@ package body support is
     end;
 
     function to_integer(data : std_ulogic) return natural is begin
-        if data = '1' then
+        if data then
             return 1;
         else
             return 0;

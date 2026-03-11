@@ -78,7 +78,7 @@ begin
 
     -- We can always accept a write response, report an error if appropriate
     bready_o <= '1';
-    write_error_o <= to_std_ulogic(bvalid_i = '1' and bresp_i /= "00");
+    write_error_o <= bvalid_i and to_std_ulogic(bresp_i /= "00");
 
     axi_o <= (
         address_ready => awready_i,

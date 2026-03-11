@@ -101,7 +101,7 @@ begin
             -- Note that read_ack is set one tick after the corresponding
             -- read_ack_i, and hence will pick up the correct read_data
             -- registered above.
-            if read_ack = '1' then
+            if read_ack then
                 read_data_o <= read_data;
             end if;
             read_ack_o <= read_ack;

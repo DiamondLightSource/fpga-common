@@ -106,11 +106,11 @@ begin
     memory_data <= memory(to_integer(read_addr_i));
     process (clk_i) begin
         if rising_edge(clk_i) then
-            if write_strobe_i = '1' then
+            if write_strobe_i then
                 memory(to_integer(write_addr_i)) <= write_data_i;
             end if;
 
-            if read_strobe_i = '1' then
+            if read_strobe_i then
                 read_data <= memory_data;
             end if;
             read_data_out <= read_data;

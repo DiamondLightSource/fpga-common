@@ -49,7 +49,7 @@ begin
             reset_phase_in <= reset_phase_i;
             reset_phase <= reset_phase_in;
 
-            if reset_phase = '1' then
+            if reset_phase then
                 phase <= (others => '0');
             else
                 phase <= phase + phase_advance;

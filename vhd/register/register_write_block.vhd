@@ -36,10 +36,10 @@ begin
 
     process (clk_i) begin
         if rising_edge(clk_i) then
-            if write_strobe_i = '1' then
+            if write_strobe_i then
                 write_ptr <= write_ptr + 1 when write_ptr < COUNT-1 else 0;
                 register_file(write_ptr) <= write_data_i;
-            elsif write_start_i = '1' then
+            elsif write_start_i then
                 write_ptr <= 0;
             end if;
         end if;

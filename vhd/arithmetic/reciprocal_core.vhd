@@ -152,7 +152,7 @@ begin
     begin
         if rising_edge(clk_i) then
             rounded := ('0' & data_i(LOOKUP_RANGE)) + 1;
-            if rounded(rounded'LEFT) = '1' then
+            if rounded(rounded'LEFT) then
                 lookup_index <= (RESULT_RANGE => '1');
             else
                 lookup_index <= rounded(RESULT_RANGE);

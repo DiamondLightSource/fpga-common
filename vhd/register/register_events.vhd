@@ -40,7 +40,7 @@ begin
         if rising_edge(clk_i) then
             pulsed_bits_in <= pulsed_bits_i;
 
-            if read_strobe_i = '1' then
+            if read_strobe_i then
                 read_data_o <= pulsed_bits;
                 if clear_sticky then
                     pulsed_bits <= pulsed_bits_in;

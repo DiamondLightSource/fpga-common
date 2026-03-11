@@ -48,9 +48,9 @@
 --  end process;
 --
 --  if USE_PCIN generate
---      abc <= resize(ab, 48) + pc_i when en_c_i = '1' else resize(ab, 48);
+--      abc <= resize(ab, 48) + pc_i when en_c_i else resize(ab, 48);
 --  else
---      abc <= resize(ab, 48) + c_in when en_c_in = '1' else resize(ab, 48);
+--      abc <= resize(ab, 48) + c_in when en_c_in else resize(ab, 48);
 --  end generate;
 --
 --  ovf_o <= to_std_ulogic(not all_ones and not all_zeros);

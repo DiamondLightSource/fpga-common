@@ -28,7 +28,7 @@ architecture arch of sync_reset is
 
 begin
     process (clk_ok_i, clk_i) begin
-        if clk_ok_i = '0' then
+        if not clk_ok_i then
             clk_ok_meta <= '0';
             clk_ok_delay <= '0';
             sync_clk_ok_o <= '0';

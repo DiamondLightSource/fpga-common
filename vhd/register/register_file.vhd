@@ -31,7 +31,7 @@ begin
     process (clk_i) begin
         if rising_edge(clk_i) then
             for r in write_strobe_i'RANGE loop
-                if write_strobe_i(r) = '1' then
+                if write_strobe_i(r) then
                     register_file(r) <= write_data_i(r);
                 end if;
             end loop;
