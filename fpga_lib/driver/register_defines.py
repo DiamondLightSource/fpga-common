@@ -1,18 +1,8 @@
 # Use register definitions to create API
 
-from __future__ import print_function
-
-import os
-import sys
 import numpy
 
 from fpga_lib import parse
-
-
-# Helper function for reading signed values from unsigned field
-def to_signed(x, bits):
-    # First convert from 2's complement to offset, then add in the offset.
-    return (x ^ (1 << (bits - 1))) + (-1 << (bits - 1))
 
 
 # Reads and writes a bit-field in a register

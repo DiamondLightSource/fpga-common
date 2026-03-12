@@ -1,10 +1,6 @@
 # Simple argument parsing helper functions
 
-from __future__ import division
-from __future__ import print_function
-
 import argparse
-import numpy
 
 
 def parse_count(argument):
