@@ -14,7 +14,7 @@
 #       group_def | reg_def | reg_pair | reg_array | shared_name | reg_overlay
 #
 #   reg_def = name rw { field_def | field_skip }*
-#   field_def = "."name [ width ] [ "@"offset ] [ rw ]
+#   field_def = "."name [ width ] [ "@"offset ]
 #   field_skip = "-" [ width ]
 #
 #   reg_pair = "*RW" { reg_def_or_name }2
@@ -29,12 +29,21 @@
 #   reg_def_or_name = reg_def | shared_name
 #   shared_name = ":"saved_name [{ new_name | - } [rw]]
 #
-#   rw = "R" | "W" | "RW" | "WP"
+#   rw = "R" | "RMW" | "R+W" | "WO" | "WM" | "R+WM"
 #
 #   name and new_name are any valid VHDL identifier
 #   saved_name is a previously defined shared_reg_def or shared_group_def name
 #   count, offset, width are all integers
 #   in reg_def_or_name the shared_name must name a register, not a group
+#
+#   The five rw options have the following meanings:
+#   R       Read only register
+#   RMW     Configuration read/write: reads mirror the last data written
+#   R+W     Independent read and write registers used for IO
+#   WO      Write only register, data is lost on write
+#   WM      Configuration write only register, data can be mirrored in software
+#   R+WM    Configuration write only register overlaid with read only register.
+#           Not a good configuration to use!
 #
 # The syntax {...}* denotes a list of parses at the indented level, {...}2
 # specifies precisely two sub-parses, {...}+ denotes one or more sub-parses.
@@ -68,7 +77,7 @@ Register = namedtuple('Register',
 RegisterArray = namedtuple('RegisterArray',
     ['name', 'range', 'rw', 'fields', 'doc'])
 Field = namedtuple('Field',
-    ['name', 'range', 'is_bit', 'rw', 'doc'])
+    ['name', 'range', 'is_bit', 'doc'])
 RwPair = namedtuple('RwPair',
     ['registers'])
 Overlay = namedtuple('Overlay',
@@ -162,7 +171,7 @@ class PrintMethods(WalkParse):
         print()
 
     def walk_field(self, n, field):
-        self.__do_print(n, 'F', field, field.range, field.is_bit, field.rw)
+        self.__do_print(n, 'F', field, field.range, field.is_bit)
         print()
 
     def walk_group(self, n, group):
@@ -246,7 +255,7 @@ def is_int(value):
     return value and value[0] in '0123456789'
 
 def check_rw(rw, line_no):
-    if rw not in ['R', 'W', 'RW', 'WP']:
+    if rw not in ['R', 'RMW', 'R+W', 'WO', 'WM', 'R+WM']:
         fail_parse('Invalid R/W specification %s' % rw, line_no)
 
 
@@ -254,7 +263,7 @@ def is_field_skip(parse):
     return parse.line.split()[0] == '-'
 
 
-# field_def = "."name [ width ] [ "@"offset ] [ rw ]
+# field_def = "."name [ width ] [ "@"offset ]
 def parse_field_def(offset, parse):
     line, _, doc, line_no = parse
     line = line.split()
@@ -286,13 +295,8 @@ def parse_field_def(offset, parse):
             line_no)
 
     check_args(args, 0, 1, line_no)
-    if args:
-        rw = args[0]
-        check_rw(rw, line_no)
-    else:
-        rw = ''
 
-    return (Field(name, (offset, count), is_bit, rw, doc), offset + count)
+    return (Field(name, (offset, count), is_bit, doc), offset + count)
 
 
 # field_skip = "-" [ width ]
@@ -382,7 +386,7 @@ def parse_reg_pair(offset, parse, defines):
         parse_reg_def_or_name(
             offset, body[0], defines, expect = ['R']),
         parse_reg_def_or_name(
-            offset, body[1], defines, expect = ['W', 'WP'])]), 1)
+            offset, body[1], defines, expect = ['WO', 'WM'])]), 1)
 
 
 # reg_overlay = "*OVERLAY" name rw { reg_def_or_name }
