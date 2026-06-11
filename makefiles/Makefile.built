@@ -14,7 +14,7 @@ built_dir/top_entity.vhd: $(CONSTR_DIR)/used | built_dir
 built_dir/version.vhd: | built_dir
 	$(TOOLS_DIR)/make_version $(FPGA_TOP) $@
 
-built_dir/metadata.coe: prom_config | built_dir
+built_dir/metadata.coe: prom_config$(_TARGET) | built_dir
 	$(TOOLS_DIR)/prom_data_creator --format coe $< >$@
 
 # Register definitions, recognised by name of form _defines.vhd
