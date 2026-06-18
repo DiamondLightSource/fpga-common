@@ -8,9 +8,9 @@ use work.support.all;
 
 entity dot_product is
     generic (
-        -- Width of a_i: must be <= 25
+        -- To accomodate the targeted DSP one input must be no more than 25 bits
+        -- wide and the other no more than 18.
         A_WIDTH : natural;
-        -- Width of b_i: must be <= 18
         B_WIDTH : natural;
         -- Number of taps in arrays
         TAP_COUNT : natural;
@@ -40,6 +40,12 @@ architecture arch of dot_product is
     subtype OUT_RANGE is natural range
         OFFSET_OUT+OUT_LENGTH-1 downto OFFSET_OUT;
 
+    -- Automatically assign widest input to a_in and other input to b_in
+    constant A_IN_WIDTH : natural := maximum(A_WIDTH, B_WIDTH);
+    constant B_IN_WIDTH : natural := minimum(A_WIDTH, B_WIDTH);
+    signal a_in : signed_array(0 to TAP_COUNT-1)(A_IN_WIDTH-1 downto 0);
+    signal b_in : signed_array(0 to TAP_COUNT-1)(B_IN_WIDTH-1 downto 0);
+
 begin
     assert OUT_LENGTH <= 48
         report "Output length too long: " & to_string(OUT_LENGTH)
@@ -49,6 +55,15 @@ begin
         accum_array(0) <= (others => '0');
     else generate
         accum_array(0) <= (OUT_RANGE'RIGHT-1 => '1', others => '0');
+    end generate;
+
+    -- Assign inputs to appropriate ports of the multiplier element
+    gen_a_b : if A_WIDTH > B_WIDTH generate
+        a_in <= a_i;
+        b_in <= b_i;
+    else generate
+        a_in <= b_i;
+        b_in <= a_i;
     end generate;
 
     dot : for i in 0 to TAP_COUNT-1 generate
@@ -77,8 +92,8 @@ begin
             PROCESS_DELAY => PROCESS_DELAY
         ) port map (
             clk_i => clk_i,
-            a_i => a_i(i),
-            b_i => b_i(i),
+            a_i => a_in(i),
+            b_i => b_in(i),
             c_i => accum_array(i),
             en_p_i => enable_p,
             p_o => p_out,
