@@ -59,9 +59,9 @@ entity poly_fir is
 end;
 
 architecture arch of poly_fir is
-    signal last_in : std_ulogic := '0';
-    signal enable_in : std_ulogic := '0';
-    signal data_in : signed(DATA_WIDTH-1 downto 0) := (others => '0');
+    signal last_in : std_ulogic;
+    signal enable_in : std_ulogic;
+    signal data_in : signed(DATA_WIDTH-1 downto 0);
 
     subtype TAP_RANGE is natural range tap_i'RANGE;
 
