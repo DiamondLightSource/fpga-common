@@ -34,7 +34,7 @@ FILE_LIST_DEFS =
 FILE_LIST_DEFS += VHD_DIR
 FILE_LIST_DEFS += COMMON_VHD
 
-DEFAULT = fpga
+DEFAULT = help
 
 TOP_ENTITY = top
 BUILT = top_entity.vhd
@@ -43,6 +43,9 @@ BUILT = top_entity.vhd
 PROJECT_DEPENDS =
 
 JOBS_COUNT = 6
+
+# Symbols that must be defined
+$(call MUST_DEFINE,FPGA_PART)        # Definition of FPGA in use
 
 
 # ------------------------------------------------------------------------------
@@ -69,6 +72,16 @@ _BITFILE = $(PROJECT_NAME)/$(PROJECT_NAME).runs/impl_1/top.bit
 # By default the default target is fpga which resolves to $(PROJECT_NAME).bit
 default: $(DEFAULT)
 .PHONY: default
+
+help:
+	@echo
+	@echo The following targets are available:
+	@echo
+	@echo 'project    Creates fresh Vivado project from sources'
+	@echo 'fpga       Builds complete bitstream from project'
+	@echo 'runvivado  Runs Vivado on project'
+	@echo
+.PHONY: help
 
 project: $(_PROJECT)
 .PHONY: project

@@ -15,7 +15,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity %(entity_name)s is
-port (
 '''
 
 entity_template_declaration = '''\
@@ -23,8 +22,6 @@ entity_template_declaration = '''\
 '''
 
 entity_template_tail = '''\
-
-);
 end;
 '''
 
@@ -233,11 +230,14 @@ def map_pin_range(mapping):
 def write_entity(used_pins, entity_name, entity_file):
     with open(entity_file, 'w') as file:
         file.write(entity_template_head % locals())
-        sep = ''
-        for mapping in used_pins:
-            name, direction, type = map_pin_range(mapping)
-            file.write(entity_template_declaration % locals())
-            sep = ';\n'
+        if used_pins:
+            file.write('port (\n')
+            sep = ''
+            for mapping in used_pins:
+                name, direction, type = map_pin_range(mapping)
+                file.write(entity_template_declaration % locals())
+                sep = ';\n'
+            file.write('\n);\n')
         file.write(entity_template_tail % locals())
 
 
