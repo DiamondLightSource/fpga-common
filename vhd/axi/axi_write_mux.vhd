@@ -22,8 +22,8 @@ entity axi_write_mux is
         ADDRESS_WIDTH : natural;
         LOG_DATA_BYTES : natural;           -- log2 of data byte width
         MUX_CHANNEL_COUNT : natural;        -- Number of mux channels
-        MAX_BURST_COUNT : natural := 2;     -- Number of requested bursts
-        LOG_COMPLETION_COUNT : natural := 4 -- Number of outstanding completions
+        LOG_REQUEST_QUEUE : natural := 3;   -- Depth of request FIFO
+        LOG_COMPLETION_QUEUE : natural := 5 -- Number of outstanding completions
     );
     port (
         clk_i : in std_ulogic;
@@ -49,50 +49,23 @@ entity axi_write_mux is
 end;
 
 architecture arch of axi_write_mux is
-    constant DATA_WIDTH : natural := 8 * 2**LOG_DATA_BYTES;
     subtype DATA_SELECT_RANGE is
-        natural range bits(MUX_CHANNEL_COUNT-1) downto 0;
+        natural range bits(MUX_CHANNEL_COUNT - 1) downto 0;
 
-    -- Decoded choice of next available input source
-    signal mux_select_in_valid : std_ulogic := '0';
-    signal mux_select_in : unsigned(DATA_SELECT_RANGE) := (others => '0');
-    signal fifo_mux_select : unsigned(DATA_SELECT_RANGE);
+    signal mux_select_in : unsigned(DATA_SELECT_RANGE);
+    signal mux_select_valid : std_ulogic := '0';
 
-    signal current_addr_mux : axi_o'SUBTYPE;
-    signal ack_address_in : std_ulogic := '0';
-    signal ack_address_delay : std_ulogic := '0';
+    signal data_fifo_write_ready : std_ulogic;
+    signal data_fifo_read_valid : std_ulogic;
+    signal data_fifo_read_ready : std_ulogic := '0';
+    signal data_mux_next : unsigned(DATA_SELECT_RANGE);
+    signal data_mux_select : unsigned(DATA_SELECT_RANGE);
+    signal data_mux_valid : std_ulogic := '0';
 
-    -- Selected channel is recorded in FIFO
-    signal select_fifo_valid_in : std_ulogic := '0';
-    signal select_fifo_ready_in : std_ulogic;
-
-    -- Data completion for BRESP is also in FIFO, managed at same time as the
-    -- selection FIFO
-    signal completion_fifo_valid_in : std_ulogic := '0';
-    signal completion_fifo_ready_in : std_ulogic;
-    signal completion_fifo_valid_out : std_ulogic;
+    signal completion_fifo_write_ready : std_ulogic;
     signal completion_select : unsigned(DATA_SELECT_RANGE);
+    signal completion_valid : std_ulogic := '0';
 
-    -- Selected data channel to transmit
-    signal select_fifo_valid_out : std_ulogic;
-    signal data_select_out : unsigned(DATA_SELECT_RANGE);
-    signal data_select : unsigned(DATA_SELECT_RANGE) := (others => '0');
-    signal data_buffer_ready_early : std_ulogic;
-    signal data_buffer_ready : std_ulogic;
-
-    type data_state_t is (DATA_IDLE, DATA_START, DATA_RUNNING);
-    signal data_state : data_state_t := DATA_IDLE;
-
-    -- Intermediate buffers for data buffer input and output.
-    signal current_data_mux : axi_o'SUBTYPE;
-    signal buffer_data_in : std_ulogic_vector(DATA_WIDTH+1 downto 0);
-    signal buffer_data_out : std_ulogic_vector(DATA_WIDTH+1 downto 0);
-
-
-    -- -------------------------------------------------------------------------
-    -- Output gathering: outputs are more easily managed as separate variables,
-    -- and this avoids unpleasant surprises when assigning different fields of a
-    -- structure from different processes.
 
     -- Outputs for mux_o.  Easier to manage as bit arrays
     signal mux_address_ready : std_ulogic_vector(0 to MUX_CHANNEL_COUNT-1)
@@ -106,217 +79,283 @@ architecture arch of axi_write_mux is
     signal axi_address_valid : std_ulogic := '0';
     signal axi_address : unsigned(ADDRESS_WIDTH-1 downto LOG_DATA_BYTES);
     signal axi_burst_length : unsigned(7 downto 0);
-    signal axi_data_valid : std_ulogic;
+    signal axi_data_valid : std_ulogic := '0';
     signal axi_data_last : std_ulogic;
     signal axi_data : std_ulogic_vector(8 * 2**LOG_DATA_BYTES - 1 downto 0);
     signal axi_data_enable : std_ulogic;
 
+    -- Skid buffer for output data
+    signal skid_data_valid : std_ulogic := '0';
+    signal skid_data_last : std_ulogic;
+    signal skid_data : std_ulogic_vector(8 * 2**LOG_DATA_BYTES - 1 downto 0);
+    signal skid_data_enable : std_ulogic;
+
+
 begin
-    -- Aliases for the selected views of the appropriate selected incoming
-    -- address and data sources.
-    current_addr_mux <= mux_i(to_integer(mux_select_in));
-    current_data_mux <= mux_i(to_integer(data_select));
+    -- The implementation consists of the following elements:
+    --
+    --  * Address dispatch.  The highest priority available address request is
+    --    forwarded to the AXI output and the selected channel is simultaneously
+    --    written to a data FIFO and a completion FIFO.  This requires blocking
+    --    until all three destinations are available.
+    --  * Data dispatch.  Channels to forward are read in turn from the data
+    --    FIFO and one burst from that channel is forwarded.
+    --  * Completion dispatch.  Each completion is forwarded in turn to the
+    --    channnel.
 
-
-    -- FIFO for multiplexer inputs: records which mux inputs have had their
-    -- corresponding burst parameters set and need to process data.  Only the
-    -- selection needs to be recorded.
-    select_fifo : entity work.simple_fifo generic map (
-        FIFO_DEPTH => MAX_BURST_COUNT,
+    -- FIFO for data bursts, keeps track of which channel to send next.  We will
+    -- rely on correct framing to manage the burst length!
+    data_fifo : entity work.fifo generic map (
+        FIFO_BITS => LOG_REQUEST_QUEUE,
         DATA_WIDTH => mux_select_in'LENGTH
     ) port map (
         clk_i => clk_i,
 
-        write_valid_i => select_fifo_valid_in,
-        write_ready_o => select_fifo_ready_in,
-        write_data_i => std_ulogic_vector(fifo_mux_select),
+        write_valid_i => mux_select_valid,
+        write_ready_o => data_fifo_write_ready,
+        write_data_i => std_ulogic_vector(mux_select_in),
 
-        read_valid_o => select_fifo_valid_out,
-        read_ready_i => to_std_ulogic(data_state = DATA_IDLE),
-        unsigned(read_data_o) => data_select_out
+        read_valid_o => data_fifo_read_valid,
+        read_ready_i => data_fifo_read_ready,
+        unsigned(read_data_o) => data_mux_next
     );
+
 
     -- FIFO for write completion responses, keeps track of which channel is
     -- expecting the next write complete response
     completion_fifo : entity work.fifo generic map (
-        FIFO_BITS => LOG_COMPLETION_COUNT,
+        FIFO_BITS => LOG_COMPLETION_QUEUE,
         DATA_WIDTH => mux_select_in'LENGTH
     ) port map (
         clk_i => clk_i,
 
-        write_valid_i => completion_fifo_valid_in,
-        write_ready_o => completion_fifo_ready_in,
-        write_data_i => std_ulogic_vector(fifo_mux_select),
+        write_valid_i => mux_select_valid,
+        write_ready_o => completion_fifo_write_ready,
+        write_data_i => std_ulogic_vector(mux_select_in),
 
-        read_valid_o => completion_fifo_valid_out,
+        read_valid_o => completion_valid,
         read_ready_i => axi_i.write_complete,
         unsigned(read_data_o) => completion_select
     );
 
 
-    -- Data output buffer.  We need to use a two stage buffer to ensure bubble
-    -- free operation and yet allow for slave flow control
-    data_buffer : entity work.simple_fifo generic map (
-        FIFO_DEPTH => 2,
-        DATA_WIDTH => DATA_WIDTH + 2
-    ) port map (
-        clk_i => clk_i,
-
-        write_valid_i =>
-            current_data_mux.data_valid and
-            to_std_ulogic(data_state = DATA_RUNNING),
-        write_ready_early_o => data_buffer_ready_early,
-        write_ready_o => data_buffer_ready,
-        write_data_i => buffer_data_in,
-
-        read_valid_o => axi_data_valid,
-        read_ready_i => axi_i.data_ready,
-        read_data_o => buffer_data_out
-    );
-    -- Because of brain damage in the definition of VHDL we have to do these
-    -- associations *outside* the entity assignment above.  Just because.
-    -- It's in the standard, apparently.  Allegedly this would work if
-    -- DATA_WIDTH was a project wide constant!  I am lost for words...
-    buffer_data_in(DATA_WIDTH-1 downto 0) <= current_data_mux.data;
-    buffer_data_in(DATA_WIDTH) <= current_data_mux.data_last;
-    buffer_data_in(DATA_WIDTH+1) <= current_data_mux.data_enable;
-    axi_data <= buffer_data_out(DATA_WIDTH-1 downto 0);
-    axi_data_last <= buffer_data_out(DATA_WIDTH);
-    axi_data_enable <= buffer_data_out(DATA_WIDTH+1);
-
-
-    -- Address output and input source selection
     process (clk_i)
-        -- Computes index of next available input ready signal
+        -- Computes index of next available input ready signal.  Lowest numbered
+        -- index takes priority
         procedure find_next_ready(
-            signal found : out std_ulogic;
-            signal data_select : out unsigned;
-            mux : axi_write_array_t) is
+            variable mux_select : out natural;
+            variable found : out std_ulogic) is
         begin
             for i in 0 to MUX_CHANNEL_COUNT-1 loop
-                if mux(i).address_valid then
-                    found <= '1';
-                    data_select <= to_unsigned(i, data_select'LENGTH);
+                -- Look for incoming addresses that we haven't acknowledged yet
+                if mux_i(i).address_valid then
+                    found := '1';
+                    mux_select := i;
                     return;
                 end if;
             end loop;
-            found <= '0';
+            found := '0';
         end;
 
-        variable select_fifo_ready : std_ulogic;
-        variable axi_address_ready : std_ulogic;
-        variable taking_address : std_ulogic;
 
-    begin
-        if rising_edge(clk_i) then
-            -- Select FIFO is ready if it's not blocked with untaken data
-            select_fifo_ready :=
-                not select_fifo_valid_in or select_fifo_ready_in;
-            -- Similarly, the AXI output is ready if not blocked
-            axi_address_ready := not axi_address_valid or axi_i.address_ready;
-            -- We are ready to take a new address if the following conditions
-            -- all hold:
-            taking_address :=
-                -- Ensure that any previous address has been fully acknowledged.
-                not ack_address_in and not ack_address_delay and
-                -- Select and completion FIFOs can take data
-                select_fifo_ready and
-                -- Ensure any previous output address has been taken
-                axi_address_ready and
-                -- We have an incoming address to process
-                mux_select_in_valid;
-
-            -- We register the selected mux address to avoid overly complex
-            -- combinatorial paths.  Unfortunately this adds a extra delay to
-            -- detecting the next valid input.
-            find_next_ready(mux_select_in_valid, mux_select_in, mux_i);
-
-            if taking_address then
-                axi_address_valid <= '1';
-                axi_address <= current_addr_mux.address;
-                axi_burst_length <= current_addr_mux.burst_length;
-                select_fifo_valid_in <= '1';
-                completion_fifo_valid_in <= '1';
-                fifo_mux_select <= mux_select_in;
+        -- Update the outgoing address using a simple "ping-pong" buffer
+        procedure update_address_out(
+            mux_select : natural; address_valid : std_ulogic) is
+        begin
+            if axi_address_valid then
+                axi_address_valid <= not axi_i.address_ready;
             else
-                if axi_i.address_ready then
-                    axi_address_valid <= '0';
-                end if;
-                if select_fifo_ready_in then
-                    select_fifo_valid_in <= '0';
-                end if;
-                completion_fifo_valid_in <= '0';
+                axi_address_valid <= address_valid;
+                axi_address <= mux_i(mux_select).address;
+                axi_burst_length <= mux_i(mux_select).burst_length;
             end if;
+        end;
 
-            compute_strobe(
-                mux_address_ready, to_integer(mux_select_in), taking_address);
+
+        -- Process incoming address.  Ensure we can write the address to the AXI
+        -- master port and can write the mux selection to the data and
+        -- completion queues.
+        procedure process_address is
+            variable mux_select : natural;
+            variable mux_ix : natural;
+            variable address_found : std_ulogic;
+            variable address_valid : std_ulogic;
+
+        begin
+            -- Update priority selection.  Only allow selection to proceed if
+            -- all three destinations are ready.
+            find_next_ready(mux_select, address_found);
+            address_valid :=
+                -- Check incoming address found
+                address_found and
+                -- Check no outstanding address out
+                not axi_address_valid and
+                -- Check for room in our data and completion queues
+                data_fifo_write_ready and completion_fifo_write_ready;
+
+            -- Acknowleged the selected address
+            compute_strobe(mux_address_ready, mux_select, address_valid);
+
+            -- Write selection to data and completion FIFOs
+            mux_select_in <= to_unsigned(mux_select, mux_select_in'LENGTH);
+            mux_select_valid <= address_valid;
+
+            -- Write address to AXI slave
+            update_address_out(mux_select, address_valid);
+
+            -- If we miss a completion eventually the completion FIFO will fill
+            -- and we'll stop accepting writes.
+            missing_completion_o <=
+                address_found and not completion_fifo_write_ready;
+        end;
+
+
+        -- Updates the AXI data out buffer via a skid buffer so we can properly
+        -- manage our flow control.
+        --   The flag data_out_ready record whether this buffer will be ready to
+        -- take data on the next tick
+        procedure update_data_out(
+            mux_select : natural;
+            data_out_valid : std_ulogic;
+            variable data_out_ready : out std_ulogic) is
+        begin
+            -- Manage the output buffer
+            if axi_i.data_ready or not axi_data_valid then
+                -- In this state we can update the output buffer, use incoming
+                -- data or the skid buffer as appropriate.  We will be ready
+                -- for more data on the next tick.
+                if skid_data_valid then
+                    skid_data_valid <= '0';
+                    axi_data_valid <= '1';
+                    axi_data_last <= skid_data_last;
+                    axi_data_enable <= skid_data_enable;
+                    axi_data <= skid_data;
+                else
+                    axi_data_valid <= data_out_valid;
+                    axi_data_last <= mux_i(mux_select).data_last;
+                    axi_data_enable <= mux_i(mux_select).data_enable;
+                    axi_data <= mux_i(mux_select).data;
+                end if;
+                data_out_ready := '1';
+            elsif axi_data_valid and data_out_valid then
+                -- Can't put the data in the output buffer so put it in the
+                -- skid buffer instead.  We are not ready for more data.
+                skid_data_valid <= '1';
+                skid_data_last <= mux_i(mux_select).data_last;
+                skid_data_enable <= mux_i(mux_select).data_enable;
+                skid_data <= mux_i(mux_select).data;
+                data_out_ready := '0';
+
+                -- The data_out_ready flag is designed to specifically avoid
+                -- this case.  If the skid buffer is already full then we will
+                -- be losing data here.
+                assert not skid_data_valid severity failure;
+            else
+                -- We can accept data so long as the skid buffer is empty
+                data_out_ready := not skid_data_valid;
+            end if;
+        end;
+
+
+        procedure update_data_mux_select(
+            next_mux_valid : std_ulogic; load_next : std_ulogic) is
+        begin
+            if load_next or not data_mux_valid then
+                data_mux_select <= data_mux_next;
+                data_mux_valid <= next_mux_valid;
+                data_fifo_read_ready <= next_mux_valid;
+            else
+                data_fifo_read_ready <= '0';
+            end if;
+        end;
+
+
+        -- Data forwarding is surprisingly delicate.  Data needs to be forwarded
+        -- without bubbles, so the flow is a bit tricky.  This processing has
+        -- the following three steps:
+        --  * Update the AXI output buffer.  This is a skid buffer to allow us
+        --    to know in advance whether data can be taken on the next tick.
+        --  * Use the status flag from the output buffer to update the data
+        --    ready flag for the next beat.  At this point we may need to switch
+        --    to the next available channel.
+        --  * Advance the channel selection if appropriate.  The channel
+        --    selection is double buffered to help with advancing the data ready
+        --    flag at the end of each burst.
+        procedure process_data is
+            variable next_mux_valid : std_ulogic;
+            variable mux_select : natural;
+            variable data_out_valid : std_ulogic;
+            variable data_out_last : std_ulogic;
+            variable next_data_ready : std_ulogic;
+
+        begin
+            -- We alternate between using a reading the next value and accepting
+            -- it, which means during the acceptance cycle we have to mark the
+            -- next value as invalid.
+            next_mux_valid :=
+                data_fifo_read_valid and not data_fifo_read_ready;
+
+            if data_mux_valid then
+                mux_select := to_integer(data_mux_select);
+                data_out_valid :=
+                    mux_i(mux_select).data_valid and
+                    mux_o(mux_select).data_ready;
+                data_out_last :=
+                    data_out_valid and
+                    mux_i(mux_select).data_last;
+
+                -- Update the output buffer, discover whether we can take data
+                -- for the next tick.
+                update_data_out(mux_select, data_out_valid, next_data_ready);
+
+                -- Update the appropriate data input for the correct data
+                if not data_out_last then
+                    -- In the middle of a burst use current selection
+                    compute_strobe(mux_data_ready, mux_select, next_data_ready);
+                elsif next_mux_valid then
+                    -- At the end use the next selection if available
+                    compute_strobe(
+                        mux_data_ready, to_integer(data_mux_next),
+                        next_data_ready);
+                else
+                    -- If no selection, nothing to do
+                    mux_data_ready <= (others => '0');
+                end if;
+
+                -- Advance data mux selection on last beat of write
+                update_data_mux_select(next_mux_valid, data_out_last);
+            else
+                -- Stand still until we have something to do
+                update_data_out(0, '0', next_data_ready);
+                mux_data_ready <= (others => '0');
+                update_data_mux_select(next_mux_valid, '0');
+            end if;
+        end;
+
+
+        -- Most of the work for completion is already done in the FIFO handshake
+        procedure process_completion is
+        begin
             compute_strobe(
                 mux_write_complete, to_integer(completion_select),
-                axi_i.write_complete and completion_fifo_valid_out);
+                axi_i.write_complete);
 
-            -- Check for the unexpected completion protocol errors
-            --
-            -- Completion received when none expected
+            -- If we don't have a FIFO entry for this completion we have a
+            -- protocol error
             unexpected_completion_o <=
-                axi_i.write_complete and not completion_fifo_valid_out;
-            -- If more than 16 outstanding completions we'll lose track of
-            -- further completions
-            missing_completion_o <=
-               completion_fifo_valid_in and not completion_fifo_ready_in;
-
-            ack_address_in <= taking_address;
-            ack_address_delay <= ack_address_in;
-        end if;
-    end process;
-
-
-    -- Data capture
-    process (clk_i)
-        variable last_processed : std_ulogic;
+                axi_i.write_complete and not completion_valid;
+        end;
 
     begin
         if rising_edge(clk_i) then
-            -- When last is accepted by the skip buffer we need to stop taking
-            -- data from this source.
-            last_processed := current_data_mux.data_last and data_buffer_ready;
-
-            -- Data capture state control
-            case data_state is
-                when DATA_IDLE =>
-                    if select_fifo_valid_out then
-                        data_select <= data_select_out;
-                        data_state <= DATA_START;
-                    end if;
-                when DATA_START =>
-                    data_state <= DATA_RUNNING;
-                when DATA_RUNNING =>
-                    -- Need to wait for final data write to complete
-                    if last_processed then
-                        data_state <= DATA_IDLE;
-                    end if;
-            end case;
-
-            -- Wire ready to selected source.  This uses the early version of
-            -- the data buffer ready flag, and we need to ensure we go false as
-            -- soon as last has been processed by the data FIFO.
-            compute_strobe(
-                mux_data_ready, to_integer(data_select),
-                -- While we're running (and during the first startup tick) we
-                -- ensure that the skip buffer's ready signal is registered to
-                -- the appropriate source.  We stop taking data as soon as last
-                -- has been registered into the skip buffer.
-                to_std_ulogic(
-                    data_state = DATA_START or data_state = DATA_RUNNING) and
-                data_buffer_ready_early and not last_processed);
+            -- Dispatch incoming address to AXI slave and FIFOs
+            process_address;
+            -- Dispatch the selected data stream
+            process_data;
+            -- Ensure completions are handled
+            process_completion;
         end if;
     end process;
-
-
-    validate : entity work.axi_write_validate port map (
-        clk_i => clk_i,
-        axi_i => axi_o,
-        axi_ready_i => axi_i
-    );
 
 
     -- Assign mux_o array
@@ -328,7 +367,7 @@ begin
         );
     end generate;
 
-    -- We need to assign axi_o in a single process, so we do it here.
+    -- Assign axi_o
     axi_o <= (
         address_valid => axi_address_valid,
         address => axi_address,
