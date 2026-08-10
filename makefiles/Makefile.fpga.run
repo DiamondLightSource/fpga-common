@@ -36,7 +36,6 @@ FILE_LIST_DEFS += COMMON_VHD
 
 DEFAULT = help
 
-TOP_ENTITY = top
 BUILT = top_entity.vhd
 
 # Any extra dependencies for building the project

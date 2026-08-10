@@ -39,5 +39,7 @@ BD_DIR = $(FPGA_TOP)/bd$(_TARGET)
 # Command to run vivado
 RUN_VIVADO = $(VIVADO) $(VIVADO_EXTRA_ARGS)
 
+TOP_ENTITY = top
+
 
 # vim: set filetype=make:
