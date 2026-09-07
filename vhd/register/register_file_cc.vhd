@@ -23,13 +23,22 @@ entity register_file_cc is
 
         -- Register array on data clock domain
         clk_data_i : in std_ulogic;
-        register_data_o : out reg_data_array_t;
-        data_strobe_o : out std_ulogic_vector
+        register_data_o : out reg_data_array_t
     );
 end;
 
 architecture arch of register_file_cc is
+    -- Data to write using write range
+    signal register_strobe : std_ulogic_vector(write_strobe_i'RANGE);
     signal register_data : reg_data_array_t(write_strobe_i'RANGE);
+
+    -- Data to return using read range.
+    -- This separate assignment allows the register data to have a different
+    -- index range from the register interface, which can be invaluable.
+    signal register_strobe_remap : std_ulogic_vector(register_data_o'RANGE);
+    signal register_data_remap : register_data_o'SUBTYPE;
+    signal register_data_out : register_data_o'SUBTYPE
+        := (others => (others => '0'));
 
 begin
     gen_regs : for i in write_strobe_i'RANGE generate
@@ -43,12 +52,24 @@ begin
             data_i => write_data_i(i),
 
             clk_out_i => clk_data_i,
-            strobe_o => data_strobe_o(i),
+            strobe_o => register_strobe(i),
             data_o => register_data(i)
         );
     end generate;
 
-    -- This separate assignment allows the register data to have a different
-    -- index range from the register interface, which is sometimes useful.
-    register_data_o <= register_data;
+    -- Remap returned data onto output range
+    register_strobe_remap <= register_strobe;
+    register_data_remap <= register_data;
+
+    -- Register data on new clock domain
+    process (clk_data_i) begin
+        if rising_edge(clk_data_i) then
+            for i in register_data_o'RANGE loop
+                if register_strobe_remap(i) then
+                    register_data_out(i) <= register_data_remap(i);
+                end if;
+            end loop;
+        end if;
+    end process;
+    register_data_o <= register_data_out;
 end;
