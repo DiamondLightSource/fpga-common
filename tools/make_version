@@ -2,41 +2,27 @@
 
 # Shell script for creating VHDL version file
 
-set -e
+HERE="$(dirname "$0")"
 
 # First argument specifies project top
 PROJECT_TOP="${1:?Must specify project top}"
 # Second optional argument specifies where to place the built file
 TARGET_FILE="${2:-/dev/stdout}"
 
-set -o pipefail
 
-# First pick up the git information
-if GIT_SHA=$(git -C "$PROJECT_TOP" rev-parse HEAD 2>/dev/null | cut -b -7); then
-    # Ok, we have a valid git repository
-    GIT_DIRTY=$(git -C "$PROJECT_TOP" diff --shortstat --quiet HEAD; echo $?)
-else
-    # No git repository, create default values instead
-    GIT_SHA=0000000
-    GIT_DIRTY=1
-fi
+# Invoke get-git-version to get the project information
+read GIT_SHA GIT_DIRTY VERSION_MAJOR VERSION_MINOR VERSION_PATCH VERSION_AGE \
+    <<<"$("$HERE"/get-git-version "$PROJECT_TOP")"  &&
 
-# # Now pick up the version file.  This is in makefile format, so we get make to
-# # convert it for us
-# VERSION="$(make -C "$PROJECT_TOP" print_version --no-print-directory)"
-# eval "$VERSION"
-
-# This isn't implemented as yet, so just fill in placeholders
-VERSION_MAJOR=0
-VERSION_MINOR=0
-VERSION_PATCH=0
-
+# Emit version information
 cat <<EOF >"$TARGET_FILE"
+-- Automatically generated on $(date), DO NOT EDIT
 package version is
     constant GIT_VERSION : natural := 16#$GIT_SHA#;
     constant GIT_DIRTY : natural := $GIT_DIRTY;
     constant VERSION_MAJOR : natural := $VERSION_MAJOR;
     constant VERSION_MINOR : natural := $VERSION_MINOR;
     constant VERSION_PATCH : natural := $VERSION_PATCH;
+    constant VERSION_AGE : natural := $VERSION_AGE;
 end;
 EOF

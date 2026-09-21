@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# Extracts git version information from specified project and head.  Recognises
+# dot separated numerical tags of the form:
+#
+#   n.m or n.m.p    (n for major, m for minor, p for patch)
+#
+# Should be called as:
+#
+#   get-git-version [repo-path] [commit]
+#
+# repo-path defaults to the working directory and commit defaults to HEAD.
+#
+# Returns six numbers in the following format:
+#
+#   git-sha dirty-flag major minor patch age
+#
+# git-sha is 7 hexadecimal digits encoding the git SHA of the selected commit
+# dirty-flag is 1 if the repository has uncommitted changes, 0 otherwise
+# major, minor, patch are extracted from the most up to date tag in the repo
+# age is the number of commit since the tag
+#
+# If the tag is not of the expected format (two or three dot separate numbers)
+# then the version and age numbers are set to zero.
+
+PROJECT_TOP="${1:-.}"
+HEAD="${2:-HEAD}"
+
+
+# Default versions for version info to be generated below.
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_AGE=0
+
+
+# First pick up the git 7 bit SHA code
+if GIT_SHA=$(git -C "$PROJECT_TOP" rev-parse --short "$HEAD" 2>/dev/null); then
+    # Ok, we have a valid git repository
+
+    # First pick up the dirty flag
+    DIRTY=$(git -C "$PROJECT_TOP" diff --shortstat --quiet "$HEAD"; echo $?)
+
+    # Next try and decode a revision number from the tag.  Although there are a
+    # lot of possible options, we'll be quite strict and only recognise dot
+    # separated two or three part version numbers with tags of the following
+    # forms:
+    #
+    #   n.m             A tag with a full two part revision
+    #   n.m-k-gxxx      A two part tag with subsequent untagged revisions
+    #   n.m.l           A tag with a full three part revision
+    #   n.m.l-k-gxxx    A three part tag with subsequent untagged revisions
+    #
+    PATTERN="^([0-9]+)[.]([0-9]+)([.]([0-9]+))?(-([0-9]+)-g$GIT_SHA)?\$"
+
+    VERSIONS="$(git -C "$PROJECT_TOP" describe --tags "$HEAD")"
+    if [[ $VERSIONS =~ $PATTERN ]]; then
+        # Pull out the major, minor, and optional patch
+        VERSION_MAJOR=${BASH_REMATCH[1]}
+        VERSION_MINOR=${BASH_REMATCH[2]}
+        if [[ -n ${BASH_REMATCH[3]} ]]; then
+            VERSION_PATCH=${BASH_REMATCH[4]}
+        fi
+
+        # Check for extra commits after the tag
+        if [[ -n ${BASH_REMATCH[5]} ]]; then
+            VERSION_AGE=${BASH_REMATCH[6]}
+        fi
+    fi
+else
+    # Generate zero SHA with dirty repository if git rev-parse fails
+    GIT_SHA=0000000
+    DIRTY=1
+fi
+
+echo $GIT_SHA $DIRTY $VERSION_MAJOR $VERSION_MINOR $VERSION_PATCH $VERSION_AGE
