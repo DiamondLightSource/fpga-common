@@ -15,7 +15,7 @@ BLOCK_DESIGNS =
 # By default load the built pin definition constraints and all constraints from
 # the computed constraints directory
 CONSTR_FILES =
-CONSTR_FILES += built_dir/top_pins.xdc
+CONSTR_FILES += built_dir/$(TOP_ENTITY)_pins.xdc
 CONSTR_FILES += $(wildcard $(CONSTR_DIR)/*.xdc)
 # TCL based constraints need separate treatment
 CONSTR_TCL =
@@ -36,7 +36,7 @@ FILE_LIST_DEFS += COMMON_VHD
 
 DEFAULT = help
 
-BUILT = top_entity.vhd
+BUILT = $(TOP_ENTITY)_entity.vhd
 
 # Any extra dependencies for building the project
 PROJECT_DEPENDS =
