@@ -2,6 +2,8 @@
 
 from __future__ import print_function
 
+import argparse
+
 import sys
 import os
 import types
@@ -158,6 +160,13 @@ def parse_signals_line(line):
     return names, range, direction, no_pin
 
 
+def report_error(e, line_no, file):
+    print(f'File "{file}" line {line_no}: {e}')
+    if verbose:
+        raise
+    else:
+        sys.exit(1)
+
 
 # Load list of available signals on the target
 def load_signals(signal_file):
@@ -170,8 +179,7 @@ def load_signals(signal_file):
                 assert name not in signals, 'Repeated signal name %s' % name
                 signals[name] = (range, direction, no_pin)
         except Exception as e:
-            print('Error', e, 'on line', line_no)
-            raise
+            report_error(e, line_no, signal_file)
 
     return signals
 
@@ -190,8 +198,7 @@ def load_locations(pins_file):
             name, index = parse_name_index(name)
             pins[(name, index)] = (pin, iostandard, others)
         except Exception as e:
-            print('Error', e, 'on line', line_no)
-            raise
+            report_error(e, line_no, pins_file)
     return pins
 
 
@@ -200,12 +207,16 @@ def load_used_pins(signals, used_file):
     used_pins = []
 
     for line, line_no in uncomment_file(used_file, '#'):
-        names, range_in, direction, no_pin_in = parse_signals_line(line)
-        for name in expand_string(names):
-            signal_range, signal_direction, no_pin = signals[name]
-            check_signal_direction(signal_direction, direction)
-            check_signal_range(signal_range, range_in)
-            used_pins.append((name, range_in, direction, no_pin or no_pin_in))
+        try:
+            names, range_in, direction, no_pin_in = parse_signals_line(line)
+            for name in expand_string(names):
+                signal_range, signal_direction, no_pin = signals[name]
+                check_signal_direction(signal_direction, direction)
+                check_signal_range(signal_range, range_in)
+                used_pins.append(
+                    (name, range_in, direction, no_pin or no_pin_in))
+        except Exception as e:
+            report_error(e, line_no, used_file)
 
     return used_pins
 
@@ -277,16 +288,38 @@ def write_xdc(locations, used_pins, xdc_file):
                 if others == 'PULLUP':
                     file.write(xdc_pullup_line % locals())
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description = 'Generates top entity and pin constraints')
+    parser.add_argument('-v', dest = 'verbose', action = 'store_true',
+        help = 'Set to enable full tracebacks')
+    parser.add_argument('board',
+        help = 'Path to directory containing board definitions')
+    parser.add_argument('used',
+        help = 'File containing list of signals used')
+    parser.add_argument('entity',
+        help = 'Name of top level entity to generate')
+    parser.add_argument('out_dir',
+        help = 'Path to output directory')
+    return parser.parse_args()
+
+
+verbose = False
 
 def main():
+    args = parse_args()
+
     # Directory where the list of signals and pin assigments can be found
-    board_dir = sys.argv[1]
+    board_dir = args.board
     # File containing list of signals used
-    used_file = sys.argv[2]
+    used_file = args.used
     # Name of entity to generate
-    entity_name = sys.argv[3]
+    entity_name = args.entity
     # Location to place generated files
-    target_dir = sys.argv[4]
+    target_dir = args.out_dir
+
+    global verbose
+    verbose = args.verbose
 
     # We generate two files: a top level entity and a pin constrains file.
     entity_file = os.path.join(target_dir, '%s_entity.vhd' % entity_name)
