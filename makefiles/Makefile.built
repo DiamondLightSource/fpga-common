@@ -8,7 +8,7 @@ VPATH += $(VHD_DIR)
 
 
 # Generate top entity
-built_dir/top_entity.vhd: $(CONSTR_DIR)/used | built_dir
+built_dir/$(TOP_ENTITY)_entity.vhd: $(CONSTR_DIR)/used | built_dir
 	$(TOOLS_DIR)/make_entity $(BOARD_DIR) $^ $(TOP_ENTITY) built_dir
 
 built_dir/version.vhd: | built_dir
