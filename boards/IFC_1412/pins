@@ -639,8 +639,6 @@ pad_FMC2_DP_M2C_P[4]                N38
 pad_FMC2_DP_M2C_N[4]                N39
 pad_FMC2_DP_C2M_P[4]                N34
 pad_FMC2_DP_C2M_N[4]                N35
-pad_E10G_CLK1_P                     T32
-pad_E10G_CLK1_N                     T33
 
 
 # Quad 224 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -667,8 +665,6 @@ pad_AMC_PCI_RX_N[4]                 AW3
 
 # Quad 225 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-pad_E10G_CLK3_P                    AM10
-pad_E10G_CLK3_N                     AM9
 pad_AMC_PCI_TX_P[11]                AM6
 pad_AMC_PCI_TX_N[11]                AM5
 pad_AMC_PCI_TX_P[10]                AN8
@@ -735,6 +731,8 @@ pad_FMC1_DP_C2M_N[8]                AG7
 
 # Quad 228 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+pad_E10G_CLK3_P                     AA8
+pad_E10G_CLK3_N                     AA7
 pad_FMC1_GBTCLK_P[0]                 W8
 pad_FMC1_GBTCLK_N[0]                 W7
 pad_FMC1_DP_M2C_P[3]                AB2
@@ -805,6 +803,8 @@ pad_FMC2_DP_C2M_N[0]                 J7
 
 # Quad 231 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+pad_E10G_CLK2_P                     K10
+pad_E10G_CLK2_N                      K9
 pad_FMC2_GBTCLK_P[3]                H10
 pad_FMC2_GBTCLK_N[3]                 H9
 pad_FMC2_DP_M2C_P[15]                H2
@@ -823,12 +823,12 @@ pad_FMC2_DP_M2C_P[12]                E4
 pad_FMC2_DP_M2C_N[12]                E3
 pad_FMC2_DP_C2M_P[12]                E8
 pad_FMC2_DP_C2M_N[12]                E7
-pad_E10G_CLK2_P                     K10
-pad_E10G_CLK2_N                      K9
 
 
 # Quad 232 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+pad_MGT232_REFCLK_P                 F10
+pad_MGT232_REFCLK_N                  F9
 pad_RTM_GTP_CLK0_IN_P               D10
 pad_RTM_GTP_CLK0_IN_N                D9
 pad_RTM_GTP_3_0_TX_P[3]              A8
@@ -847,8 +847,6 @@ pad_RTM_GTP_3_0_TX_P[0]              D6
 pad_RTM_GTP_3_0_TX_N[0]              D5
 pad_RTM_GTP_3_0_RX_P[0]              D2
 pad_RTM_GTP_3_0_RX_N[0]              D1
-pad_MGT232_REFCLK_P                 F10
-pad_MGT232_REFCLK_N                  F9
 
 
 # SGRAM (banks 24, 25) VDD_SGRAM - - - - - - - - - - - - - - - - - - - - - - - -
