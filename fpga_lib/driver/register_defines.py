@@ -227,18 +227,21 @@ def make_top(group, attributes):
             self.__values = {}
 
         def _read_value(self, offset, rw):
-            if rw == 'W':
+            if rw in ['R', 'RMW', 'R+W', 'R+WM']:
+                # Ordinary readable register, read from hardware
+                return self.__hardware._read_value(offset)
+            elif rw == 'WM':
                 # Write only register, return cached value
                 return self.__values.get(offset, 0)
-            elif rw == 'WP':
-                # Pulse register, only ever reads as zero
+            elif rw == 'WO':
+                # Write only register, return 0
                 return 0
             else:
-                return self.__hardware._read_value(offset)
+                assert False, f'Unknown access type "{rw}"'
 
         def _write_value(self, offset, rw, value):
             assert rw != 'R', 'Writing to read only register'
-            if rw == 'W':
+            if rw in ['WM', 'R+WM']:
                 # Cache value written to write-only register
                 self.__values[offset] = value
             self.__hardware._write_value(offset, value)
